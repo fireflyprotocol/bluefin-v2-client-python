@@ -1,9 +1,35 @@
 import nacl
 import hashlib
 import json
+import base64
+from .utilities import *
+from .account import *
 class Signer:
     def __init__(self):
         pass
+
+    def sign_tx(self, tx_bytes, sui_wallet: SuiWallet):
+        """
+            expects the msg in bytes
+            expects public key in bytes.
+            expects privateKey in bytes
+            Signs the msg and returns the signature. 
+            Returns the value in b64 encoded format
+        """
+
+        intent=bytearray()
+        intent.extend([0,0,0])
+        intent=intent+tx_bytes
+        hash=hashlib.blake2b(intent,digest_size=32).digest()
+
+
+        result= nacl.signing.SigningKey(sui_wallet.privateKeyBytes).sign(hash)[:64]
+        temp=bytearray()
+        temp.append(0)
+        temp.extend(result)
+        temp.extend(sui_wallet.publicKeyBytes[1:])
+        res=base64.b64encode(temp)
+        return res
         
     def sign_hash(self, hash, private_key, append=''):
         """
@@ -11,7 +37,7 @@ class Signer:
         """
         result= nacl.signing.SigningKey(private_key).sign(hash)[:64]
         return result.hex()+'1' + append
-    
+        
 
     def encode_message(self,msg: dict):
         msg=json.dumps(msg,separators=(',', ':'))

@@ -50,3 +50,26 @@
    1. We sign the order and send it to bluefin, now imagine we do not have the hash of our order.
    2. We resign our order and get the hash and then we follow the similar approach as above. Please have a look at `7.cancelling_orders.py` in our examples file.
 
+
+
+## A detailed Guide on Onboarding:
+1. Basically as explained earlier when sign the onboarding url and send it to bluefin, bluefin returns us the TOKEN.
+2. The change in this repo is following. 
+3. ```python 
+        # imagine msg="https://testnet.bluefin.io"
+        msgDict={}
+        msgDict['onboardingUrl']=msg
+        msg=json.dumps(msgDict,separators=(',', ':'))
+        # we first create a json something like this '{"onboardingURL":"https://testnet.bluefin.io"}
+
+        # we then convert this json to a bytearray
+        msg_bytearray=bytearray(msg.encode("utf-8"))
+        intent=bytearray()
+        #we then append [3,0,0,length of our json object] to our intent bytearray
+        intent.extend([3,0,0, len(msg_bytearray)])
+        intent=intent+msg_bytearray
+
+        # we then take a blake2b hash of intent bytearray we created
+        hash=hashlib.blake2b(intent,digest_size=32)
+        #then we finally sign the hash
+   ```
