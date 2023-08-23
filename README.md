@@ -15,7 +15,7 @@ Python Client for the Firefly Exchange API and Smart Contracts for SUI.
 
 ### Install
 
-The package can be installed from [PyPi](https://pypi.org/project/firefly-exchange-client/) using pip:
+The package can be installed from [PyPi](https://pypi.org/project/bluefin-client-sui/) using pip:
 
 ```
 pip install bluefin_client_sui
@@ -28,6 +28,9 @@ pip install .
 ```
 
 The package currently supports python `>=3.8`. Find complete documentation on the library at https://docs.firefly.exchange/.
+
+
+
 
 ### Getting Started
 
@@ -43,7 +46,7 @@ When initializing the client, users must accept [terms and conditions](https://f
 }
 ```
 
-Users can import predefined networks from [constants](https://github.com/fireflyprotocol/firefly_exchange_client/blob/main/src/firefly_exchange_client/constants.py):
+Users can import predefined networks from [constants](https://github.com/fireflyprotocol/bluefin-client-python-sui/blob/main/src/bluefin_client_sui/constants.py):
 
 ```python
 from bluefin_client_sui import Networks

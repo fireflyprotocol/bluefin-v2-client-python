@@ -11,6 +11,8 @@ async def place_limit_order(client: FireflyClient):
    
     # default leverage of account is set to 3 on firefly
     user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
+    print ("User Leverage", user_leverage)
+    
 
     # creates a LIMIT order to be signed
     signature_request = OrderSignatureRequest(
@@ -19,7 +21,7 @@ async def place_limit_order(client: FireflyClient):
         quantity=toSuiBase(0.01), # quantity
         side=ORDER_SIDE.BUY, 
         orderType=ORDER_TYPE.LIMIT,
-        leverage=toSuiBase(1)
+        leverage=toSuiBase(user_leverage)
     )  
 
     # create signed order

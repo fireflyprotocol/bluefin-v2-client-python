@@ -6,7 +6,6 @@ from bluefin_client_sui import FireflyClient, Networks, MARKET_SYMBOLS, TRADE_TY
 from pprint import pprint
 import asyncio
 
-TEST_NETWORK="SUI_STAGING"
 
 async def main():
 
