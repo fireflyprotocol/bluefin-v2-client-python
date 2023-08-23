@@ -18,6 +18,9 @@ async def main():
         )
     await client.init(True) 
 
+    await client.withdraw_margin_from_bank(1000)
+
+
 
 
     # add market that you wish to trade on ETH/BTC are supported currently

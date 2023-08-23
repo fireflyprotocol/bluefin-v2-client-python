@@ -8,14 +8,15 @@ class Signer:
     def __init__(self):
         pass
 
-    def sign_tx(self, tx_bytes, sui_wallet: SuiWallet):
+
+    def sign_tx(self, tx_bytes_str: str, sui_wallet: SuiWallet) -> str:
         """
-            expects the msg in bytes
-            expects public key in bytes.
-            expects privateKey in bytes
+            expects the msg in str
+            expects the suiwallet object
             Signs the msg and returns the signature. 
             Returns the value in b64 encoded format
         """
+        tx_bytes=base64.b64decode(tx_bytes_str)
 
         intent=bytearray()
         intent.extend([0,0,0])
@@ -29,7 +30,8 @@ class Signer:
         temp.extend(result)
         temp.extend(sui_wallet.publicKeyBytes[1:])
         res=base64.b64encode(temp)
-        return res
+        return res.decode()
+
         
     def sign_hash(self, hash, private_key, append=''):
         """

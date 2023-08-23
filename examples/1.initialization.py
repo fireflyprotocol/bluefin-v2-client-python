@@ -1,8 +1,10 @@
-from config import TEST_ACCT_KEY, TEST_NETWORK
 import os
 import sys
+
 print (os.getcwd())
 sys.path.append(os.getcwd()+"/src/")
+
+from config import TEST_ACCT_KEY, TEST_NETWORK
 
 from bluefin_client_sui import FireflyClient, Networks
 from pprint import pprint
