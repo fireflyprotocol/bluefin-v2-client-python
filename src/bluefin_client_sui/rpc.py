@@ -46,7 +46,7 @@ def rpc_sui_executeTransactionBlock(url, txBytes, signature):
     return result
 
 
-def rpc_get_usdc_coins(url, params, method="suix_getCoins"):
+def rpc_call_sui_function(url, params, method="suix_getCoins"):
     base_dict={}
     base_dict["jsonrpc"]="2.0"
     base_dict["id"]= 1

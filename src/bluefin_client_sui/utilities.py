@@ -16,6 +16,10 @@ def fromDapiBase(number: Union[int, float], dtype=int)-> int:
 def toSuiBase(number: Union[int,float]) -> int:
     return int(number*SUI_BASE_NUM)
 
+def fromSuiBase(number: Union[str,int])-> float:
+    number=float(number)
+    return number/float(SUI_BASE_NUM)
+
 
 def numberToHex(num, pad=32):
     #converting number to Hexadecimal format

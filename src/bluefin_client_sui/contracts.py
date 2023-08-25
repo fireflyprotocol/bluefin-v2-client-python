@@ -9,6 +9,14 @@ class Contracts:
         self.contract_addresses["auxiliaryContractsAddresses"]=contract_address['auxiliaryContractsAddresses']
         self.contract_addresses[market]=contract_address[market.value]
     
+    def get_sub_account_id(self):
+        return self.contract_addresses['auxiliaryContractsAddresses']['objects']['SubAccounts']['id']
+    
+    def get_bank_table_id(self):
+        return self.contract_addresses['auxiliaryContractsAddresses']['objects']['BankTable']['id']
+
+    def get_price_oracle_object_id(self, market):
+        return self.contract_addresses[market]['PriceOracle']['id']
 
     def get_perpetual_id(self, market: MARKET_SYMBOLS=MARKET_SYMBOLS.ETH):
         return self.contract_addresses[market]['Perpetual']['id']
@@ -18,7 +26,7 @@ class Contracts:
     def get_currency_type(self):
         return self.contract_addresses['auxiliaryContractsAddresses']['objects']['Currency']['dataType']
     
-    def get_bank_id(self, market: MARKET_SYMBOLS=MARKET_SYMBOLS.ETH):
+    def get_bank_id(self):
         return self.contract_addresses['auxiliaryContractsAddresses']['objects']['Bank']['id']
     def get_contract(self,name,market=""):
         """

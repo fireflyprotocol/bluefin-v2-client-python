@@ -42,19 +42,8 @@ async def place_market_order(client: FireflyClient):
     # default leverage of account is set to 3 on firefly
     user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
 
-    # creates a LIMIT order to be signed
-    '''
-    signature_request = OrderSignatureRequest(
-        symbol=MARKET_SYMBOLS.ETH,  # market symbol
-        price=0,  # price at which you want to place order
-        quantity=0.01, # quantity
-        side=ORDER_SIDE.BUY, 
-        orderType=ORDER_TYPE.MARKET,
-        leverage=user_leverage
-    ) '''
     signature_request = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,
-       # market = "0x25a869797387e2eaa09c658c83dc0deaba99bb02c94447339c06fdbe8287347e",
         price = toSuiBase(0),
         quantity = toSuiBase(1),
         leverage = toSuiBase(1),
@@ -96,7 +85,7 @@ async def main():
     client.add_market(MARKET_SYMBOLS.ETH)
 
     # await place_limit_order(client)
-    await place_market_order(client)
+    await (client)
     await place_limit_order(client)
     
     await client.close_connections()

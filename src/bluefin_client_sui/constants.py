@@ -1,6 +1,6 @@
 Networks = {
   "SUI_STAGING":{
-      "url":"",
+      "url":"https://fullnode.testnet.sui.io:443",
       "chainId":1234,
       "apiGateway":"https://dapi.api.sui-staging.bluefin.io",
       "socketURL":"wss://dapi.api.sui-staging.bluefin.io",
