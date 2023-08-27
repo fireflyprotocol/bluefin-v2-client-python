@@ -1,21 +1,26 @@
+import sys, os
 
-import sys,os
-sys.path.append(os.getcwd()+"/src/")
+sys.path.append(os.getcwd() + "/src/")
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import FireflyClient, Networks, MARKET_SYMBOLS, GetFundingHistoryRequest
+from bluefin_client_sui import (
+    BluefinClient,
+    Networks,
+    MARKET_SYMBOLS,
+    GetFundingHistoryRequest,
+)
 from pprint import pprint
 import asyncio
 
+
 async def main():
-    client = FireflyClient(True, Networks[TEST_NETWORK], TEST_ACCT_KEY)
+    client = BluefinClient(True, Networks[TEST_NETWORK], TEST_ACCT_KEY)
     await client.init(True)
- 
 
     # create a funding history request
     funding_history_request = GetFundingHistoryRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
-        pageSize=50, # gets provided number of payments <= 50
-        cursor=0 # fetch a particular page. A single page contains upto 50 records
+        pageSize=50,  # gets provided number of payments <= 50
+        cursor=0,  # fetch a particular page. A single page contains upto 50 records
     )
 
     # submit request for funding history
@@ -28,6 +33,6 @@ async def main():
 
 
 if __name__ == "__main__":
-  loop = asyncio.new_event_loop()
-  loop.run_until_complete(main())
-  loop.close()
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main())
+    loop.close()

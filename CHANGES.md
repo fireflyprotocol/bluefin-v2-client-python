@@ -38,7 +38,7 @@
 
 3. For signing onboarding signer we follow a different approach.
 
-   1. What is onboarding signer: When we are calling a firefly init function we sign a string using our private key and send it to bluefin exchange along with our public key, bluefin exchange verifies it and returns us a token.
+   1. What is onboarding signer: When we are calling a Bluefin init function we sign a string using our private key and send it to bluefin exchange along with our public key, bluefin exchange verifies it and returns us a token.
    2. For signing it we first convert our message to bytes and then add [3,0,0, len(message)] to the start of our bytearray and then our message. if our message length is greater than 256 then it wont fit in a byte in this case we follow BCS methodology to send our message.
 
 4. For signing cancel order, there are two ways.

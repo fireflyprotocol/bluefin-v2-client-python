@@ -1,16 +1,11 @@
-# Firefly Client Library
-
-[<img alt="Firefly logo" src="https://raw.githubusercontent.com/fireflyprotocol/firefly_exchange_client/main/res/banner.png" />](#)
-
 <div align="center">
+  <img height="100x" src="https://bluefin.io/images/bluefin-logo.svg" />
 
-![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/fireflyprotocol/bluefin-client-python-sui/publish_to_pypi.yml)
-[![pypi version](https://img.shields.io/pypi/v/bluefun_client_sui?logo=pypi)](https://pypi.org/project/bluefin_client_sui/)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+  <h1 style="margin-top:20px;">Bluefin Python Client Library</h1>
 
 </div>
 
-Python Client for the Firefly Exchange API and Smart Contracts for SUI.
+Python Client for the Bluefin Exchange API and SUI Contracts.
 ​
 
 ### Install
@@ -27,11 +22,11 @@ Alternatively, you could run:
 pip install .
 ```
 
-The package currently supports python `>=3.8`. Find complete documentation on the library at https://docs.firefly.exchange/.
+The package currently supports python `>=3.8`. Find complete documentation on the library at https://docs.bluefin.io/.
 
 ### Getting Started
 
-When initializing the client, users must accept [terms and conditions](https://firefly.exchange/terms-of-use) and define network object containing the following values:
+When initializing the client, users must accept [terms and conditions](https://bluefin.io/terms-of-use) and define network object containing the following values:
 
 ```json
 {
@@ -49,31 +44,30 @@ Users can import predefined networks from [constants](https://github.com/firefly
 from bluefin_client_sui import Networks
 ```
 
-For testing purposes use `Networks[SUI_STAGING]` and for production please use `Networks[SUI_PROD]`.
+For testing purposes use `Networks[SUI_STAGING]` and for production use `Networks[SUI_PROD]`.
 
 ## Initialization example​
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import FireflyClient, Networks
+from bluefin_client_sui import BluefinClient, Networks
 from pprint import pprint
 import asyncio
 
 async def main():
   # initialize client
-  client = FireflyClient(
+  client = BluefinClient(
       True, # agree to terms and conditions
       Networks[TEST_NETWORK], # network to connect with
       TEST_ACCT_KEY, # private key of wallet
-      )
+  )
 
-  # initialize the client
-  # on boards user on firefly. Must be set to true for first time use
+  # on boards user on bluefin. Must be set to true for firs time use
   await client.init(True)
 
-  print('Account Address:', client.get_public_address())
+  print('Account address:', client.get_public_address())
 
-  # # gets user account data on-chain
+  # gets user account on-chain data
   data = await client.get_user_account_data()
 
   # close aio http connection
@@ -88,20 +82,20 @@ if __name__ == "__main__":
 ```
 
 **Read-only Initialization:**
-Firefly-client can also be initialized in `read-only` mode, below is the example:
+Bluefin-client can also be initialized in `read-only` mode, below is the example:
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import FireflyClient, Networks
+from bluefin_client_sui import BluefinClient, Networks
 from pprint import pprint
 import asyncio
 
 async def main():
   # initialize client without providing private_key
-  client = FireflyClient(
+  client = BluefinClient(
       True, # agree to terms and conditions
       Networks[TEST_NETWORK], # network to connect with
-      )
+    )
 
   # Initializing client for the private key provided. The second argument api_token is optional
   await client.init(True,"54b0bfafc9a48728f76e52848a716e96d490263392e3959c2d44f05dea960761")
@@ -124,16 +118,16 @@ if __name__ == "__main__":
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import FireflyClient, Networks, MARKET_SYMBOLS, ORDER_SIDE, ORDER_TYPE, OrderSignatureRequest
+from bluefin_client_sui import BluefinClient, Networks, MARKET_SYMBOLS, ORDER_SIDE, ORDER_TYPE, OrderSignatureRequest
 import asyncio
 
 async def main():
     # initialize client
-    client = FireflyClient(
+    client = BluefinClient(
         True, # agree to terms and conditions
         Networks[TEST_NETWORK], # network to connect with
         TEST_ACCT_KEY, # private key of wallet
-        )
+      )
 
     await client.init(True)
 
@@ -173,7 +167,7 @@ if __name__ == "__main__":
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import FireflyClient, Networks, SOCKET_EVENTS
+from bluefin_client_sui import BluefinClient, Networks, SOCKET_EVENTS
 import asyncio
 import time
 
@@ -182,13 +176,13 @@ def callback(event):
 
 async def main():
     # initialize
-    client = FireflyClient(
+    client = BluefinClient(
         True, # agree to terms and conditions
         Networks[TEST_NETWORK], # network to connect with
         TEST_ACCT_KEY, # private key of wallet
         )
     await client.init(True)
-    # make connection with firefly exchange
+    # make connection with bluefin exchange
     await client.socket.open()
 
     # subscribe to local user events
@@ -208,13 +202,13 @@ if __name__ == "__main__":
   loop.close()​
 ```
 
-Look at the [example](https://github.com/fireflyprotocol/firefly_exchange_client/tree/main/examples) directory to see more examples on how to use this library.
+Look at the [example](https://github.com/fireflyprotocol/bluefin-client-python-sui/tree/main/examples) directory to see more examples on how to use this library.
 
 **Listening To Events Using Web Sockets:**
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import FireflyClient, Networks, SOCKET_EVENTS, MARKET_SYMBOLS
+from bluefin_client_sui import BluefinClient, Networks, SOCKET_EVENTS, MARKET_SYMBOLS
 import time
 import asyncio
 
@@ -223,11 +217,11 @@ def callback(event):
 
 async def main():
     # initialize
-    client = FireflyClient(
+    client = BluefinClient(
         True, # agree to terms and conditions
         Networks[TEST_NETWORK], # network to connect with
         TEST_ACCT_KEY, # private key of wallet
-        )
+    )
 
     await client.init(True)
 
@@ -240,7 +234,7 @@ async def main():
         if resp:
             print("Subscribed to user updates")
 
-    # make connection with firefly exchange
+    # make connection with bluefin exchange
     client.webSocketClient.initialize_socket(on_open=on_open)
     # listen to user order updates and trigger callback
     client.webSocketClient.listen(SOCKET_EVENTS.EXCHANGE_HEALTH.value, callback)

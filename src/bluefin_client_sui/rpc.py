@@ -1,63 +1,76 @@
 import requests
 import json
 
-def rpc_unsafe_moveCall(url,params, function_name: str, function_library: str, userAddress ,packageId, gasBudget=100000000 ):
-    base_dict={}
-    base_dict["jsonrpc"]="2.0"
-    base_dict["id"]=1689764924887
-    base_dict["method"]="unsafe_moveCall"
-    base_dict["params"]=[]
-    base_dict["params"].extend([userAddress, packageId, function_library,function_name])
+
+def rpc_unsafe_moveCall(
+    url,
+    params,
+    function_name: str,
+    function_library: str,
+    userAddress,
+    packageId,
+    gasBudget=100000000,
+):
+    base_dict = {}
+    base_dict["jsonrpc"] = "2.0"
+    base_dict["id"] = 1689764924887
+    base_dict["method"] = "unsafe_moveCall"
+    base_dict["params"] = []
+    base_dict["params"].extend(
+        [userAddress, packageId, function_library, function_name]
+    )
     base_dict["params"].append([])
     base_dict["params"].append(params)
 
     base_dict["params"].append(None)
     base_dict["params"].append(str(gasBudget))
 
-    payload=json.dumps(base_dict)
+    payload = json.dumps(base_dict)
 
-    headers = {'Content-Type': 'application/json' }
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=payload)
-    result=json.loads(response.text)
-    return result['result']['txBytes']
+    result = json.loads(response.text)
+    return result["result"]["txBytes"]
+
 
 def rpc_sui_executeTransactionBlock(url, txBytes, signature):
-    base_dict={}
-    base_dict["jsonrpc"]="2.0"
-    base_dict["id"]=5
-    base_dict["method"]="sui_executeTransactionBlock"
-    base_dict["params"]=[]
+    base_dict = {}
+    base_dict["jsonrpc"] = "2.0"
+    base_dict["id"] = 5
+    base_dict["method"] = "sui_executeTransactionBlock"
+    base_dict["params"] = []
     base_dict["params"].append(txBytes)
     base_dict["params"].append([signature])
 
-    outputTypeDict={
-      "showInput": True,
-      "showEffects": True,
-      "showEvents": True,
-      "showObjectChanges": True
+    outputTypeDict = {
+        "showInput": True,
+        "showEffects": True,
+        "showEvents": True,
+        "showObjectChanges": True,
     }
-    base_dict["params"].append( outputTypeDict)
+    base_dict["params"].append(outputTypeDict)
     base_dict["params"].append("WaitForLocalExecution")
-    payload=json.dumps(base_dict)
+    payload = json.dumps(base_dict)
 
-    headers = {'Content-Type': 'application/json' }
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=payload)
-    result=json.loads(response.text)
+    result = json.loads(response.text)
     return result
 
 
 def rpc_call_sui_function(url, params, method="suix_getCoins"):
-    base_dict={}
-    base_dict["jsonrpc"]="2.0"
-    base_dict["id"]= 1
-    base_dict["method"]=method
-    base_dict["params"]=params
-    payload=json.dumps(base_dict) 
-    
-    headers = {'Content-Type': 'application/json' }
+    base_dict = {}
+    base_dict["jsonrpc"] = "2.0"
+    base_dict["id"] = 1
+    base_dict["method"] = method
+    base_dict["params"] = params
+    payload = json.dumps(base_dict)
+
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=payload)
-    result=json.loads(response.text)
+    result = json.loads(response.text)
     return result["result"]
+
 
 """
 
@@ -89,12 +102,6 @@ print(response.text)
 
 
 """
-
-
-
-
-
-
 
 
 """

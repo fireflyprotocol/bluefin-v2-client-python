@@ -47,23 +47,23 @@ class WebsocketClient:
 
     def set_token(self, token):
         """
-            Sets default user token
-            Inputs:
-                - token (user auth token): firefly onboarding token.
+        Sets default user token
+        Inputs:
+            - token (user auth token): Bluefin onboarding token.
         """
         self.token = token
 
     def set_api_token(self, token):
         """
-            Sets default user token
-            Inputs:
-                - token (user auth token): firefly onboarding token.
+        Sets default user token
+        Inputs:
+            - token (user auth token): Bluefin onboarding token.
         """
         self.api_token = token
 
     def listen(self, event, callback):
         """
-            Assigns callbacks to desired events
+        Assigns callbacks to desired events
         """
         self.callbacks[event] = callback
         return
@@ -73,83 +73,122 @@ class WebsocketClient:
 
     def subscribe_global_updates_by_symbol(self, symbol: MARKET_SYMBOLS):
         """
-            Allows user to subscribe to global updates for the desired symbol.
-            Inputs:
-                - symbol: market symbol of market user wants global updates for. (e.g. DOT-PERP)
+        Allows user to subscribe to global updates for the desired symbol.
+        Inputs:
+            - symbol: market symbol of market user wants global updates for. (e.g. DOT-PERP)
         """
         try:
             if not self.socket_manager.ws.connected:
                 raise Exception(
-                    "Socket connection is established, invoke socket.open()")
+                    "Socket connection is established, invoke socket.open()"
+                )
 
-            self.socket_manager.send_message(json.dumps(['SUBSCRIBE', [
-                {
-                    "e": SOCKET_EVENTS.GLOBAL_UPDATES_ROOM.value,
-                    "p": symbol.value,
-                },
-            ]]))
+            self.socket_manager.send_message(
+                json.dumps(
+                    [
+                        "SUBSCRIBE",
+                        [
+                            {
+                                "e": SOCKET_EVENTS.GLOBAL_UPDATES_ROOM.value,
+                                "p": symbol.value,
+                            },
+                        ],
+                    ]
+                )
+            )
             return True
         except Exception:
             return False
 
     def unsubscribe_global_updates_by_symbol(self, symbol: MARKET_SYMBOLS):
         """
-            Allows user to unsubscribe to global updates for the desired symbol.
-                Inputs:
-                    - symbol: market symbol of market user wants to remove global updates for. (e.g. DOT-PERP)
+        Allows user to unsubscribe to global updates for the desired symbol.
+            Inputs:
+                - symbol: market symbol of market user wants to remove global updates for. (e.g. DOT-PERP)
         """
         try:
             if not self.socket_manager.ws.connected:
                 return False
 
-            self.socket_manager.send_message(json.dumps((['UNSUBSCRIBE', [
-                {
-                    "e": SOCKET_EVENTS.GLOBAL_UPDATES_ROOM.value,
-                    "p": symbol.value,
-                },
-            ]])))
+            self.socket_manager.send_message(
+                json.dumps(
+                    (
+                        [
+                            "UNSUBSCRIBE",
+                            [
+                                {
+                                    "e": SOCKET_EVENTS.GLOBAL_UPDATES_ROOM.value,
+                                    "p": symbol.value,
+                                },
+                            ],
+                        ]
+                    )
+                )
+            )
             return True
         except:
             return False
 
     def subscribe_user_update_by_token(self, user_token: str = None):
         """
-            Allows user to subscribe to their account updates.
-            Inputs:
-                - token(str): auth token generated when onboarding on firefly
+        Allows user to subscribe to their account updates.
+        Inputs:
+            - token(str): auth token generated when onboarding on Bluefin
         """
         try:
             if not self.socket_manager.ws.connected:
                 return False
 
-            self.socket_manager.send_message(json.dumps((["SUBSCRIBE", [
-                {
-                    "e": SOCKET_EVENTS.USER_UPDATES_ROOM.value,
-                    "t": self.token if user_token == None else user_token,
-                    "rt": self.api_token
-                },
-            ]])))
+            self.socket_manager.send_message(
+                json.dumps(
+                    (
+                        [
+                            "SUBSCRIBE",
+                            [
+                                {
+                                    "e": SOCKET_EVENTS.USER_UPDATES_ROOM.value,
+                                    "t": self.token
+                                    if user_token == None
+                                    else user_token,
+                                    "rt": self.api_token,
+                                },
+                            ],
+                        ]
+                    )
+                )
+            )
             return True
         except:
             return False
 
     def unsubscribe_user_update_by_token(self, user_token: str = None):
         """
-            Allows user to unsubscribe to their account updates.
-            Inputs:
-                - token: auth token generated when onboarding on firefly
+        Allows user to unsubscribe to their account updates.
+        Inputs:
+            - token: auth token generated when onboarding on Bluefin
         """
         try:
             if not self.socket_manager.ws.connected:
                 return False
 
-            self.socket_manager.send_message(json.dumps((["UNSUBSCRIBE", [
-                {
-                    "e": SOCKET_EVENTS.USER_UPDATES_ROOM.value,
-                    "t": self.token if user_token == None else user_token,
-                    "rt": self.api_token
-                },
-            ]])))
+            self.socket_manager.send_message(
+                json.dumps(
+                    (
+                        [
+                            "UNSUBSCRIBE",
+                            [
+                                {
+                                    "e": SOCKET_EVENTS.USER_UPDATES_ROOM.value,
+                                    "t": self.token
+                                    if user_token == None
+                                    else user_token,
+                                    "rt": self.api_token,
+                                },
+                            ],
+                        ]
+                    )
+                )
+            )
             return True
         except:
             return False
@@ -164,7 +203,7 @@ class WebsocketClient:
 
     def listener(self, _, message):
         """
-            Listens to all events emitted by the server
+        Listens to all events emitted by the server
         """
         data = json.loads(message)
         event_name = data["eventName"]
@@ -173,8 +212,7 @@ class WebsocketClient:
                 callback = self.callbacks[event_name]
                 callback(data["data"])
             elif "default" in self.callbacks.keys():
-                self.callbacks["default"](
-                    {"event": event_name, "data": data["data"]})
+                self.callbacks["default"]({"event": event_name, "data": data["data"]})
             else:
                 pass
         except:
