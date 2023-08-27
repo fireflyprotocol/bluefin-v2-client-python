@@ -1,6 +1,6 @@
 [project]
 name = "bluefin_client_sui"
-version = "0.1.0"
+version = "1.0.0"
 description = "Library to interact with firefly exchange protocol including its off-chain api-gateway and on-chain contracts"
 readme = "README.md"
 requires-python = ">=3.8"

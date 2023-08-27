@@ -20,11 +20,6 @@ async def main():
 
     await client.withdraw_margin_from_bank(1000)
 
-
-
-
-    # add market that you wish to trade on ETH/BTC are supported currently
-    client.add_market(MARKET_SYMBOLS.ETH)
     txBytes="AAADAQGPzuAZV5krLKJWD1WUXOjk7Guz2vki2pBMZJ6CXkRf1XLGgQAAAAAAAQAgH/qFdX+Vzs7ShiLTDkGkUsiFFt9TRQyxkTgS3YKNWWgAEOgDAAAAAAAAAAAAAAAAAAABAF82iNaL7Cly31h0P767ErFoKbQb8bxQeNNRAJDvbPWOC21hcmdpbl9iYW5rEndpdGhkcmF3X2Zyb21fYmFuawADAQAAAQEAAQIAH/qFdX+Vzs7ShiLTDkGkUsiFFt9TRQyxkTgS3YKNWWgBWiybg/9fRf7zXUmsdBU3umIFeucEZNWeMGzlLttPf86tHg8AAAAAACA3qZfzxP1+yVILtVkJ6LdfZvkF7gK877AJco9Xook9Th/6hXV/lc7O0oYi0w5BpFLIhRbfU0UMsZE4Et2CjVlo6AMAAAAAAAAA4fUFAAAAAAA="
     dec_msg=base64.b64decode(txBytes)
     mysigner=signer.Signer()

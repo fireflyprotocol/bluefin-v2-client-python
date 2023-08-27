@@ -2,18 +2,18 @@ from typing import TypedDict, List
 from .enumerations import *
 
 class Order(TypedDict):
-    market: str
-    price: int 
-    isBuy: bool 
-    reduceOnly: bool 
-    quantity: int 
-    postOnly: bool
-    orderbookOnly: bool
-    leverage: int 
-    expiration: int 
-    salt: int   
-    maker: str 
-    ioc: bool
+  market: str
+  price: int 
+  isBuy: bool 
+  reduceOnly: bool 
+  quantity: int 
+  postOnly: bool
+  orderbookOnly: bool
+  leverage: int 
+  expiration: int 
+  salt: int   
+  maker: str 
+  ioc: bool
 
 
 class SignedOrder(Order):
@@ -217,7 +217,3 @@ class FailedCountDownResetResponse(TypedDict):
 class PostTimerResponse(TypedDict):
   acceptedToReset: List[str]
   failedReset: List[FailedCountDownResetResponse]
-
-
-
-

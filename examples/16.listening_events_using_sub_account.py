@@ -42,8 +42,6 @@ async def main():
   print("Listening to parents position updates")
   await clientChild.socket.listen(SOCKET_EVENTS.POSITION_UPDATE.value, callback)
 
-  clientChild.add_market(MARKET_SYMBOLS.ETH)
-
   parent_leverage =  await clientParent.get_user_leverage(MARKET_SYMBOLS.ETH)
 
   signature_request = OrderSignatureRequest(

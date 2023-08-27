@@ -5,8 +5,7 @@ Networks = {
       "socketURL":"wss://dapi.api.sui-staging.bluefin.io",
       "dmsURL":"https://dapi.api.sui-staging.bluefin.io",
       "webSocketURL":"wss://notifications.api.sui-staging.bluefin.io",
-      "onboardingUrl": "https://testnet.bluefin.io",
-
+      "onboardingUrl": "https://testnet.bluefin.io"
   },
   "SUI_PROD":{
       "url":"https://fullnode.testnet.sui.io:443",
@@ -14,7 +13,7 @@ Networks = {
       "socketURL":"wss://dapi.api.sui-prod.bluefin.io",
       "dmsURL":"https://dapi.api.sui-prod.bluefin.io",
       "webSocketURL":"wss://notifications.api.sui-prod.bluefin.io",
-      "onboardingUrl": "https://trade.bluefin.io",
+      "onboardingUrl": "https://trade.bluefin.io"
   }
 }
 
@@ -68,6 +67,4 @@ SERVICE_URLS = {
   },
 }
 
-
-SUI_BASE_NUM=1000000000
 DAPI_BASE_NUM=1000000000000000000

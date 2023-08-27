@@ -51,8 +51,6 @@ async def main():
     client = FireflyClient(True, Networks[TEST_NETWORK], TEST_ACCT_KEY)
     await client.init(True)
 
-    client.add_market(MARKET_SYMBOLS.ETH)
-
     def callback(event):
         global event_received
         print("Event data:", event)

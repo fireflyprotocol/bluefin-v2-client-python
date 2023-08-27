@@ -38,8 +38,6 @@ async def main():
     pprint(tx_history)
 
     # gets user current position
-    # must add market to client before using this method
-    client.add_market(MARKET_SYMBOLS.ETH)
     position = await client.get_user_position({"symbol":MARKET_SYMBOLS.ETH})
 
     print("User position:")    

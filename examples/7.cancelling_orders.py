@@ -3,7 +3,6 @@ sys.path.append(os.getcwd()+"/src/")
 
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui.utilities import toSuiBase
 from bluefin_client_sui import FireflyClient, Networks, MARKET_SYMBOLS, ORDER_SIDE, ORDER_TYPE, ORDER_STATUS, OrderSignatureRequest
 from pprint import pprint
 import asyncio
@@ -15,8 +14,6 @@ async def main():
     client = FireflyClient(True, Networks[TEST_NETWORK], TEST_ACCT_KEY)
     await client.init(True)
 
-    # must add market before cancelling its orders
-    client.add_market(MARKET_SYMBOLS.ETH)
     #client.create_order_to_sign()
     await client.adjust_leverage(MARKET_SYMBOLS.ETH, 1) 
 
@@ -24,11 +21,11 @@ async def main():
         # creates a LIMIT order to be signed
     order = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
-        price=toSuiBase(1636.8),  # price at which you want to place order
-        quantity=toSuiBase(0.01), # quantity
+        price=1636.8,  # price at which you want to place order
+        quantity=0.01, # quantity
         side=ORDER_SIDE.BUY, 
         orderType=ORDER_TYPE.LIMIT,
-        leverage=toSuiBase(1),
+        leverage=1,
         salt=random.randint(0,100000000),
         expiration=int(time.time()+(30*24*60*60))*1000
     ) 

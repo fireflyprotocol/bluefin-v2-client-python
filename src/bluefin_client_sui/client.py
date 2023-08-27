@@ -1,19 +1,21 @@
 import json
+from copy import deepcopy
+
 from .api_service import APIService
 from .contracts import Contracts
 from .order_signer import OrderSigner
 from .onboarding_signer import OnboardingSigner
-from .utilities import *
 from .constants import TIME, SERVICE_URLS
-from .interfaces import *
 from .sockets_lib import Sockets
-from .enumerations import *
 from .websocket_client import WebsocketClient
-from .account import *
 from .signer import Signer
+from .utilities import default_value
 from .rpc import *
+from .account import *
+from .interfaces import *
+from .enumerations import *
 
-
+_SUI_BASE_NUM=1000000000
 class FireflyClient:
     def __init__(self, are_terms_accepted, network, private_key=""):
         self.are_terms_accepted = are_terms_accepted
@@ -23,37 +25,38 @@ class FireflyClient:
             self.account=SuiWallet(seed=private_key)
             #self.account = Account.from_key(private_key)
         self.apis = APIService(self.network["apiGateway"], default_value(self.network, "UUID", "") )
-        self.dmsApi = APIService(self.network["dmsURL"])
+        self.dms_api = APIService(self.network["dmsURL"])
         self.socket = Sockets(self.network["socketURL"])
-        self.webSocketClient = WebsocketClient(self.network["webSocketURL"])
+        self.ws_client = WebsocketClient(self.network["webSocketURL"])
         self.contracts = Contracts()
-        self.order_signers = {}
+        self.order_signer = OrderSigner()
         self.onboarding_signer = OnboardingSigner()
         self.contract_signer=Signer()
         self.url=self.network['url']
         
             
-    async def init(self, user_onboarding=True, api_token="", symbol:MARKET_SYMBOLS=MARKET_SYMBOLS.ETH):
+    async def init(self, user_onboarding=True, api_token=""):
         """
             Initialize the client.
             Inputs:
                 user_onboarding (bool, optional): If set to true onboards the user address to exchange and gets authToken. Defaults to True.
                 api_token(string, optional): API token to initialize client in read-only mode 
         """
-        self.contracts.contract_addresses = await self.get_contract_addresses(symbol)
-        self.contracts.set_contract_addresses(self.contracts.contract_addresses, market=symbol)
+        contract_info = await self.get_contract_addresses()
+        self.contracts.set_contract_addresses(contract_info)
+
 
         if api_token:
             self.apis.api_token = api_token
             # for socket
             self.socket.set_api_token(api_token)
-            self.webSocketClient.set_api_token(api_token)
+            self.ws_client.set_api_token(api_token)
         # In case of api_token received, user onboarding is not done
         elif user_onboarding:
             self.apis.auth_token = await self.onboard_user()
-            self.dmsApi.auth_token = self.apis.auth_token
+            self.dms_api.auth_token = self.apis.auth_token
             self.socket.set_token(self.apis.auth_token)
-            self.webSocketClient.set_token(self.apis.auth_token)
+            self.ws_client.set_token(self.apis.auth_token)
 
 
     async def onboard_user(self, token:str=None):
@@ -98,32 +101,6 @@ class FireflyClient:
                 "isTermAccepted": self.are_terms_accepted,
             })
 
-    def add_market(self, symbol: MARKET_SYMBOLS):
-        """
-            Adds Order signer for market to instance's order_signers dict.
-            Inputs:
-                symbol(MARKET_SYMBOLS): Market symbol of order signer.
-                trader_contract(str): Contract address of the Orders contract.
-            
-            Returns:
-                bool: indicating whether the market was successfully added
-        """
-        symbol_str = symbol.value
-        # if signer for market already exists return false
-        if symbol_str in self.order_signers:
-            return False
-        
-        # if orders contract address is not provided get 
-        # from addresses retrieved from dapi
-        #if trader_contract == None:
-        #    try:
-        #        trader_contract = self.contracts.contract_addresses[symbol_str]["IsolatedTrader"]
-        #    except:
-        #        raise SystemError("Can't find orders contract address for market: {}".format(symbol_str))
-
-        self.order_signers[symbol_str] = OrderSigner()
-        return True
-
     def create_order_to_sign(self, params:OrderSignatureRequest):
         """
             Creates order signature request for an order.
@@ -133,7 +110,7 @@ class FireflyClient:
             Returns:
                 Order: order raw info
         """
-        expiration = current_unix_timestamp()        
+        expiration = current_unix_timestamp()      
         # MARKET ORDER set expiration of 1 minute
         if (params["orderType"] == ORDER_TYPE.MARKET):
             expiration += TIME["SECONDS_IN_A_MINUTE"]
@@ -142,9 +119,9 @@ class FireflyClient:
         else:
             expiration += TIME["SECONDS_IN_A_MONTH"]
             expiration*=1000
-         
+
         return Order (
-            market = default_value(params,'market',self.contracts.get_market_id(params['symbol'])),
+            market = default_value(params,'market',self.contracts.get_perpetual_id(params['symbol'])),
             isBuy = params["side"] == ORDER_SIDE.BUY,
             price = params["price"],
             quantity =  params["quantity"],
@@ -158,43 +135,36 @@ class FireflyClient:
             ioc = default_value(params,"ioc", False )            
             )
 
-    def create_signed_order(self, params:OrderSignatureRequest):
+    def create_signed_order(self, req:OrderSignatureRequest) -> OrderSignatureResponse:
         """
-            Create an order from provided params and signs it using the private 
-            key of the account
+            Create an order from provided params and signs it using the private key of the account
             Inputs:
                 params (OrderSignatureRequest): parameters to create order with
-    
             Returns:
                 OrderSignatureResponse: order raw info and generated signature
         """
-        
-        # from params create order to sign
-        order = self.create_order_to_sign(params)
+        sui_params = deepcopy(req)
+        sui_params["price"] = self._to_sui_base(req["price"])
+        sui_params["quantity"] = self._to_sui_base(req["quantity"])
+        sui_params["leverage"] = self._to_sui_base(req["leverage"])
 
-        symbol = params["symbol"].value
-        order_signer = self.order_signers.get(symbol) 
-
-        if not order_signer:
-            raise SystemError("Provided Market Symbol({}) is not added to client library".format(symbol))
-        
-        order_signature = order_signer.sign_order(order, self.account.privateKeyBytes)
-        order_signature=order_signature+self.account.publicKeyBase64.decode()
-        
+        order = self.create_order_to_sign(sui_params)
+        symbol = sui_params["symbol"].value
+        order_signature = self.order_signer.sign_order(order, self.account.privateKeyBytes)
+        order_signature=order_signature+self.account.publicKeyBase64.decode()    
         return OrderSignatureResponse(
             symbol=symbol,
-            price=params["price"],
-            quantity=params["quantity"],
-            side=params["side"],
-            leverage=default_value(params, "leverage", 1),
-            reduceOnly=default_value(params, "reduceOnly", False),
+            price=sui_params["price"],
+            quantity=sui_params["quantity"],
+            side=sui_params["side"],
+            leverage=default_value(sui_params, "leverage", self._to_sui_base(1)),
+            reduceOnly=default_value(sui_params, "reduceOnly", False),
             salt=order["salt"],
             expiration=order["expiration"],
             orderSignature=order_signature,
-            orderType=params["orderType"],
+            orderType=sui_params["orderType"],
             maker=order["maker"],
-            orderbookOnly=default_value(params,'orderbookOnly',True)
-
+            orderbookOnly=default_value(sui_params,'orderbookOnly',True)
         )
     
     def create_signed_cancel_order(self,params:OrderSignatureRequest, parentAddress:str=""):
@@ -205,17 +175,13 @@ class FireflyClient:
         Inputs:
             params (OrderSignatureRequest): parameters to create cancel order with
             parentAddress (str): Only provided by a sub account
- 
+
         Returns:
             OrderSignatureResponse: generated cancel signature 
         """
-        try:
-            signer:OrderSigner = self._get_order_signer(params["symbol"])
-            order_to_sign = self.create_order_to_sign(params)
-            hash = signer.get_order_hash(order_to_sign, withBufferHex=False)
-            return self.create_signed_cancel_orders(params["symbol"], hash.hex(), parentAddress)
-        except Exception as e:
-            return ""
+        order_to_sign = self.create_order_to_sign(params)
+        hash_val = self.order_signer.get_order_hash(order_to_sign, withBufferHex=False)
+        return self.create_signed_cancel_orders(params["symbol"], hash_val.hex(), parentAddress)
 
     def create_signed_cancel_orders(self, symbol:MARKET_SYMBOLS, order_hash:list, parentAddress:str=""):
         """
@@ -228,11 +194,10 @@ class FireflyClient:
         Returns:
             OrderCancellationRequest: containing symbol, hashes and signature
         """
-        if type(order_hash)!=list:
+        if isinstance(order_hash, list) is False:
             order_hash = [order_hash]
-        order_signer:OrderSigner = self._get_order_signer(symbol)
-        cancel_hash = order_signer.sign_cancellation_hash(order_hash )
-        hash_sig = order_signer.sign_hash(cancel_hash,self.account.privateKeyBytes,"")+self.account.publicKeyBase64.decode()
+        cancel_hash = self.order_signer.encode_message({'orderHashes' : order_hash})
+        hash_sig = self.order_signer.sign_hash(cancel_hash,self.account.privateKeyBytes,"")+self.account.publicKeyBase64.decode()
         return OrderCancellationRequest(
             symbol=symbol.value,
             hashes=order_hash,
@@ -252,10 +217,10 @@ class FireflyClient:
         return await self.apis.delete(
             SERVICE_URLS["ORDERS"]["ORDERS_HASH"],
             {
-            "symbol": params["symbol"],
-            "orderHashes":params["hashes"],
-            "cancelSignature":params["signature"],
-            "parentAddress": params["parentAddress"],
+                "symbol": params["symbol"],
+                "orderHashes":params["hashes"],
+                "cancelSignature":params["signature"],
+                "parentAddress": params["parentAddress"],
             },
             auth_required=True
             )
@@ -324,7 +289,7 @@ class FireflyClient:
             )
 
     ## Contract calls
-    async def deposit_margin_to_bank(self, amount: int, coin_id: str, market=MARKET_SYMBOLS.ETH)-> bool:
+    async def deposit_margin_to_bank(self, amount: int, coin_id: str) -> bool:
         """
             Deposits given amount of USDC from user's account to margin bank
 
@@ -334,12 +299,12 @@ class FireflyClient:
             Returns:
                 Boolean: true if amount is successfully deposited, false otherwise
         """
-        package_id=self.contracts.get_package_id(market=market)
+        package_id=self.contracts.get_package_id()
         user_address=self.account.getUserAddress()
         callArgs=[]
         callArgs.append(self.contracts.get_bank_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(amount))
+        callArgs.append(str(self._to_sui_base(amount)))
         callArgs.append(coin_id)
         txBytes=rpc_unsafe_moveCall(self.url,
                                     callArgs,
@@ -355,7 +320,7 @@ class FireflyClient:
 
         return res
 
-    async def withdraw_margin_from_bank(self, amount, market=MARKET_SYMBOLS.ETH):
+    async def withdraw_margin_from_bank(self, amount):
         """
             Withdraws given amount of usdc from margin bank if possible
 
@@ -375,7 +340,7 @@ class FireflyClient:
                             "withdraw_from_bank",
                             "margin_bank",
                             self.account.getUserAddress(),
-                            self.contracts.get_package_id(market=market)
+                            self.contracts.get_package_id()
                             )
         signature=self.contract_signer.sign_tx(txBytes, self.account)
         res=rpc_sui_executeTransactionBlock(self.url,
@@ -384,25 +349,23 @@ class FireflyClient:
 
         return res
 
-    async def withdraw_all_margin_from_bank(self, market=MARKET_SYMBOLS.ETH):
+    async def withdraw_all_margin_from_bank(self):
         bank_id=self.contracts.get_bank_id()
         account_address=self.account.getUserAddress()
-        perp_id=self.contracts.get_perpetual_id()
-
 
         callArgs=[bank_id, account_address]
         txBytes=rpc_unsafe_moveCall(self.url,
-                            callArgs,
-                            "withdraw_all_margin_from_bank",
-                            "margin_bank",
-                            self.account.getUserAddress(),
-                            self.contracts.get_package_id(market=market)
-                            )
+            callArgs,
+            "withdraw_all_margin_from_bank",
+            "margin_bank",
+            self.account.getUserAddress(),
+            self.contracts.get_package_id()
+        )
         signature=self.contract_signer.sign_tx(txBytes, self.account)
         res=rpc_sui_executeTransactionBlock(self.url,
-                                        txBytes,
-                                        signature)
-
+            txBytes,
+            signature
+        )
         return res
 
 
@@ -430,18 +393,18 @@ class FireflyClient:
             callArgs.append(self.contracts.get_bank_id())
             callArgs.append(self.contracts.get_sub_account_id())
             callArgs.append(account_address)
-            callArgs.append(str(toSuiBase(leverage)))
+            callArgs.append(str(self._to_sui_base(leverage)))
             callArgs.append(self.contracts.get_price_oracle_object_id(symbol.value))
-            txBytes=rpc_unsafe_moveCall(self.url, 
-                                callArgs,
-                                "adjust_leverage",
-                                "exchange",
-                                self.account.getUserAddress(),
-                                self.contracts.get_package_id(market=symbol))
+            txBytes=rpc_unsafe_moveCall(self.url,
+                callArgs,
+                "adjust_leverage",
+                "exchange",
+                self.account.getUserAddress(),
+                self.contracts.get_package_id()
+            )
             signature=self.contract_signer.sign_tx(txBytes, self.account)
             result=rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
             return result
-
         else:
             await self.apis.post(
                 SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
@@ -450,12 +413,11 @@ class FireflyClient:
                     "address": account_address,
                     "leverage": toDapiBase(leverage),
                     "marginType": MARGIN_TYPE.ISOLATED.value,
-                    },
+                },
                 auth_required=True
-                )
-        
+            )
         return True
- 
+
     async def adjust_margin(self, symbol: MARKET_SYMBOLS, operation: ADJUST_MARGIN, amount: str, parentAddress:str=""):
         """
             Adjusts user's on-chain position by adding or removing the specified amount of margin.
@@ -474,35 +436,36 @@ class FireflyClient:
 
         
         if(user_position == {}):
-            raise(Exception("User has no open position on market: {}".format(symbol)))
-        else:
-            callArgs = []
-            callArgs.append(self.contracts.get_perpetual_id())
-            callArgs.append(self.contracts.get_bank_id())
+            raise(Exception(f"User has no open position on market: {symbol}"))
 
-            callArgs.append(self.contracts.get_sub_account_id())
-            callArgs.append(self.account.getUserAddress())
-            callArgs.append(str(amount))
-            callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
-            if operation==ADJUST_MARGIN.ADD:
-                txBytes=rpc_unsafe_moveCall(self.url,
-                                    callArgs,
-                                    "add_margin",
-                                    "exchange",
-                                    self.account.getUserAddress(),
-                                    self.contracts.get_package_id())
-                
-            else:
-                txBytes=rpc_unsafe_moveCall(self.url,
-                                    callArgs,
-                                    "remove_margin",
-                                    "exchange",
-                                    self.account.getUserAddress(),
-                                    self.contracts.get_package_id())
+        callArgs = []
+        callArgs.append(self.contracts.get_perpetual_id(symbol))
+        callArgs.append(self.contracts.get_bank_id())
+
+        callArgs.append(self.contracts.get_sub_account_id())
+        callArgs.append(self.account.getUserAddress())
+        callArgs.append(str(amount))
+        callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
+        if operation==ADJUST_MARGIN.ADD:
+            txBytes=rpc_unsafe_moveCall(self.url,
+                callArgs,
+                "add_margin",
+                "exchange",
+                self.account.getUserAddress(),
+                self.contracts.get_package_id()
+            )
             
-            signature=self.contract_signer.sign_tx(txBytes, self.account)
-            result=rpc_sui_executeTransactionBlock(self.url,txBytes, signature)
-            
+        else:
+            txBytes=rpc_unsafe_moveCall(self.url,
+                callArgs,
+                "remove_margin",
+                "exchange",
+                self.account.getUserAddress(),
+                self.contracts.get_package_id()
+            )
+        
+        signature=self.contract_signer.sign_tx(txBytes, self.account)
+        result=rpc_sui_executeTransactionBlock(self.url,txBytes, signature)
         return True
     
     
@@ -521,14 +484,14 @@ class FireflyClient:
         callArgs.append(sub_account_address)
         callArgs.append(status)
         txBytes=rpc_unsafe_moveCall(self.url,
-                            callArgs,
-                            "set_sub_account",
-                            "roles", 
-                            self.account.getUserAddress(),
-                            self.contracts.get_package_id())
+            callArgs,
+            "set_sub_account",
+            "roles", 
+            self.account.getUserAddress(),
+            self.contracts.get_package_id()
+        )
         
         signature=self.contract_signer.sign_tx(txBytes, self.account)
-        
         result=rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
         if result['result']['effects']['status']['status']=='success':
             return True
@@ -545,13 +508,13 @@ class FireflyClient:
             callArgs.append("0x2::sui::SUI")
 
             result=rpc_call_sui_function(self.url, callArgs, method="suix_getBalance")["totalBalance"]
-            return fromSuiBase(result)
+            return self._from_sui_base(result)
         except Exception as e:
-            raise(Exception("Failed to get balance, Exception: {}".format(e)))
-    
+            raise(Exception(f"Failed to get balance, error: {e}"))
+        
+
     def get_usdc_coins(self):
         try:
-
             callArgs=[]
             callArgs.append(self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
@@ -569,32 +532,30 @@ class FireflyClient:
             callArgs.append(self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
             result=rpc_call_sui_function(self.url, callArgs, method="suix_getBalance")["totalBalance"]
-            return fromSuiBase(result)
-           
+            return self._from_sui_base(result)
+        
         except Exception as e:
             raise(Exception("Failed to get balance, Exception: {}".format(e)))
 
     async def get_margin_bank_balance(self)-> float:
         """
             Returns user's Margin Bank balance.
-        """ 
+        """
         try:
-
-            callArgs=[]
-            callArgs.append(self.contracts.get_bank_table_id())
-            callArgs.append({
+            call_args=[]
+            call_args.append(self.contracts.get_bank_table_id())
+            call_args.append({
                 "type": "address",
                 "value": self.account.getUserAddress()
             })
-            result=rpc_call_sui_function(self.url, callArgs, method="suix_getDynamicFieldObject")
+            result=rpc_call_sui_function(self.url, call_args, method="suix_getDynamicFieldObject")
         
-            balance=fromSuiBase(result["data"]["content"]["fields"]["value"]["fields"]["balance"])
+            balance=self._from_sui_base(result["data"]["content"]["fields"]["value"]["fields"]["balance"])
             return balance
         except Exception as e:
             raise(Exception("Failed to get balance, Exception: {}".format(e)))
 
     ## Market endpoints
-    
     async def get_orderbook(self, params:GetOrderbookRequest):
         """
             Returns a dictionary containing the orderbook snapshot.
@@ -604,11 +565,10 @@ class FireflyClient:
                 dict: Orderbook snapshot
         """
         params = extract_enums(params, ["symbol"])
-
         return await self.apis.get(
             SERVICE_URLS["MARKET"]["ORDER_BOOK"], 
             params
-            )
+        )
 
     async def get_exchange_status(self):
         """
@@ -784,25 +744,17 @@ class FireflyClient:
         return await self.apis.get(
             SERVICE_URLS["MARKET"]["RECENT_TRADE"], 
             params
-            ) 
+        )
 
-    async def get_contract_addresses(self, symbol:MARKET_SYMBOLS=MARKET_SYMBOLS.ETH):
+    async def get_contract_addresses(self):
         """
-            Returns all contract addresses for the provided market.
-            Inputs:
-                symbol(MARKET_SYMBOLS): the market symbol
-            Returns:
-                dict: all the contract addresses
+            Returns: 
+                dict: all contract addresses for the all markets.
         """
-        query = {"symbol": symbol.value } if symbol else {}
-
-        return await self.apis.get(
-            SERVICE_URLS["MARKET"]["CONTRACT_ADDRESSES"], 
-            query
-            )   
+        return await self.apis.get(SERVICE_URLS["MARKET"]["CONTRACT_ADDRESSES"])
 
     ## User endpoints
-    
+
     def get_account(self):
         """
             Returns the user account object 
@@ -824,6 +776,7 @@ class FireflyClient:
             {},
             True
         )
+
     async def get_orders(self,params:GetOrderRequest):
         """
             Returns a list of orders.
@@ -928,7 +881,7 @@ class FireflyClient:
         """
         
         params = extract_enums(params, ["symbol"])
-        response = await self.dmsApi.get(
+        response = await self.dms_api.get(
             SERVICE_URLS["USER"]["CANCEL_ON_DISCONNECT"],
             params,
             auth_required=True
@@ -949,7 +902,7 @@ class FireflyClient:
                     - acceptedToReset: array with symbols for which timer was reset successfully
                     - failedReset: aray with symbols for whcih timer failed to reset 
         """
-        response = await self.dmsApi.post(
+        response = await self.dms_api.post(
             SERVICE_URLS["USER"]["CANCEL_ON_DISCONNECT"],
             json.dumps(params),
             auth_required=True,
@@ -960,25 +913,17 @@ class FireflyClient:
             raise Exception("Cancel on Disconnect (dead-mans-switch) feature is currently unavailable")
         return response
     
-    ## Internal methods
-    def _get_order_signer(self,symbol:MARKET_SYMBOLS=None):
-        """
-            Returns the order signer for the specified symbol, else returns a dictionary of symbol -> order signer
-            Inputs:
-                symbol(MARKET_SYMBOLS): the symbol to get order signer for, optional
-            Returns:
-                dict/order signer object
-        """
-        if symbol:
-            if symbol.value in self.order_signers.keys():
-                return self.order_signers[symbol.value]
-            else:
-                raise(Exception("Signer does not exist. Make sure to add market"))
-        else:
-            return self.order_signers
-
 
     async def close_connections(self):
         # close aio http connection
         await self.apis.close_session()
-        await self.dmsApi.close_session()
+        await self.dms_api.close_session()
+
+
+    def _from_sui_base(self, number: Union[str,int]) -> float:
+        number=float(number)
+        return number/float(_SUI_BASE_NUM)
+
+
+    def _to_sui_base(self, number: Union[int,float]) -> int:
+        return int(number*_SUI_BASE_NUM)

@@ -13,13 +13,6 @@ def toDapiBase(number: Union[int, float])->int:
 def fromDapiBase(number: Union[int, float], dtype=int)-> int:
     return dtype(number/DAPI_BASE_NUM)
 
-def toSuiBase(number: Union[int,float]) -> int:
-    return int(number*SUI_BASE_NUM)
-
-def fromSuiBase(number: Union[str,int])-> float:
-    number=float(number)
-    return number/float(SUI_BASE_NUM)
-
 
 def numberToHex(num, pad=32):
     #converting number to Hexadecimal format

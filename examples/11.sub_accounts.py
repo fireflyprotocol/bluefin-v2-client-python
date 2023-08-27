@@ -20,10 +20,7 @@ async def main():
 
   # # whitelist sub account
   status = await clientParent.update_sub_account(clientChild.get_public_address(), True)
-  print("Sub account created: {}".format(status))
-
-
-  clientChild.add_market(MARKET_SYMBOLS.ETH)
+  print(f"Sub account created: {status}")
 
   parent_leverage =  await clientParent.get_user_leverage(MARKET_SYMBOLS.ETH)
   await clientParent.adjust_leverage(MARKET_SYMBOLS.ETH,1)
@@ -32,10 +29,10 @@ async def main():
         symbol=MARKET_SYMBOLS.ETH, # sub account is only whitelisted for ETH market
         maker=clientParent.get_public_address(),  # maker of the order is the parent account
         price=0,  
-        quantity=toSuiBase(0.02),
+        quantity=0.02,
         side=ORDER_SIDE.BUY, 
         orderType=ORDER_TYPE.MARKET,
-        leverage=toSuiBase(parent_leverage),
+        leverage=parent_leverage,
     )  
 
   # order is signed using sub account's private key

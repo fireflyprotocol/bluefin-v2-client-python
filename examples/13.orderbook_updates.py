@@ -7,26 +7,24 @@ sys.path.append(os.getcwd()+"/src/")
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_client_sui import FireflyClient, Networks, MARKET_SYMBOLS, SOCKET_EVENTS, ORDER_SIDE, ORDER_TYPE, OrderSignatureRequest
-from bluefin_client_sui.utilities import toSuiBase
 import asyncio
 TEST_NETWORK="SUI_STAGING"
 
 event_received = False
 
 async def place_limit_order(client:FireflyClient):
-       
     # default leverage of account is set to 3 on firefly
     user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
 
     # creates a LIMIT order to be signed
     signature_request = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
-        price=toSuiBase(1300),  # price at which you want to place order
-        quantity=toSuiBase(0.01), # quantity
-        side=ORDER_SIDE.SELL, 
+        price=1300,  # price at which you want to place order
+        quantity=0.01, # quantity
+        side=ORDER_SIDE.SELL,
         orderType=ORDER_TYPE.LIMIT,
-        leverage= toSuiBase(1)
-    )  
+        leverage=user_leverage
+    )
     # create signed order
     signed_order = client.create_signed_order(signature_request) 
 
@@ -43,8 +41,6 @@ async def main():
     client = FireflyClient(True, Networks[TEST_NETWORK], TEST_ACCT_KEY)
     await client.init(True)
     
-    client.add_market(MARKET_SYMBOLS.ETH)
-
     def callback(event):
         global event_received
         print("Event data:", event)
@@ -79,7 +75,6 @@ async def main():
 
 
 if __name__ == "__main__":
-  loop = asyncio.new_event_loop()
-  loop.run_until_complete(main())
-  loop.close()
-
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main())
+    loop.close()

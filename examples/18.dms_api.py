@@ -16,22 +16,19 @@ async def main():
   await client.init(True)
 
   print("User: ", client.get_public_address())
-  client.add_market(MARKET_SYMBOLS.BTC)
-  client.add_market(MARKET_SYMBOLS.ETH)
-
   countDownsObject: PostTimerAttributes = dict()
   countDowns = list()
   countDowns.append({
             'symbol': MARKET_SYMBOLS.BTC.value,
             'countDown': 3 * 1000
           }
-         )
+  )
   
   countDowns.append({
             'symbol': MARKET_SYMBOLS.ETH.value,
             'countDown': 3 * 1000
           }
-         )
+  )
 
   countDownsObject["countDowns"] = countDowns
   try:

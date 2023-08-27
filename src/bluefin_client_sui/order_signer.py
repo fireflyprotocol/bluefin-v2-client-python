@@ -1,15 +1,12 @@
-from .utilities import bn_to_bytes8, address_to_bytes32,numberToHex, hexToByteArray
-from .constants import *
+from .utilities import numberToHex, hexToByteArray
 from .signer import Signer
 from .interfaces import Order
 import hashlib
 
 class OrderSigner(Signer):
-    def __init__(self, orders_contract_address="", domain="IsolatedTrader", version="1.0"):
+    def __init__(self, version="1.0"):
         super().__init__()
-        self.contract_address = orders_contract_address 
-        self.domain = domain
-        self.version = version 
+        self.version = version
 
     def get_order_flags(self, order):
         
@@ -35,13 +32,6 @@ class OrderSigner(Signer):
             flag+=16
         return flag
     
-    def get_domain_hash(self):
-        """
-            Returns domain hash
-        """
-        ### todo
-        return ""
-       
 
     def get_order_hash(self, order:Order, withBufferHex=True):
         """
@@ -65,18 +55,19 @@ class OrderSigner(Signer):
         bluefin=bytearray("Bluefin", encoding="utf-8")
 
         buffer=orderPriceHex+orderQuantityHex+orderLeverageHex+orderSalt+orderExpiration+orderMaker+orderMarket+flags+bluefin
-        
+
         #for cancel order signature verification we use buffer directly
         # for placing order we use buffer.hex().encode("utf-8")
         if withBufferHex:
             order_hash=hashlib.sha256(buffer.hex().encode("utf-8")).digest()
         else:
             order_hash=hashlib.sha256(buffer).digest()
-        return order_hash        
+        return order_hash  
+
     def sign_order(self, order:Order, private_key):
         """
             Used to create an order signature. The method will use the provided key 
-            in params(if any) to sign the order.
+            in params to sign the order.
 
             Args:
                 order (Order): an order containing order fields (look at Order interface)
@@ -87,23 +78,3 @@ class OrderSigner(Signer):
         """
         order_hash = self.get_order_hash(order)
         return self.sign_hash(order_hash, private_key, "")
-
-    def sign_cancellation_hash(self,order_hash:list):
-        """
-            Used to create a cancel order signature. The method will use the provided key 
-            in params(if any) to sign the cancel order.
-
-            Args:
-                order_hash(list): a list containing all orders to be cancelled
-                private_key (str): private key of the account to be used for signing
-            Returns:
-                str: generated signature
-        """
-        sigDict={}
-        sigDict['orderHashes']=order_hash
-        encodedMessage=self.encode_message(sigDict)
-        return encodedMessage        
-
-
-
-    
