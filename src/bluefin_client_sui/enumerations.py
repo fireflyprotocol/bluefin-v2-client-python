@@ -11,12 +11,6 @@ class ORDER_SIDE(Enum):
 class MARKET_SYMBOLS(Enum):
     BTC = "BTC-PERP"
     ETH = "ETH-PERP"
-    SOL = "SOL-PERP"
-    LINK = "LINK-PERP"
-    MATIC = "MATIC-PERP"
-    DOGE = "DOGE-PERP"
-    ARB = "ARB-PERP"
-
 
 class TIME_IN_FORCE(Enum):
     FILL_OR_KILL = "FOK"

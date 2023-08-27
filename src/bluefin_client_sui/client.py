@@ -18,7 +18,6 @@ class FireflyClient:
     def __init__(self, are_terms_accepted, network, private_key=""):
         self.are_terms_accepted = are_terms_accepted
         self.network = network
-        self.w3 = ''#self._connect_w3(self.network["url"])
         if private_key != "":
             #currently we only support seed phrase 
             self.account=SuiWallet(seed=private_key)
@@ -77,8 +76,7 @@ class FireflyClient:
             response = await self.authorize_signed_hash(onboarding_signature) 
             
             if 'error' in response:
-
-                raise SystemError("Authorization error: {}".format(response['error']['message']))
+                raise SystemError(f"Authorization error: {response['error']['message']}")
 
             user_auth_token = response['token']
 
@@ -100,7 +98,7 @@ class FireflyClient:
                 "isTermAccepted": self.are_terms_accepted,
             })
 
-    def add_market(self, symbol: MARKET_SYMBOLS, trader_contract=None):
+    def add_market(self, symbol: MARKET_SYMBOLS):
         """
             Adds Order signer for market to instance's order_signers dict.
             Inputs:
@@ -112,9 +110,9 @@ class FireflyClient:
         """
         symbol_str = symbol.value
         # if signer for market already exists return false
-        if (symbol_str in self.order_signers):
-            return False 
-          
+        if symbol_str in self.order_signers:
+            return False
+        
         # if orders contract address is not provided get 
         # from addresses retrieved from dapi
         #if trader_contract == None:
@@ -123,28 +121,8 @@ class FireflyClient:
         #    except:
         #        raise SystemError("Can't find orders contract address for market: {}".format(symbol_str))
 
-        self.order_signers[symbol_str] = OrderSigner(
-            self.network["chainId"],
-            )
-        return True 
-
-    def add_contract(self,name,address,market=None):
-        """
-            Adds contracts to the instance's contracts dictionary. 
-            The contract name should match the contract's abi name in ./abi directory or a new abi should be added with the desired name.
-            Inputs:
-                name(str): The contract name.
-                address(str): The contract address.
-                market(str): The market (ETH/BTC) this contract belongs to (required for market specific contracts).
-        """
-        abi = self.contracts.get_contract_abi(name)
-        if market:
-            contract=self.w3.eth.contract(address=Web3.toChecksumAddress(address), abi=abi)
-            self.contracts.set_contracts(market=market,name=name,contract=contract)
-        else:
-            contract=self.w3.eth.contract(address=Web3.toChecksumAddress(address), abi=abi)
-            self.contracts.set_contracts(name=name,contract=contract)
-        return 
+        self.order_signers[symbol_str] = OrderSigner()
+        return True
 
     def create_order_to_sign(self, params:OrderSignatureRequest):
         """
@@ -979,9 +957,9 @@ class FireflyClient:
         )
         # check for service unavailibility
         if hasattr(response, 'status') and response.status == 503:
-             raise Exception("Cancel on Disconnect (dead-mans-switch) feature is currently unavailable")
+            raise Exception("Cancel on Disconnect (dead-mans-switch) feature is currently unavailable")
         return response
-       
+    
     ## Internal methods
     def _get_order_signer(self,symbol:MARKET_SYMBOLS=None):
         """
@@ -999,32 +977,8 @@ class FireflyClient:
         else:
             return self.order_signers
 
-    def _execute_tx(self, transaction):
-        """
-            An internal function to create signed tx and wait for its receipt
-        Args:
-            transaction: A constructed txn using self.account address
-
-        Returns:
-            tx_receipt: a receipt of txn mined on-chain
-        """
-        tx_create = self.w3.eth.account.signTransaction(transaction, self.account.key)
-        tx_hash = self.w3.eth.sendRawTransaction(tx_create.rawTransaction)
-        return self.w3.eth.waitForTransactionReceipt(tx_hash)
-
-    def _connect_w3(self,url):
-        """
-            Creates a connection to Web3 RPC given the RPC url.
-        """
-        try:
-            return Web3(Web3.HTTPProvider(url))
-        except:
-            raise(Exception("Failed to connect to Host: {}".format(url)))
-           
-
 
     async def close_connections(self):
-         # close aio http connection
+        # close aio http connection
         await self.apis.close_session()
         await self.dmsApi.close_session()
-           

@@ -4,4 +4,3 @@ from .constants import *
 from .enumerations import *
 from .interfaces import *
 from .utilities import *
-from .contract_abis import *

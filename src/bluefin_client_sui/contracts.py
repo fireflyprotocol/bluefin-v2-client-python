@@ -1,4 +1,3 @@
-from .contract_abis import MarginBank, Perpetual, USDC
 from .enumerations import *
 class Contracts:
     def __init__(self):

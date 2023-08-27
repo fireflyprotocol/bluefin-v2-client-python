@@ -3,12 +3,10 @@ from .constants import *
 from .signer import Signer
 from .interfaces import Order
 import hashlib
-import json
 
 class OrderSigner(Signer):
-    def __init__(self, network_id, orders_contract_address="", domain="IsolatedTrader", version="1.0"):
+    def __init__(self, orders_contract_address="", domain="IsolatedTrader", version="1.0"):
         super().__init__()
-        self.network_id = network_id
         self.contract_address = orders_contract_address 
         self.domain = domain
         self.version = version 

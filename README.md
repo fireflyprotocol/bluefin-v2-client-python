@@ -29,20 +29,17 @@ pip install .
 
 The package currently supports python `>=3.8`. Find complete documentation on the library at https://docs.firefly.exchange/.
 
-
-
-
 ### Getting Started
 
 When initializing the client, users must accept [terms and conditions](https://firefly.exchange/terms-of-use) and define network object containing the following values:
 
 ```json
 {
-      "apiGateway":"https://dapi.api.sui-staging.bluefin.io",
-      "socketURL":"wss://dapi.api.sui-staging.bluefin.io",
-      "dmsURL":"https://dapi.api.sui-staging.bluefin.io",
-      "webSocketURL":"wss://notifications.api.sui-staging.bluefin.io",
-      "onboardingUrl": "https://testnet.bluefin.io"
+  "apiGateway": "https://dapi.api.sui-staging.bluefin.io",
+  "socketURL": "wss://dapi.api.sui-staging.bluefin.io",
+  "dmsURL": "https://dapi.api.sui-staging.bluefin.io",
+  "webSocketURL": "wss://notifications.api.sui-staging.bluefin.io",
+  "onboardingUrl": "https://testnet.bluefin.io"
 }
 ```
 
@@ -92,6 +89,7 @@ if __name__ == "__main__":
 
 **Read-only Initialization:**
 Firefly-client can also be initialized in `read-only` mode, below is the example:
+
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_client_sui import FireflyClient, Networks
@@ -106,7 +104,7 @@ async def main():
       )
 
   # Initializing client for the private key provided. The second argument api_token is optional
-  await client.init(True,"54b0bfafc9a48728f76e52848a716e96d490263392e3959c2d44f05dea960761") 
+  await client.init(True,"54b0bfafc9a48728f76e52848a716e96d490263392e3959c2d44f05dea960761")
 
   # close aio http connection
   await client.apis.close_session()
@@ -119,6 +117,7 @@ if __name__ == "__main__":
   loop.run_until_complete(main())
   loop.close()
 ```
+
 ​Here is the [list](https://docs.bluefin.io/8/2.readonly-access-data) of APIs that can be accessed in `read-only` mode.
 
 **Placing Orders:**
@@ -262,4 +261,3 @@ if __name__ == "__main__":
   loop.run_until_complete(main())
   loop.close()
 ```
-  
