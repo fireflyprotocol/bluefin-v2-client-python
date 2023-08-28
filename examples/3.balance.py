@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import BluefinClient, Networks
@@ -32,18 +32,24 @@ async def main():
 
     # deposit usdc to margin bank
     # must have native chain tokens to pay for gas fee
-    print("USDC deposited:", await client.deposit_margin_to_bank(10))
+    usdc_coins = client.get_usdc_coins()
+    ## we expect that you have some coins in your usdc,
+    coin_obj_id = usdc_coins["data"][1]["coinObjectId"]
+    print("USDC deposited:", await client.deposit_margin_to_bank(5000, coin_obj_id))
 
     # check margin bank balance
     resp = await client.get_margin_bank_balance()
     print("Margin bank balance:", resp)
 
     # withdraw margin bank balance
-    print("USDC Withdrawn:", await client.withdraw_margin_from_bank(resp))
+    print("USDC Withdrawn:", await client.withdraw_margin_from_bank(10))
 
     # check margin bank balance
     print("Margin bank balance:", await client.get_margin_bank_balance())
 
+    print("Withdraw all", await client.withdraw_all_margin_from_bank())
+
+    print("Margin bank balance:", await client.get_margin_bank_balance())
     await client.close_connections()
 
 

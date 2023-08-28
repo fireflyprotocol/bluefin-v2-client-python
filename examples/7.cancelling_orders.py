@@ -1,6 +1,6 @@
 import sys, os, random
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
@@ -23,15 +23,16 @@ async def main():
 
     # client.create_order_to_sign()
     await client.adjust_leverage(MARKET_SYMBOLS.ETH, 1)
+    user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
 
     # creates a LIMIT order to be signed
     order = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
-        price=1636.8,  # price at which you want to place order
+        price=2905,  # price at which you want to place order
         quantity=0.01,  # quantity
         side=ORDER_SIDE.BUY,
         orderType=ORDER_TYPE.LIMIT,
-        leverage=1,
+        leverage=user_leverage,
         salt=random.randint(0, 100000000),
         expiration=int(time.time() + (30 * 24 * 60 * 60)) * 1000,
     )

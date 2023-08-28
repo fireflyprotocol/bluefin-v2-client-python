@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS, ADJUST_MARGIN
@@ -13,8 +13,6 @@ from bluefin_v2_client import (
     ORDER_TYPE,
     OrderSignatureRequest,
 )
-
-TEST_NETWORK = "SUI_STAGING"
 
 
 async def place_limit_order(client: BluefinClient):
@@ -91,7 +89,10 @@ async def main():
 
     # adding 100$ from our margin bank into our BTC position on-chain
     # must have native chain tokens to pay for gas fee
-    await client.adjust_margin(MARKET_SYMBOLS.ETH, ADJUST_MARGIN.ADD, 100)
+    print(
+        "Adjusting Margin",
+        await client.adjust_margin(MARKET_SYMBOLS.ETH, ADJUST_MARGIN.ADD, 100),
+    )
 
     # get updated position margin. Note it can take a few seconds to show updates
     # to on-chain positions on exchange as off-chain infrastructure waits for blockchain
@@ -100,7 +101,10 @@ async def main():
     print("Current margin in position:", position["margin"])
 
     # removing 100$ from margin
-    await client.adjust_margin(MARKET_SYMBOLS.ETH, ADJUST_MARGIN.REMOVE, 100)
+    print(
+        "Adjusting margin",
+        await client.adjust_margin(MARKET_SYMBOLS.ETH, ADJUST_MARGIN.REMOVE, 100),
+    )
 
     position = await client.get_user_position({"symbol": MARKET_SYMBOLS.ETH})
     print("Current margin in position:", int(position["margin"]))

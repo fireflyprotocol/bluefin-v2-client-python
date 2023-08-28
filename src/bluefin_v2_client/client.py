@@ -5,11 +5,11 @@ from .api_service import APIService
 from .contracts import Contracts
 from .order_signer import OrderSigner
 from .onboarding_signer import OnboardingSigner
-from .constants import TIME, SERVICE_URLS
+from .constants import TIME, SERVICE_URLS, CONTRACTS_BASE_NUM
 from .sockets_lib import Sockets
 from .websocket_client import WebsocketClient
 from .signer import Signer
-from .utilities import default_value
+from .utilities import *
 from .rpc import *
 from .account import *
 from .interfaces import *
@@ -106,7 +106,7 @@ class BluefinClient:
             },
         )
 
-    def create_order_to_sign(self, params: OrderSignatureRequest):
+    def create_order_to_sign(self, params: OrderSignatureRequest) -> Order:
         """
         Creates order signature request for an order.
         Inputs:
@@ -192,7 +192,11 @@ class BluefinClient:
         Returns:
             OrderSignatureResponse: generated cancel signature
         """
-        order_to_sign = self.create_order_to_sign(params)
+        sui_params = deepcopy(params)
+        sui_params["price"] = self._to_sui_base(params["price"])
+        sui_params["quantity"] = self._to_sui_base(params["quantity"])
+        sui_params["leverage"] = self._to_sui_base(params["leverage"])
+        order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign, withBufferHex=False)
         return self.create_signed_cancel_orders(
             params["symbol"], hash_val.hex(), parentAddress
@@ -331,7 +335,7 @@ class BluefinClient:
         callArgs = []
         callArgs.append(self.contracts.get_bank_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(self._to_sui_base(amount)))
+        callArgs.append(str(toSuiBase(amount, base=CONTRACTS_BASE_NUM)))
         callArgs.append(coin_id)
         txBytes = rpc_unsafe_moveCall(
             self.url,
@@ -344,9 +348,12 @@ class BluefinClient:
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
 
-        return res
+        if res["result"]["effects"]["status"]["status"] == "success":
+            return True
+        else:
+            return False
 
-    async def withdraw_margin_from_bank(self, amount):
+    async def withdraw_margin_from_bank(self, amount: Union[float, int]) -> bool:
         """
         Withdraws given amount of usdc from margin bank if possible
 
@@ -360,7 +367,11 @@ class BluefinClient:
         bank_id = self.contracts.get_bank_id()
         account_address = self.account.getUserAddress()
 
-        callArgs = [bank_id, account_address, str(amount)]
+        callArgs = [
+            bank_id,
+            account_address,
+            str(toSuiBase(amount, base=CONTRACTS_BASE_NUM)),
+        ]
         txBytes = rpc_unsafe_moveCall(
             self.url,
             callArgs,
@@ -372,9 +383,20 @@ class BluefinClient:
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
 
-        return res
+        if res["result"]["effects"]["status"]["status"] == "success":
+            return True
+        else:
+            return False
 
     async def withdraw_all_margin_from_bank(self):
+        """
+        Withdraws everything of usdc from margin bank
+
+        Inputs:
+            No input Required
+        Returns:
+            Boolean: true if amount is successfully withdrawn, false otherwise
+        """
         bank_id = self.contracts.get_bank_id()
         account_address = self.account.getUserAddress()
 
@@ -389,7 +411,11 @@ class BluefinClient:
         )
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-        return res
+
+        if res["result"]["effects"]["status"]["status"] == "success":
+            return True
+        else:
+            return False
 
     async def adjust_leverage(self, symbol, leverage, parentAddress: str = ""):
         """
@@ -411,6 +437,7 @@ class BluefinClient:
 
         account_address = self.account.address if parentAddress == "" else parentAddress
         # implies user has an open position on-chain, perform on-chain leverage update
+        open_position = True
         if user_position != {}:
             callArgs = []
             callArgs.append(self.contracts.get_perpetual_id(symbol))
@@ -418,7 +445,7 @@ class BluefinClient:
             callArgs.append(self.contracts.get_sub_account_id())
             callArgs.append(account_address)
             callArgs.append(str(self._to_sui_base(leverage)))
-            callArgs.append(self.contracts.get_price_oracle_object_id(symbol.value))
+            callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
             txBytes = rpc_unsafe_moveCall(
                 self.url,
                 callArgs,
@@ -429,19 +456,22 @@ class BluefinClient:
             )
             signature = self.contract_signer.sign_tx(txBytes, self.account)
             result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-            return result
-        else:
-            await self.apis.post(
-                SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
-                {
-                    "symbol": symbol.value,
-                    "address": account_address,
-                    "leverage": toDapiBase(leverage),
-                    "marginType": MARGIN_TYPE.ISOLATED.value,
-                },
-                auth_required=True,
-            )
-        return True
+            if result["result"]["effects"]["status"]["status"] == "success":
+                return True
+            else:
+                return False
+
+        res = await self.apis.post(
+            SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
+            {
+                "symbol": symbol.value,
+                "address": account_address,
+                "leverage": toDapiBase(leverage),
+                "marginType": MARGIN_TYPE.ISOLATED.value,
+            },
+            auth_required=True,
+        )
+        return res
 
     async def adjust_margin(
         self,
@@ -476,7 +506,7 @@ class BluefinClient:
 
         callArgs.append(self.contracts.get_sub_account_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(amount))
+        callArgs.append(str(toSuiBase(amount)))
         callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
         if operation == ADJUST_MARGIN.ADD:
             txBytes = rpc_unsafe_moveCall(
@@ -500,7 +530,10 @@ class BluefinClient:
 
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-        return True
+        if result["result"]["effects"]["status"]["status"] == "success":
+            return True
+        else:
+            return False
 
     async def update_sub_account(self, sub_account_address: str, status: bool) -> bool:
         """
@@ -549,6 +582,9 @@ class BluefinClient:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
     def get_usdc_coins(self):
+        """
+        Returns the list of the usdc coins owned by user
+        """
         try:
             callArgs = []
             callArgs.append(self.account.getUserAddress())

@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK

@@ -11,7 +11,9 @@ class Contracts:
 
     def set_contract_addresses(self, contracts_info):
         self.contract_info = contracts_info
-        self.contracts_global_info = contracts_info[_DEFAULT_MARKET]["Deployment"]
+        self.contracts_global_info = contracts_info["auxiliaryContractsAddresses"][
+            "objects"
+        ]
 
     def get_sub_account_id(self):
         return self.contracts_global_info["SubAccounts"]["id"]
@@ -29,7 +31,7 @@ class Contracts:
         return self.contracts_global_info["Currency"]["dataType"]
 
     def get_price_oracle_object_id(self, market: MARKET_SYMBOLS):
-        return self.contract_info[market]["objects"]["PriceOracle"]["id"]
+        return self.contract_info[market.value]["PriceOracle"]["id"]
 
     def get_perpetual_id(self, market: MARKET_SYMBOLS):
-        return self.contract_info[market]["objects"]["Perpetual"]["id"]
+        return self.contract_info[market.value]["Perpetual"]["id"]

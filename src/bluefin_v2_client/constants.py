@@ -13,7 +13,7 @@ Networks = {
         "socketURL": "wss://dapi.api.sui-prod.bluefin.io",
         "dmsURL": "https://dapi.api.sui-prod.bluefin.io",
         "webSocketURL": "wss://notifications.api.sui-prod.bluefin.io",
-        "onboardingUrl": "https://trade.bluefin.io",
+        "onboardingUrl": "https://trade-sui.bluefin.exchange",
     },
 }
 
@@ -64,4 +64,6 @@ SERVICE_URLS = {
     },
 }
 
+SUI_BASE_NUM = 1000000000
 DAPI_BASE_NUM = 1000000000000000000
+CONTRACTS_BASE_NUM = 1000000

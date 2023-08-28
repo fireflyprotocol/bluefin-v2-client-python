@@ -6,7 +6,7 @@ import time
 import bip_utils
 import hashlib
 from typing import Union
-from .constants import SUI_BASE_NUM, DAPI_BASE_NUM
+from .constants import SUI_BASE_NUM, DAPI_BASE_NUM, CONTRACTS_BASE_NUM
 
 
 def toDapiBase(number: Union[int, float]) -> int:
@@ -15,6 +15,15 @@ def toDapiBase(number: Union[int, float]) -> int:
 
 def fromDapiBase(number: Union[int, float], dtype=int) -> int:
     return dtype(number / DAPI_BASE_NUM)
+
+
+def toSuiBase(number: Union[int, float], base=SUI_BASE_NUM) -> int:
+    return int(number * base)
+
+
+def fromSuiBase(number: Union[str, int], base=SUI_BASE_NUM) -> float:
+    number = float(number)
+    return number / float(base)
 
 
 def numberToHex(num, pad=32):

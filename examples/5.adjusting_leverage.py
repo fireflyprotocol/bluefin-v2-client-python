@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS
@@ -15,27 +15,18 @@ async def main():
         TEST_ACCT_KEY,  # private key of wallet
     )
 
-    await client.init(True, symbol=MARKET_SYMBOLS.BTC)
+    await client.init(True)
 
     print("Leverage on BTC market:", await client.get_user_leverage(MARKET_SYMBOLS.BTC))
     # we have a position on BTC so this will perform on-chain leverage update
     # must have native chain tokens to pay for gas fee
-    await client.adjust_leverage(MARKET_SYMBOLS.BTC, 6)
+    await client.adjust_leverage(MARKET_SYMBOLS.BTC, 2)
 
     print("Leverage on BTC market:", await client.get_user_leverage(MARKET_SYMBOLS.BTC))
 
-    # initialize client
-    client = BluefinClient(
-        True,  # agree to terms and conditions
-        Networks[TEST_NETWORK],  # network to connect with
-        TEST_ACCT_KEY,  # private key of wallet
-    )
-
-    await client.init(True, symbol=MARKET_SYMBOLS.ETH)
-
     print("Leverage on ETH market:", await client.get_user_leverage(MARKET_SYMBOLS.ETH))
     # since we don't have a position on-chain, it will perform off-chain leverage adjustment
-    await client.adjust_leverage(MARKET_SYMBOLS.ETH, 7)
+    await client.adjust_leverage(MARKET_SYMBOLS.ETH, 8)
 
     print("Leverage on ETH market:", await client.get_user_leverage(MARKET_SYMBOLS.ETH))
 

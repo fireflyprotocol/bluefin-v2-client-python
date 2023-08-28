@@ -76,3 +76,20 @@
         hash=hashlib.blake2b(intent,digest_size=32)
         #then we finally sign the hash
    ```
+## Margin Bank:
+1. When you insert money to margin bank we give it in BASE6 but when we see balance it is in base9.  internally the functions are implemented that way.
+2. We expect you to give the arguments directly in DECIMALS.
+
+
+## Making Direct Contract Calls:
+1. for making contract calls. The one interacting with our contracts are implemented internally in `client.py`
+2. we have exposed some generic functions through which you can make direct contract calls yourself
+   1. `def rpc_unsafe_moveCall(url,params, function_name: str, function_library: str, userAddress ,packageId, gasBudget=100000000 ):`
+   2. `def rpc_sui_executeTransactionBlock(url, txBytes, signature):`
+   3. The first one is used to serialise the contract calls you are going to make. 
+   4. for second one you need to sign the result of first call with your signer and then make call along with serialised call and signature.
+   5. internally all our contract calls to packages uses these functions. for more information have a look at `rpc.py`
+3. For making calls to SUI functions
+   1. For that we have exposed `def rpc_call_sui_function(url, params, method="suix_getCoins"):`
+   2. Here you can specify the params and the name of the sui function you are calling.
+   3. internally we use these calls to get the chain balance, usdc coins.
