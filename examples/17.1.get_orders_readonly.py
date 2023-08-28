@@ -8,7 +8,7 @@ import sys, os
 
 sys.path.append(os.getcwd() + "/src/")
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import (
+from bluefin_v2_client import (
     BluefinClient,
     Networks,
     MARKET_SYMBOLS,

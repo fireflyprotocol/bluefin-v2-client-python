@@ -1,12 +1,11 @@
 [project]
-name = "bluefin_client_sui"
+name = "bluefin_v2_client"
 version = "2.0.0"
-description = "Library to interact with firefly exchange protocol including its off-chain api-gateway and on-chain contracts"
+description = "Library to interact with Bluefin exchange protocol including its off-chain api-gateway and on-chain contracts"
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = ["bluefin", "exchange", "decentralized", "perpetuals", "blockchain"]
 dependencies = [
-  'web3 ~= 5.31.3',
   'requests ~= 2.28.1',
   'python-socketio ~= 5.7.2',
   'websocket-client ~= 1.5.1'
