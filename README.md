@@ -10,7 +10,7 @@ Python Client for the Bluefin Exchange API and SUI Contracts.
 
 ### Install
 
-The package can be installed from [PyPi](https://pypi.org/project/bluefin-client-sui/) using pip:
+The package can be installed from [PyPi](https://pypi.org/project/bluefin-v2-client-python/) using pip:
 
 ```
 pip install bluefin_client_sui
@@ -38,7 +38,7 @@ When initializing the client, users must accept [terms and conditions](https://b
 }
 ```
 
-Users can import predefined networks from [constants](https://github.com/fireflyprotocol/bluefin-client-python-sui/blob/main/src/bluefin_client_sui/constants.py):
+Users can import predefined networks from [constants](https://github.com/fireflyprotocol/bluefin-v2-client-python/blob/main/src/bluefin_client_sui/constants.py):
 
 ```python
 from bluefin_client_sui import Networks
@@ -202,7 +202,7 @@ if __name__ == "__main__":
   loop.close()​
 ```
 
-Look at the [example](https://github.com/fireflyprotocol/bluefin-client-python-sui/tree/main/examples) directory to see more examples on how to use this library.
+Look at the [example](https://github.com/fireflyprotocol/bluefin-v2-client-python/tree/main/examples) directory to see more examples on how to use this library.
 
 **Listening To Events Using Web Sockets:**
 

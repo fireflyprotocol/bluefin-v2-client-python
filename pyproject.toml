@@ -13,9 +13,9 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/fireflyprotocol/bluefin-client-python-sui"
-"Bug Reports" = "https://github.com/fireflyprotocol/bluefin-client-python-sui/issues"
-"Source" = "https://github.com/fireflyprotocol/bluefin-client-python-sui"
+"Homepage" = "https://github.com/fireflyprotocol/bluefin-v2-client-python"
+"Bug Reports" = "https://github.com/fireflyprotocol/bluefin-v2-client-python/issues"
+"Source" = "https://github.com/fireflyprotocol/bluefin-v2-client-python"
 
 [build-system]
 requires = [
