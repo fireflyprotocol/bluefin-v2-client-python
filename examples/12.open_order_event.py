@@ -32,11 +32,11 @@ async def place_limit_order(client: BluefinClient):
     # creates a LIMIT order to be signed
     signature_request = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
-        price=1300000000000,  # price at which you want to place order
-        quantity=10000000,  # quantity
+        price=1300,  # price at which you want to place order
+        quantity=0.01,  # quantity
         side=ORDER_SIDE.SELL,
         orderType=ORDER_TYPE.LIMIT,
-        leverage=1000000000,
+        leverage=user_leverage,
     )
 
     # create signed order

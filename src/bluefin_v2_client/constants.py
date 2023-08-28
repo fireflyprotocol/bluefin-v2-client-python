@@ -13,7 +13,7 @@ Networks = {
         "socketURL": "wss://dapi.api.sui-prod.bluefin.io",
         "dmsURL": "https://dapi.api.sui-prod.bluefin.io",
         "webSocketURL": "wss://notifications.api.sui-prod.bluefin.io",
-        "onboardingUrl": "https://trade.bluefin.io",
+        "onboardingUrl": "https://trade-sui.bluefin.exchange",
     },
 }
 

@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import (
     BluefinClient,
@@ -49,12 +49,11 @@ async def place_market_order(client: BluefinClient):
         symbol=MARKET_SYMBOLS.ETH,
         price=0,
         quantity=1,
-        leverage=1,
+        leverage=user_leverage,
         side=ORDER_SIDE.BUY,
         reduceOnly=False,
         postOnly=False,
         orderbookOnly=True,
-        maker="0xa3c3504d90c428274beaa89f1238a769ea1d1c3516c31c0f4157f33787367af0",
         expiration=1700530261000,
         salt=1668690862116,
         orderType=ORDER_TYPE.MARKET,
@@ -83,9 +82,8 @@ async def main():
 
     await client.init(True)
 
-    # await place_limit_order(client)
-    await client
     await place_limit_order(client)
+    await place_market_order(client)
 
     await client.close_connections()
 

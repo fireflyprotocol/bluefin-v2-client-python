@@ -4,6 +4,9 @@
   has no position of its own. So when placing orders or listening to position updates
   the sub account must specify the parent address whose position its listening.
 """
+import os, sys
+
+# sys.path.append(os.getcwd() + "/src/")
 import time, sys
 from config import TEST_ACCT_KEY, TEST_NETWORK, TEST_SUB_ACCT_KEY
 from bluefin_v2_client import (
@@ -35,7 +38,7 @@ async def main():
 
     # # whitelist sub account
     status = await clientParent.update_sub_account(
-        MARKET_SYMBOLS.ETH, clientChild.get_public_address(), True
+        clientChild.get_public_address(), True
     )
     print("Sub account created: {}\n".format(status))
 

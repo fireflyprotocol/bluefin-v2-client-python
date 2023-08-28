@@ -11,6 +11,21 @@ def rpc_unsafe_moveCall(
     packageId,
     gasBudget=100000000,
 ):
+    """
+    Does the RPC call to SUI chain
+    Input:
+      url: url of the node
+      params: a list of arguments to be passed to function
+      function_name: name of the function to call on sui
+      function_library: name of the library/module in which the function exists
+      userAddress: Address of the signer
+      packageId: package id in which the module exists
+      gasBudget(optional): gasBudget defaults to 100000000
+
+    Output:
+      Returns the request form serialised in bytes ready to be signed.
+
+    """
     base_dict = {}
     base_dict["jsonrpc"] = "2.0"
     base_dict["id"] = 1689764924887
@@ -34,6 +49,18 @@ def rpc_unsafe_moveCall(
 
 
 def rpc_sui_executeTransactionBlock(url, txBytes, signature):
+    """
+    Execute the SUI call on sui chain
+    Input:
+      url: url of the node
+      txBytes: the call in serialised form
+      signature: txBytes signed by signer
+
+    Output:
+      result of transaction
+
+
+    """
     base_dict = {}
     base_dict["jsonrpc"] = "2.0"
     base_dict["id"] = 5
@@ -59,6 +86,13 @@ def rpc_sui_executeTransactionBlock(url, txBytes, signature):
 
 
 def rpc_call_sui_function(url, params, method="suix_getCoins"):
+    """
+    for calling sui functions:
+    Input:
+      url: url of node
+      params: arguments of function
+      method(optional): the name of method in sui we want to call. defaults to suix_getCoins
+    """
     base_dict = {}
     base_dict["jsonrpc"] = "2.0"
     base_dict["id"] = 1
@@ -70,67 +104,3 @@ def rpc_call_sui_function(url, params, method="suix_getCoins"):
     response = requests.request("POST", url, headers=headers, data=payload)
     result = json.loads(response.text)
     return result["result"]
-
-
-"""
-
-payload = json.dumps({
-  "jsonrpc": "2.0",
-  "id": 5,
-  "method": "sui_executeTransactionBlock",
-  "params": [
-    "AAADAQGPzuAZV5krLKJWD1WUXOjk7Guz2vki2pBMZJ6CXkRf1XLGgQAAAAAAAQAgH/qFdX+Vzs7ShiLTDkGkUsiFFt9TRQyxkTgS3YKNWWgAEOgDAAAAAAAAAAAAAAAAAAABAF82iNaL7Cly31h0P767ErFoKbQb8bxQeNNRAJDvbPWOC21hcmdpbl9iYW5rEndpdGhkcmF3X2Zyb21fYmFuawADAQAAAQEAAQIAH/qFdX+Vzs7ShiLTDkGkUsiFFt9TRQyxkTgS3YKNWWgBWiybg/9fRf7zXUmsdBU3umIFeucEZNWeMGzlLttPf86tHg8AAAAAACA3qZfzxP1+yVILtVkJ6LdfZvkF7gK877AJco9Xook9Th/6hXV/lc7O0oYi0w5BpFLIhRbfU0UMsZE4Et2CjVlo6AMAAAAAAAAA4fUFAAAAAAA=",
-    [
-      "ANyIBWjL6U9T6qBoWWTc18qzVViytirDmwX+dOEqd77dibe0tgLcziDZpe3XoTRVbBJGUV9TIHCN2C21aNvUTA/JFlIyQTT87zRFBPBubLG+G22kP5UDgk3kIg8JPeUiBw=="
-    ],
-    {
-      "showInput": True,
-      "showEffects": True,
-      "showEvents": True,
-      "showObjectChanges": True
-    },
-    "WaitForLocalExecution"
-  ]
-})
-headers = {
-  'Content-Type': 'application/json'
-}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.text)
-
-
-"""
-
-
-"""
-url = "https://fullnode.testnet.sui.io:443"
-
-payload = json.dumps({
-  "jsonrpc": "2.0",
-  "id": 1689764924887,
-  "method": "unsafe_moveCall",
-  "params": [
-    "0x1ffa85757f95ceced28622d30e41a452c88516df53450cb1913812dd828d5968",
-    "0x5f3688d68bec2972df58743fbebb12b16829b41bf1bc5078d3510090ef6cf58e",
-    "margin_bank",
-    "withdraw_from_bank",
-    [],
-    [
-      "0x8fcee01957992b2ca2560f55945ce8e4ec6bb3daf922da904c649e825e445fd5",
-      "0x1ffa85757f95ceced28622d30e41a452c88516df53450cb1913812dd828d5968",
-      "1000"
-    ],
-    "0x5a2c9b83ff5f45fef35d49ac741537ba62057ae70464d59e306ce52edb4f7fce",
-    "100000000"
-  ]
-})
-headers = {
-  'Content-Type': 'application/json'
-}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-print(response.text)
-"""

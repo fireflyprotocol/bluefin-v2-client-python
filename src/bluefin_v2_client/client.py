@@ -106,7 +106,7 @@ class BluefinClient:
             },
         )
 
-    def create_order_to_sign(self, params: OrderSignatureRequest):
+    def create_order_to_sign(self, params: OrderSignatureRequest) -> Order:
         """
         Creates order signature request for an order.
         Inputs:
@@ -389,6 +389,14 @@ class BluefinClient:
             return False
 
     async def withdraw_all_margin_from_bank(self):
+        """
+        Withdraws everything of usdc from margin bank
+
+        Inputs:
+            No input Required
+        Returns:
+            Boolean: true if amount is successfully withdrawn, false otherwise
+        """
         bank_id = self.contracts.get_bank_id()
         account_address = self.account.getUserAddress()
 
@@ -522,7 +530,10 @@ class BluefinClient:
 
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-        return True
+        if result["result"]["effects"]["status"]["status"] == "success":
+            return True
+        else:
+            return False
 
     async def update_sub_account(self, sub_account_address: str, status: bool) -> bool:
         """
@@ -571,6 +582,9 @@ class BluefinClient:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
     def get_usdc_coins(self):
+        """
+        Returns the list of the usdc coins owned by user
+        """
         try:
             callArgs = []
             callArgs.append(self.account.getUserAddress())

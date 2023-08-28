@@ -1,6 +1,6 @@
 import sys, os
 
-sys.path.append(os.getcwd() + "/src/")
+# sys.path.append(os.getcwd() + "/src/")
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import (
@@ -33,7 +33,7 @@ async def main():
 
     def on_close(ws):
         # unsubscribe from global events
-        status = client.webSocketClient.unsubscribe_global_updates_by_symbol(
+        status = client.ws_client.unsubscribe_global_updates_by_symbol(
             MARKET_SYMBOLS.ETH
         )
         print("Unsubscribed from global ETH events: {}".format(status))
@@ -42,21 +42,19 @@ async def main():
 
     def on_open(ws):
         # subscribe to global event updates for ETH market
-        status = client.webSocketClient.subscribe_global_updates_by_symbol(
-            MARKET_SYMBOLS.ETH
-        )
+        status = client.ws_client.subscribe_global_updates_by_symbol(MARKET_SYMBOLS.ETH)
         print("Subscribed to global ETH events: {}".format(status))
 
         # SOCKET_EVENTS contains all events that can be listened to
         print("Listening to Exchange Health updates")
-        client.webSocketClient.listen(SOCKET_EVENTS.EXCHANGE_HEALTH.value, callback)
+        client.ws_client.listen(SOCKET_EVENTS.EXCHANGE_HEALTH.value, callback)
 
         # logs event name and data for all markets and users that are subscribed.
         # helpful for debugging
         # client.socket.listen("default",callback)
 
     print("Making socket connection to Bluefin exchange")
-    client.webSocketClient.initialize_socket(
+    client.ws_client.initialize_socket(
         on_open=on_open, on_error=on_error, on_close=on_close
     )
 
@@ -65,7 +63,7 @@ async def main():
     while not event_received and time.time() < end_time:
         time.sleep(1)
 
-    client.webSocketClient.stop()
+    client.ws_client.stop()
     await client.close_connections()
 
 
