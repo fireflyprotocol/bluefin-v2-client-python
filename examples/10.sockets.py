@@ -4,7 +4,7 @@ sys.path.append(os.getcwd() + "/src/")
 
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import BluefinClient, Networks, MARKET_SYMBOLS, SOCKET_EVENTS
+from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS, SOCKET_EVENTS
 import asyncio
 
 TEST_NETWORK = "SUI_STAGING"

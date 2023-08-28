@@ -13,7 +13,7 @@ Python Client for the Bluefin Exchange API and SUI Contracts.
 The package can be installed from [PyPi](https://pypi.org/project/bluefin-v2-client-python/) using pip:
 
 ```
-pip install bluefin_client_sui
+pip install bluefin_v2_client
 ```
 
 Alternatively, you could run:
@@ -38,10 +38,10 @@ When initializing the client, users must accept [terms and conditions](https://b
 }
 ```
 
-Users can import predefined networks from [constants](https://github.com/fireflyprotocol/bluefin-v2-client-python/blob/main/src/bluefin_client_sui/constants.py):
+Users can import predefined networks from [constants](https://github.com/fireflyprotocol/bluefin-v2-client-python/blob/main/src/bluefin-v2-client-python/constants.py):
 
 ```python
-from bluefin_client_sui import Networks
+from bluefin_v2_client import Networks
 ```
 
 For testing purposes use `Networks[SUI_STAGING]` and for production use `Networks[SUI_PROD]`.
@@ -50,7 +50,7 @@ For testing purposes use `Networks[SUI_STAGING]` and for production use `Network
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import BluefinClient, Networks
+from bluefin_v2_client import BluefinClient, Networks
 from pprint import pprint
 import asyncio
 
@@ -86,7 +86,7 @@ Bluefin-client can also be initialized in `read-only` mode, below is the example
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import BluefinClient, Networks
+from bluefin_v2_client import BluefinClient, Networks
 from pprint import pprint
 import asyncio
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import BluefinClient, Networks, MARKET_SYMBOLS, ORDER_SIDE, ORDER_TYPE, OrderSignatureRequest
+from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS, ORDER_SIDE, ORDER_TYPE, OrderSignatureRequest
 import asyncio
 
 async def main():
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import BluefinClient, Networks, SOCKET_EVENTS
+from bluefin_v2_client import BluefinClient, Networks, SOCKET_EVENTS
 import asyncio
 import time
 
@@ -208,7 +208,7 @@ Look at the [example](https://github.com/fireflyprotocol/bluefin-v2-client-pytho
 
 ```python
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import BluefinClient, Networks, SOCKET_EVENTS, MARKET_SYMBOLS
+from bluefin_v2_client import BluefinClient, Networks, SOCKET_EVENTS, MARKET_SYMBOLS
 import time
 import asyncio
 

@@ -6,7 +6,7 @@
 """
 import time, sys
 from config import TEST_ACCT_KEY, TEST_NETWORK, TEST_SUB_ACCT_KEY
-from bluefin_client_sui import (
+from bluefin_v2_client import (
     BluefinClient,
     Networks,
     MARKET_SYMBOLS,

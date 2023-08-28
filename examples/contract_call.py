@@ -4,7 +4,7 @@ sys.path.append(os.getcwd() + "/src/")
 import base64
 from bluefin_client_sui.utilities import *
 from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_client_sui import (
+from bluefin_v2_client import (
     BluefinClient,
     Networks,
     MARKET_SYMBOLS,
@@ -13,8 +13,8 @@ from bluefin_client_sui import (
     OrderSignatureRequest,
 )
 import asyncio
-from bluefin_client_sui import signer
-from bluefin_client_sui import *
+from bluefin_v2_client import signer
+from bluefin_v2_client import *
 
 
 async def main():
