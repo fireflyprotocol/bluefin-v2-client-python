@@ -32,7 +32,7 @@ When initializing the client, users must accept [terms and conditions](https://b
 {
   "apiGateway": "https://dapi.api.sui-prod.bluefin.io",
   "socketURL": "wss://dapi.api.sui-prod.bluefin.io",
-  "dmsURL": "http://api.sui-prod.bluefin.io/dead-man-switch",
+  "dmsURL": "https://api.sui-prod.bluefin.io/dead-man-switch",
   "webSocketURL": "wss://notifications.api.sui-prod.bluefin.io",
   "onboardingUrl": "https://trade-sui.bluefin.exchange"
 }
