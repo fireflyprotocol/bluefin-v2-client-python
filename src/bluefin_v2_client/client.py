@@ -157,6 +157,10 @@ class BluefinClient:
         sui_params["quantity"] = self._to_sui_base(req["quantity"])
         sui_params["leverage"] = self._to_sui_base(req["leverage"])
 
+        price_base18 = toDapiBase(req["price"])
+        quantity_base18 = toDapiBase(req["quantity"])
+        leverage_base18 = toDapiBase(req["leverage"])
+
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
         order_signature = self.order_signer.sign_order(
@@ -165,10 +169,10 @@ class BluefinClient:
         order_signature = order_signature + self.account.publicKeyBase64.decode()
         return OrderSignatureResponse(
             symbol=symbol,
-            price=sui_params["price"],
-            quantity=sui_params["quantity"],
+            price=price_base18,
+            quantity=quantity_base18,
             side=sui_params["side"],
-            leverage=default_value(sui_params, "leverage", self._to_sui_base(1)),
+            leverage=leverage_base18,
             reduceOnly=default_value(sui_params, "reduceOnly", False),
             salt=order["salt"],
             expiration=order["expiration"],
@@ -196,6 +200,7 @@ class BluefinClient:
         sui_params["price"] = self._to_sui_base(params["price"])
         sui_params["quantity"] = self._to_sui_base(params["quantity"])
         sui_params["leverage"] = self._to_sui_base(params["leverage"])
+
         order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign, withBufferHex=False)
         return self.create_signed_cancel_orders(
