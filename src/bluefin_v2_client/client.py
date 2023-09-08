@@ -153,13 +153,9 @@ class BluefinClient:
             OrderSignatureResponse: order raw info and generated signature
         """
         sui_params = deepcopy(req)
-        sui_params["price"] = self._to_sui_base(req["price"])
-        sui_params["quantity"] = self._to_sui_base(req["quantity"])
-        sui_params["leverage"] = self._to_sui_base(req["leverage"])
-
-        price_base18 = toDapiBase(req["price"])
-        quantity_base18 = toDapiBase(req["quantity"])
-        leverage_base18 = toDapiBase(req["leverage"])
+        sui_params["price"] = toDapiBase(req["price"])
+        sui_params["quantity"] = toDapiBase(req["quantity"])
+        sui_params["leverage"] = toDapiBase(req["leverage"])
 
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
@@ -169,10 +165,10 @@ class BluefinClient:
         order_signature = order_signature + self.account.publicKeyBase64.decode()
         return OrderSignatureResponse(
             symbol=symbol,
-            price=price_base18,
-            quantity=quantity_base18,
+            price=sui_params["price"],
+            quantity=sui_params["quantity"],
             side=sui_params["side"],
-            leverage=leverage_base18,
+            leverage=sui_params["leverage"],
             reduceOnly=default_value(sui_params, "reduceOnly", False),
             salt=order["salt"],
             expiration=order["expiration"],
@@ -197,9 +193,9 @@ class BluefinClient:
             OrderSignatureResponse: generated cancel signature
         """
         sui_params = deepcopy(params)
-        sui_params["price"] = self._to_sui_base(params["price"])
-        sui_params["quantity"] = self._to_sui_base(params["quantity"])
-        sui_params["leverage"] = self._to_sui_base(params["leverage"])
+        sui_params["price"] = toDapiBase(params["price"])
+        sui_params["quantity"] = toDapiBase(params["quantity"])
+        sui_params["leverage"] = toDapiBase(params["leverage"])
 
         order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign, withBufferHex=False)
@@ -449,7 +445,7 @@ class BluefinClient:
             callArgs.append(self.contracts.get_bank_id())
             callArgs.append(self.contracts.get_sub_account_id())
             callArgs.append(account_address)
-            callArgs.append(str(self._to_sui_base(leverage)))
+            callArgs.append(str(toDapiBase(leverage)))
             callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
             txBytes = rpc_unsafe_moveCall(
                 self.url,
@@ -511,7 +507,7 @@ class BluefinClient:
 
         callArgs.append(self.contracts.get_sub_account_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(toSuiBase(amount)))
+        callArgs.append(str(toDapiBase(amount)))
         callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
         if operation == ADJUST_MARGIN.ADD:
             txBytes = rpc_unsafe_moveCall(
@@ -629,7 +625,7 @@ class BluefinClient:
                 self.url, call_args, method="suix_getDynamicFieldObject"
             )
 
-            balance = self._from_sui_base(
+            balance = fromDapiBase(
                 result["data"]["content"]["fields"]["value"]["fields"]["balance"]
             )
             return balance
