@@ -6,7 +6,11 @@ import time
 from typing import Union
 import bip_utils
 import hashlib
-from .constants import BASE_1E18, BASE_1E6
+
+
+BASE_1E18 = 1000000000000000000
+BASE_1E6 = 1000000  # 1e6 for USDC token
+BASE_1E9 = 1000000000
 
 
 def to1e18(number: Union[int, float]) -> int:
@@ -18,6 +22,12 @@ def from1e18(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e18"""
     number = float(number)
     return number / float(BASE_1E18)
+
+
+def fromSuiBase(number: Union[str, int]) -> float:
+    """Takes in a number and divides it by 1e9"""
+    number = float(number)
+    return number / float(BASE_1E9)
 
 
 def toUsdcBase(number: Union[int, float]) -> int:

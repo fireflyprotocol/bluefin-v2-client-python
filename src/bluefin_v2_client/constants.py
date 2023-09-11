@@ -63,7 +63,3 @@ SERVICE_URLS = {
         "ORDERS_HASH": "/orders/hash",
     },
 }
-
-BASE_1E18 = 1000000000000000000
-# 1e6 for USDC token
-BASE_1E6 = 1000000
