@@ -15,10 +15,12 @@ from .account import *
 from .interfaces import *
 from .enumerations import *
 
-_SUI_BASE_NUM = 1000000000
-
 
 class BluefinClient:
+    """
+    A class to represent a client for interacting with bluefin offchain and onchain APIs.
+    """
+
     def __init__(self, are_terms_accepted, network, private_key=""):
         self.are_terms_accepted = are_terms_accepted
         self.network = network
@@ -153,9 +155,9 @@ class BluefinClient:
             OrderSignatureResponse: order raw info and generated signature
         """
         sui_params = deepcopy(req)
-        sui_params["price"] = toDapiBase(req["price"])
-        sui_params["quantity"] = toDapiBase(req["quantity"])
-        sui_params["leverage"] = toDapiBase(req["leverage"])
+        sui_params["price"] = to1e18(req["price"])
+        sui_params["quantity"] = to1e18(req["quantity"])
+        sui_params["leverage"] = to1e18(req["leverage"])
 
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
@@ -193,9 +195,9 @@ class BluefinClient:
             OrderSignatureResponse: generated cancel signature
         """
         sui_params = deepcopy(params)
-        sui_params["price"] = toDapiBase(params["price"])
-        sui_params["quantity"] = toDapiBase(params["quantity"])
-        sui_params["leverage"] = toDapiBase(params["leverage"])
+        sui_params["price"] = to1e18(params["price"])
+        sui_params["quantity"] = to1e18(params["quantity"])
+        sui_params["leverage"] = to1e18(params["leverage"])
 
         order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign, withBufferHex=False)
@@ -313,7 +315,7 @@ class BluefinClient:
                 ),
                 "postOnly": default_value(params, "postOnly", False),
                 "cancelOnRevert": default_value(params, "cancelOnRevert", False),
-                "clientId": "bluefin-python-client: {}".format(
+                "clientId": "bluefin-v2-client-python: {}".format(
                     default_value(params, "clientId", "bluefin-python-client")
                 ),
             },
@@ -336,7 +338,7 @@ class BluefinClient:
         callArgs = []
         callArgs.append(self.contracts.get_bank_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(toSuiBase(amount, base=CONTRACTS_BASE_NUM)))
+        callArgs.append(str(to1e18(amount)))
         callArgs.append(coin_id)
         txBytes = rpc_unsafe_moveCall(
             self.url,
@@ -371,7 +373,7 @@ class BluefinClient:
         callArgs = [
             bank_id,
             account_address,
-            str(toSuiBase(amount, base=CONTRACTS_BASE_NUM)),
+            str(to1e18(amount)),
         ]
         txBytes = rpc_unsafe_moveCall(
             self.url,
@@ -438,14 +440,13 @@ class BluefinClient:
 
         account_address = self.account.address if parentAddress == "" else parentAddress
         # implies user has an open position on-chain, perform on-chain leverage update
-        open_position = True
         if user_position != {}:
             callArgs = []
             callArgs.append(self.contracts.get_perpetual_id(symbol))
             callArgs.append(self.contracts.get_bank_id())
             callArgs.append(self.contracts.get_sub_account_id())
             callArgs.append(account_address)
-            callArgs.append(str(toDapiBase(leverage)))
+            callArgs.append(str(to1e18(leverage)))
             callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
             txBytes = rpc_unsafe_moveCall(
                 self.url,
@@ -467,7 +468,7 @@ class BluefinClient:
             {
                 "symbol": symbol.value,
                 "address": account_address,
-                "leverage": toDapiBase(leverage),
+                "leverage": to1e18(leverage),
                 "marginType": MARGIN_TYPE.ISOLATED.value,
             },
             auth_required=True,
@@ -507,7 +508,7 @@ class BluefinClient:
 
         callArgs.append(self.contracts.get_sub_account_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(toDapiBase(amount)))
+        callArgs.append(str(to1e18(amount)))
         callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
         if operation == ADJUST_MARGIN.ADD:
             txBytes = rpc_unsafe_moveCall(
@@ -894,7 +895,7 @@ class BluefinClient:
 
         for i in account_data_by_market:
             if symbol.value == i["symbol"]:
-                return fromDapiBase(int(i["selectedLeverage"]))
+                return from1e18(int(i["selectedLeverage"]))
         # default leverage on system is 3
         # todo fetch from exchange info route
         return 3
@@ -952,10 +953,3 @@ class BluefinClient:
         # close aio http connection
         await self.apis.close_session()
         await self.dms_api.close_session()
-
-    def _from_sui_base(self, number: Union[str, int]) -> float:
-        number = float(number)
-        return number / float(_SUI_BASE_NUM)
-
-    def _to_sui_base(self, number: Union[int, float]) -> int:
-        return int(number * _SUI_BASE_NUM)

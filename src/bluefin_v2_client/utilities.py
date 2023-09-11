@@ -3,33 +3,25 @@ from random import randint
 
 # from web3 import Web3
 import time
+from typing import Union
 import bip_utils
 import hashlib
-from typing import Union
-from .constants import SUI_BASE_NUM, DAPI_BASE_NUM, CONTRACTS_BASE_NUM
+from .constants import BASE_1E18
 
 
-def toDapiBase(number: Union[int, float]) -> int:
-    return int(number * DAPI_BASE_NUM)
+def to1e18(number: Union[int, float]) -> int:
+    """Takes in a number and multiples it by 1e18"""
+    return int(number * BASE_1E18)
 
 
-def fromDapiBase(number: Union[int, float], dtype=int) -> int:
-    return dtype(number / DAPI_BASE_NUM)
-
-
-def toSuiBase(number: Union[int, float], base=SUI_BASE_NUM) -> int:
-    return int(number * base)
-
-
-def fromSuiBase(number: Union[str, int], base=SUI_BASE_NUM) -> float:
+def from1e18(number: Union[str, int]) -> float:
+    """Takes in a number and divides it by 1e18"""
     number = float(number)
-    return number / float(base)
+    return number / float(BASE_1E18)
 
 
 def numberToHex(num, pad=32):
-    # converting number to Hexadecimal format
     hexNum = hex(num)
-
     # padding it with zero to make the size 32 bytes
     padHex = hexNum[2:].zfill(pad)
     return padHex
