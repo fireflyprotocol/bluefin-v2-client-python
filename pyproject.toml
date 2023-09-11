@@ -1,6 +1,6 @@
 [project]
 name = "bluefin_v2_client"
-version = "2.1.1"
+version = "2.2.1"
 description = "Library to interact with Bluefin exchange protocol including its off-chain api-gateway and on-chain contracts"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -35,7 +35,7 @@ dependencies = [
   'six ~= 1.16.0',
   'socketio ~= 0.2.1',
   'websocket ~= 0.2.1',
-  'websocket-client ~= 1.5.1',
+  'websocket-client ~= 1.6.2',
   'yarl ~= 1.9.2',
   'zope.event ~= 5.0',
   'zope.interface ~= 6.0'
