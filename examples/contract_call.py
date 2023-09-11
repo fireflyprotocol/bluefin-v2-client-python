@@ -2,7 +2,7 @@ import sys, os
 
 sys.path.append(os.getcwd() + "/src/")
 import base64
-from bluefin_client_sui.utilities import *
+from bluefin_v2_client.utilities import *
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import (
     BluefinClient,
@@ -22,7 +22,7 @@ async def main():
     client = BluefinClient(
         True,  # agree to terms and conditions
         Networks[TEST_NETWORK],  # network to connect with
-        TEST_ACCT_KEY,  # private key of wallet
+        TEST_ACCT_KEY,  # seed phrase of the wallet
     )
     await client.init(True)
 
@@ -34,11 +34,6 @@ async def main():
 
     seed = "negative repeat fold noodle symptom spirit spend trophy merge ethics math erupt"
     sui_wallet = SuiWallet(seed=seed)
-
-    # private_key=mnemonicToPrivateKey(seed)
-    # privateKeyBytes=private_key.ToBytes()
-    # publicKey=privateKeyToPublicKey(private_key)
-    # publicKeyBytes=publicKey.ToBytes()
 
     result = mysigner.sign_tx(dec_msg, sui_wallet)
     print(result)

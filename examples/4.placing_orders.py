@@ -77,7 +77,7 @@ async def main():
     client = BluefinClient(
         True,  # agree to terms and conditions
         Networks[TEST_NETWORK],  # network to connect with
-        TEST_ACCT_KEY,  # private key of wallet
+        TEST_ACCT_KEY,  # seed phrase of the wallet
     )
 
     await client.init(True)

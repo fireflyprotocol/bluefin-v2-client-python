@@ -59,7 +59,7 @@ async def main():
   client = BluefinClient(
       True, # agree to terms and conditions
       Networks[TEST_NETWORK], # network to connect with
-      TEST_ACCT_KEY, # private key of wallet
+      TEST_ACCT_KEY, # seed phrase of the wallet
   )
 
   # on boards user on bluefin. Must be set to true for firs time use
@@ -126,7 +126,7 @@ async def main():
     client = BluefinClient(
         True, # agree to terms and conditions
         Networks[TEST_NETWORK], # network to connect with
-        TEST_ACCT_KEY, # private key of wallet
+        TEST_ACCT_KEY, # seed phrase of the wallet
       )
 
     await client.init(True)
@@ -179,7 +179,7 @@ async def main():
     client = BluefinClient(
         True, # agree to terms and conditions
         Networks[TEST_NETWORK], # network to connect with
-        TEST_ACCT_KEY, # private key of wallet
+        TEST_ACCT_KEY, # seed phrase of the wallet
         )
     await client.init(True)
     # make connection with bluefin exchange
@@ -220,7 +220,7 @@ async def main():
     client = BluefinClient(
         True, # agree to terms and conditions
         Networks[TEST_NETWORK], # network to connect with
-        TEST_ACCT_KEY, # private key of wallet
+        TEST_ACCT_KEY, # seed phrase of the wallet
     )
 
     await client.init(True)

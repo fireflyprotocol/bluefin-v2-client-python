@@ -48,7 +48,7 @@ class OrderSignatureResponse(RequiredOrderFields):
 
 
 class PlaceOrderRequest(OrderSignatureResponse):
-    timeInForce: TIME_IN_FORCE  # FOK/IOC/GTT by default all orders are GTT
+    timeInForce: TIME_IN_FORCE  # IOC/GTT by default all orders are GTT
     postOnly: bool  # true/false, default is true
     cancelOnRevert: bool  # if true, the order will be cancelled in case of on-chain settlement error, default is false
     clientId: str  # id of the client
