@@ -5,7 +5,7 @@ from .api_service import APIService
 from .contracts import Contracts
 from .order_signer import OrderSigner
 from .onboarding_signer import OnboardingSigner
-from .constants import TIME, SERVICE_URLS, CONTRACTS_BASE_NUM
+from .constants import TIME, SERVICE_URLS
 from .sockets_lib import Sockets
 from .websocket_client import WebsocketClient
 from .signer import Signer
