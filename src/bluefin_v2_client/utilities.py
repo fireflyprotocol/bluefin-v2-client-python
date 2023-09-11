@@ -6,7 +6,7 @@ import time
 from typing import Union
 import bip_utils
 import hashlib
-from .constants import BASE_1E18
+from .constants import BASE_1E18, BASE_1E6
 
 
 def to1e18(number: Union[int, float]) -> int:
@@ -18,6 +18,17 @@ def from1e18(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e18"""
     number = float(number)
     return number / float(BASE_1E18)
+
+
+def toUsdcBase(number: Union[int, float]) -> int:
+    """Converts a number to usdc contract onchain representation i.e. multiply it by 1e6"""
+    return int(number * BASE_1E6)
+
+
+def fromUsdcBase(number: Union[str, int]) -> float:
+    """Converts a usdc quantity to number i.e. divide it by 1e6"""
+    number = float(number)
+    return number / float(BASE_1E6)
 
 
 def numberToHex(num, pad=32):

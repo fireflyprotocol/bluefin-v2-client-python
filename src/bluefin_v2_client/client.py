@@ -338,7 +338,7 @@ class BluefinClient:
         callArgs = []
         callArgs.append(self.contracts.get_bank_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(to1e18(amount)))
+        callArgs.append(str(toUsdcBase(amount)))
         callArgs.append(coin_id)
         txBytes = rpc_unsafe_moveCall(
             self.url,
@@ -373,7 +373,7 @@ class BluefinClient:
         callArgs = [
             bank_id,
             account_address,
-            str(to1e18(amount)),
+            str(toUsdcBase(amount)),
         ]
         txBytes = rpc_unsafe_moveCall(
             self.url,
@@ -579,7 +579,7 @@ class BluefinClient:
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
             )["totalBalance"]
-            return self._from_sui_base(result)
+            return from1e18(result)
         except Exception as e:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
@@ -607,7 +607,7 @@ class BluefinClient:
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
             )["totalBalance"]
-            return self._from_sui_base(result)
+            return from1e18(result)
 
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
@@ -626,7 +626,7 @@ class BluefinClient:
                 self.url, call_args, method="suix_getDynamicFieldObject"
             )
 
-            balance = fromDapiBase(
+            balance = from1e18(
                 result["data"]["content"]["fields"]["value"]["fields"]["balance"]
             )
             return balance
