@@ -1,13 +1,7 @@
-import sys, os
-
-# sys.path.append(os.getcwd() + "/src/")
-
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS, ORDER_STATUS
 from pprint import pprint
 import asyncio
-
-TEST_NETWORK = "SUI_STAGING"
 
 
 async def main():

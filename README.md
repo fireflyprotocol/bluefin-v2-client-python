@@ -44,7 +44,7 @@ Users can import predefined networks from [constants](https://github.com/firefly
 from bluefin_v2_client import Networks
 ```
 
-For testing purposes use `Networks[SUI_STAGING]` and for production use `Networks[SUI_PROD]`.
+For testing purposes use `Networks["SUI_STAGING"]` and for production use `Networks["SUI_PROD"]`.
 
 ## Initialization example​
 
