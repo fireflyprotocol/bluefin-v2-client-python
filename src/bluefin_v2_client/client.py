@@ -336,7 +336,7 @@ class BluefinClient:
             Boolean: true if amount is successfully deposited, false otherwise
         """
         if coin_id == "":
-            coin_id = self._get_coin_having_balance(amount)
+            coin_id = await self._get_coin_having_balance(amount)
         package_id = self.contracts.get_package_id()
         user_address = self.account.getUserAddress()
         callArgs = []
@@ -587,7 +587,7 @@ class BluefinClient:
         except Exception as e:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
-    def get_usdc_coins(self):
+    async def get_usdc_coins(self):
         """
         Returns the list of the usdc coins owned by user
         """
@@ -952,11 +952,12 @@ class BluefinClient:
             )
         return response
 
-    def _get_coin_having_balance(self, balance: int) -> str:
-        usdc_coins = self.get_usdc_coins()["data"]
+    async def _get_coin_having_balance(self, balance: int) -> str:
+        usdc_coins_resp = await self.get_usdc_coins()
+        usdc_coins = usdc_coins_resp["data"]
         balance = toSuiBase(balance)
         for coin in usdc_coins:
-            if coin["balance"] <= balance:
+            if int(coin["balance"]) <= balance:
                 return coin["coinObjectId"]
         raise Exception(
             "Insufficient balance, please add more SUI tokens or merge your existing tokens"
