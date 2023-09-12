@@ -325,16 +325,21 @@ class BluefinClient:
         )
 
     ## Contract calls
-    async def deposit_margin_to_bank(self, amount: int, coin_id: str) -> bool:
+    async def deposit_margin_to_bank(self, amount: int, coin_id: str = "") -> bool:
         """
         Deposits given amount of USDC from user's account to margin bank
 
         Inputs:
             amount (number): quantity of usdc to be deposited to bank in base decimals (1,2 etc)
+            coin_id (string) (optional): the id of the coin you want the amount to be deposited from
 
         Returns:
             Boolean: true if amount is successfully deposited, false otherwise
         """
+        usdc_coins = self.get_usdc_coins()
+        if coin_id == "":
+            coin_id = self._get_coin_having_balance(amount)
+
         package_id = self.contracts.get_package_id()
         user_address = self.account.getUserAddress()
         callArgs = []
@@ -954,3 +959,12 @@ class BluefinClient:
         # close aio http connection
         await self.apis.close_session()
         await self.dms_api.close_session()
+
+    def _get_coin_having_balance(usdc_coin_list: list, balance: int) -> str:
+        balance = toSuiBase(balance)
+        for coin in usdc_coin_list:
+            if coin["balance"] <= balance:
+                return coin["coinObjectId"]
+        raise Exception(
+            "Not enough balance available, please merge your coins for get usdc"
+        )
