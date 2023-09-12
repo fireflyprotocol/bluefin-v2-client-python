@@ -1,10 +1,7 @@
-import sys, os
-
-# sys.path.append(os.getcwd() + "/src/")
-
+from pprint import pprint
+import asyncio
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import BluefinClient, Networks
-import asyncio
 
 
 async def main():
@@ -19,37 +16,34 @@ async def main():
     # on boards user on Bluefin. Must be set to true for first time use
     await client.init(True)
 
-    # checks chain native token balance.
-    # A user must have native tokens to perform contract calls
-
+    # checks SUI token balance
     print("Chain token balance:", await client.get_native_chain_token_balance())
 
-    # check margin bank balance on-chain
+    # check usdc balance deposited to Bluefin Margin Bank
     print("Margin bank balance:", await client.get_margin_bank_balance())
 
-    # check usdc balance user has on-chain
+    # check usdc balance deposited to USDC contract
     print("USDC balance:", await client.get_usdc_balance())
 
-    # deposit usdc to margin bank
-    # must have native chain tokens to pay for gas fee
-    usdc_coins = client.get_usdc_coins()
-    ## we expect that you have some coins in your usdc,
-    coin_obj_id = usdc_coins["data"][1]["coinObjectId"]
-    print("USDC deposited:", await client.deposit_margin_to_bank(5000, coin_obj_id))
+    usdc_coins = await client.get_usdc_coins()
+    pprint(usdc_coins)
+
+    # deposit 100 usdc to margin bank
+    print("USDC deposited:", await client.deposit_margin_to_bank(100))
 
     # check margin bank balance
     resp = await client.get_margin_bank_balance()
-    print("Margin bank balance:", resp)
+    print("Margin bank balance after deposit:", resp)
 
     # withdraw margin bank balance
-    print("USDC Withdrawn:", await client.withdraw_margin_from_bank(10))
+    print("USDC Withdrawn:", await client.withdraw_margin_from_bank(100))
 
     # check margin bank balance
-    print("Margin bank balance:", await client.get_margin_bank_balance())
+    print("Margin bank balance after withdraw:", await client.get_margin_bank_balance())
 
-    print("Withdraw all", await client.withdraw_all_margin_from_bank())
+    # print("Withdraw all", await client.withdraw_all_margin_from_bank())
 
-    print("Margin bank balance:", await client.get_margin_bank_balance())
+    # print("Margin bank balance:", await client.get_margin_bank_balance())
     await client.close_connections()
 
 

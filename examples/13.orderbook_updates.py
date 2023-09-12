@@ -7,6 +7,7 @@ import sys, os
 sys.path.append(os.getcwd() + "/src/")
 import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
+import asyncio
 from bluefin_v2_client import (
     BluefinClient,
     Networks,
@@ -16,9 +17,7 @@ from bluefin_v2_client import (
     ORDER_TYPE,
     OrderSignatureRequest,
 )
-import asyncio
 
-TEST_NETWORK = "SUI_STAGING"
 
 event_received = False
 
