@@ -338,7 +338,7 @@ class BluefinClient:
         """
         usdc_coins = self.get_usdc_coins()
         if coin_id == "":
-            coin_id = self._get_coin_having_balance(amount)
+            coin_id = self._get_coin_having_balance(usdc_coins["data"], amount)
 
         package_id = self.contracts.get_package_id()
         user_address = self.account.getUserAddress()
