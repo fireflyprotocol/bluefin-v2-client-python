@@ -611,7 +611,7 @@ class BluefinClient:
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
             )["totalBalance"]
-            return fromSuiBase(result)
+            return fromUsdcBase(result)
 
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
