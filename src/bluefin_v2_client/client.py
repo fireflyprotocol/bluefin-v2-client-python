@@ -325,16 +325,18 @@ class BluefinClient:
         )
 
     ## Contract calls
-    async def deposit_margin_to_bank(self, amount: int, coin_id: str) -> bool:
+    async def deposit_margin_to_bank(self, amount: int, coin_id: str = "") -> bool:
         """
         Deposits given amount of USDC from user's account to margin bank
 
         Inputs:
             amount (number): quantity of usdc to be deposited to bank in base decimals (1,2 etc)
-
+            coin_id (string) (optional): the id of the coin you want the amount to be deducted from
         Returns:
             Boolean: true if amount is successfully deposited, false otherwise
         """
+        if coin_id is "":
+            coin_id = self._get_coin_having_balance(amount)
         package_id = self.contracts.get_package_id()
         user_address = self.account.getUserAddress()
         callArgs = []
@@ -949,6 +951,16 @@ class BluefinClient:
                 "Cancel on Disconnect (dead-mans-switch) feature is currently unavailable"
             )
         return response
+
+    def _get_coin_having_balance(self, balance: int) -> str:
+        usdc_coins = self.get_usdc_coins()["data"]
+        balance = toSuiBase(balance)
+        for coin in usdc_coins:
+            if coin["balance"] <= balance:
+                return coin["coinObjectId"]
+        raise Exception(
+            "Insufficient balance, please add more SUI tokens or merge your existing tokens"
+        )
 
     async def close_connections(self):
         # close aio http connection

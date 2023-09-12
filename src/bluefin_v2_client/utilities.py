@@ -30,6 +30,12 @@ def fromSuiBase(number: Union[str, int]) -> float:
     return number / float(BASE_1E9)
 
 
+def toSuiBase(number: Union[str, int]) -> int:
+    """Takes in a number and multiplies it by 1e9"""
+    number = int(number)
+    return number * BASE_1E9
+
+
 def toUsdcBase(number: Union[int, float]) -> int:
     """Converts a number to usdc contract onchain representation i.e. multiply it by 1e6"""
     return int(number * BASE_1E6)
