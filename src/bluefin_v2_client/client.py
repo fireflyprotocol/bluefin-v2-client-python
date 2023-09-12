@@ -335,7 +335,7 @@ class BluefinClient:
         Returns:
             Boolean: true if amount is successfully deposited, false otherwise
         """
-        if coin_id is "":
+        if coin_id == "":
             coin_id = self._get_coin_having_balance(amount)
         package_id = self.contracts.get_package_id()
         user_address = self.account.getUserAddress()
