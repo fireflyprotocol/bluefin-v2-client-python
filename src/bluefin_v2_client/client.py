@@ -630,7 +630,7 @@ class BluefinClient:
                 self.url, call_args, method="suix_getDynamicFieldObject"
             )
 
-            balance = from1e18(
+            balance = fromSuiBase(
                 result["data"]["content"]["fields"]["value"]["fields"]["balance"]
             )
             return balance
