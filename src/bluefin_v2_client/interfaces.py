@@ -22,8 +22,7 @@ class SignedOrder(Order):
 
 
 class RequiredOrderFields(TypedDict):
-    # symbol: MARKET_SYMBOLS # market for which to create order
-    market: str
+    symbol: MARKET_SYMBOLS  # market for which to create order
     price: int  # price at which to place order. Will be zero for a market order
     quantity: int  # quantity/size of order
     side: ORDER_SIDE  # BUY/SELL
