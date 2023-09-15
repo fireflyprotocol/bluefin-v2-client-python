@@ -6,6 +6,7 @@ Networks = {
         "dmsURL": "https://api.sui-staging.bluefin.io/dead-man-switch",
         "webSocketURL": "wss://notifications.api.sui-staging.bluefin.io",
         "onboardingUrl": "https://testnet.bluefin.io",
+        "UUID": ""
     },
     "SUI_PROD": {
         "url": "https://fullnode.testnet.sui.io:443",
@@ -14,6 +15,16 @@ Networks = {
         "dmsURL": "https://api.sui-prod.bluefin.io/dead-man-switch",
         "webSocketURL": "wss://notifications.api.sui-prod.bluefin.io",
         "onboardingUrl": "https://trade-sui.bluefin.exchange",
+        "UUID": ""
+    },
+    "SUI_PROD_INTERNAL": {
+        "url": "https://fullnode.testnet.sui.io:443",
+        "apiGateway": "https://dapi.api.sui-prod.int.bluefin.io",
+        "socketURL": "wss://dapi.api.sui-prod.int.bluefin.io",
+        "dmsURL": "https://api.sui-prod.int.bluefin.io/dead-man-switch",
+        "webSocketURL": "wss://notifications.api.sui-prod.int.bluefin.io",
+        "onboardingUrl": "https://trade-sui.bluefin.exchange",
+        "UUID": ""
     },
 }
 
