@@ -1,6 +1,7 @@
-###
-# Places a market order on exchange and listens to emitted events
-##
+####
+## When ever the state of orderbook changes, an event is emitted by exchange.
+## In this code example we open a socket connection and listen to orderbook update event
+####
 import sys, os
 sys.path.append(os.getcwd() + "/src/")
 import time
