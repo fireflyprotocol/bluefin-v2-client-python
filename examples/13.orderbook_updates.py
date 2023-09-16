@@ -51,12 +51,12 @@ async def main():
     await client.socket.listen("connect", connection_callback)
     await client.socket.listen("disconnect", disconnection_callback)
 
-    print("Making socket connection to firefly exchange")
+    print("Making socket connection to bluefin exchange")
     await client.socket.open()
 
     ######## Placing an Order ########
 
-    # default leverage of account is set to 3 on firefly
+    # default leverage of account is set to 3 on bluefin
     user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
 
     # creates a MARKET order to be signed
