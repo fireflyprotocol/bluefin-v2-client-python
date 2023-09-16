@@ -969,6 +969,211 @@ class BluefinClient:
             "Insufficient balance, please add more SUI tokens or merge your existing tokens"
         )
 
+     ## Growth endpoints
+    async def generate_referral_code(self,params:GenerateReferralCodeRequest):
+        """
+            Inputs:
+                params(GenerateReferralCodeRequest): params required to generate referral code
+            Returns:
+                - GenerateReferralCodeResponse
+                    - referralAddress
+                    - referralCode
+                    - message?
+        """
+        return await self.apis.post(
+            SERVICE_URLS["GROWTH"]["GENERATE_CODE"],
+            params,
+            True
+        )
+    
+    async def link_referred_user(self,params: LinkReferredUserRequest):
+        """
+            Inputs:
+                params(LinkReferredUserRequest): params required to link referred user
+            Returns:
+                - LinkReferredUserResponse
+                    - referralCode
+                    - refereeAddress
+                    - campaignId
+                    - message
+        """
+        return await self.apis.post(
+            SERVICE_URLS["GROWTH"]["LINK_REFERRED_USER"],
+            params,
+            True
+        )
+    
+    async def get_referrer_info(self,campaignId:int):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch referrer info for
+            Returns:
+                - GetReferrerInfoResponse
+                    - isReferee
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["REFERRER_INFO"],
+            {"campaignId": campaignId},
+            True
+        )
+    
+    async def get_campaign_details(self):
+        """
+            Returns:
+                - list of GetCampaignDetailsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["CAMPAIGN_DETAILS"]
+        )
+    
+    async def get_campaign_rewards(self,campaignId:int):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch rewards of
+            Returns:
+                - GetCampaignRewardsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["CAMPAIGN_REWARDS"],
+            {"campaignId": campaignId},
+            True
+        )
+    
+    async def get_affiliate_payouts(self,campaignId:int):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch payouts of
+            Returns:
+                - List of GetAffiliatePayoutsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["AFFILIATE_PAYOUTS"],
+            {"campaignId": campaignId},
+            True
+        )
+    
+    async def get_affiliate_referee_details(self,params:GetAffiliateRefereeDetailsRequest):
+        """
+            Inputs:
+                params: GetAffiliateRefereeDetailsRequest
+            Returns:
+                - GetAffiliateRefereeDetailsRequestGetAffiliatePayoutsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["AFFILIATE_REFEREE_DETAILS"],
+            params,
+            True
+        )
+    
+    async def get_affiliate_referee_count(self,campaignId:int):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch referee count of
+            Returns:
+                - GetAffiliateRefereeCountResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["AFFILIATE_REFEREE_DETAILS"],
+            {"campaignId": campaignId},
+            True
+        )
+    
+    async def get_user_rewards_history(self,params:GetUserRewardsHistoryRequest):
+        """
+            Inputs:
+                params: GetUserRewardsHistoryRequest
+            Returns:
+                - GetUserRewardsHistoryResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["USER_REWARDS_HISTORY"],
+            params,
+            True
+        )
+    
+    async def get_user_rewards_summary(self):
+        """
+            Returns:
+                - List of GetUserRewardsSummaryResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["USER_REWARDS_SUMMARY"],
+            {},
+            True
+        )
+    
+    async def get_trade_and_earn_rewards_overview(self,campaignId:int):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch rewards overview of
+            Returns:
+                - GetTradeAndEarnRewardsOverviewResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["REWARDS_OVERVIEW"],
+            {"campaignId": campaignId},
+            True
+        )
+    
+    async def get_trade_and_earn_rewards_detail(self,params:GetTradeAndEarnRewardsDetailRequest):
+        """
+            Inputs:
+                params: GetTradeAndEarnRewardsDetailRequest
+            Returns:
+                - GetTradeAndEarnRewardsDetailResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["REWARDS_DETAILS"],
+            params,
+            True
+        )
+    
+    async def get_total_historical_trading_rewards(self):
+        """
+            Returns:
+                - GetTotalHistoricalTradingRewardsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["TOTAL_HISTORICAL_TRADING_REWARDS"],
+            {},
+            True
+        )
+    
+    async def get_maker_rewards_summary(self):
+        """
+            Returns:
+                - GetMakerRewardsSummaryResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["MAKER_REWARDS_SUMMARY"],
+            {},
+            True
+        )
+    
+    async def get_maker_reward_details(self,params:GetMakerRewardDetailsRequest):
+        """
+            Inputs:
+                params: GetMakerRewardDetailsRequest
+            Returns:
+                - GetMakerRewardDetailsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["MAKER_REWARDS_DETAILS"],
+            params,
+            True
+        )
+
+    async def get_user_white_list_status_for_market_maker(self):
+        """
+            Returns:
+                - GetUserWhiteListStatusForMarkeMaker
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["MAKER_WHITELIST_STATUS"],
+            {},
+            True
+        )
+
     async def close_connections(self):
         # close aio http connection
         await self.apis.close_session()
