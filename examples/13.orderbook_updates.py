@@ -33,7 +33,7 @@ async def main():
 
     async def connection_callback():
         # This callback will be invoked as soon as the socket connection is established
-        # subscribe to global event updates for BTC market
+        # subscribe to global event updates for ETH market
         status = await client.socket.subscribe_global_updates_by_symbol(MARKET_SYMBOLS.ETH)
         print("Subscribed to global ETH events: {}".format(status))
 

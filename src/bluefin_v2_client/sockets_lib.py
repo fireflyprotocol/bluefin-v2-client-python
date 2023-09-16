@@ -21,7 +21,7 @@ class Sockets:
         """
         try:
             await sio.connect(self.url, wait_timeout=self.timeout,
-                        transports=["websocket"])
+                              transports=["websocket"])
             return True
         except:
             return False
@@ -30,7 +30,7 @@ class Sockets:
         """
             Sets default user token
             Inputs:
-                - token (user auth token): firefly onboarding token.
+                - token (user auth token): Bluefin onboarding token.
         """
         self.token = token
 
@@ -38,7 +38,7 @@ class Sockets:
         """
             Sets default user token
             Inputs:
-                - token (user auth token): firefly onboarding token.
+                - token (user auth token): Bluefin onboarding token.
         """
         self.api_token = token
 
@@ -74,14 +74,13 @@ class Sockets:
         except:
             pass
         return
-        
+
     @sio.event
     async def connect():
         print("Connected To Socket Server")
         if 'connect' in Sockets.callbacks:
             # Execute the callback using asyncio.run() if available
             await Sockets.callbacks['connect']()
-        
 
     @sio.event
     async def disconnect():
@@ -89,8 +88,6 @@ class Sockets:
         if 'disconnect' in Sockets.callbacks:
             # Execute the callback using asyncio.run() if available
             await Sockets.callbacks['disconnect']()
-            
-
 
     async def listen(self, event, callback):
         """
@@ -142,7 +139,7 @@ class Sockets:
             Inputs:
                 - parent_account(str): address of parent account. Only whitelisted 
                   sub-account can listen to its parent account position updates
-                - token(str): auth token generated when onboarding on firefly
+                - token(str): auth token generated when onboarding on Bluefin
         """
         try:
             resp = await sio.call("SUBSCRIBE", [
@@ -164,7 +161,7 @@ class Sockets:
             Allows user to unsubscribe to their account updates.
             Inputs:
                 - parent_account(str): address of parent account. Only for sub-accounts
-                - token: auth token generated when onboarding on firefly
+                - token: auth token generated when onboarding on Bluefin
         """
         try:
             resp = await sio.call("UNSUBSCRIBE", [
