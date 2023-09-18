@@ -1,6 +1,6 @@
-import sys, os
-
-# sys.path.append(os.getcwd() + "/src/")
+from pprint import pprint
+import asyncio
+import time
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import (
     BluefinClient,
@@ -10,65 +10,48 @@ from bluefin_v2_client import (
     ORDER_TYPE,
     OrderSignatureRequest,
 )
-import asyncio
 
 
-async def place_limit_order(client: BluefinClient):
+async def place_orders(client: BluefinClient):
     # default leverage of account is set to 3 on Bluefin
     user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
-    print("User Leverage", user_leverage)
+    print("User Default Leverage", user_leverage)
 
-    # creates a LIMIT order to be signed
+    # Sign and place a limit order at 4x leverage. Order is signed using the account seed phrase set on the client
+    adjusted_leverage = 4
+    await client.adjust_leverage(MARKET_SYMBOLS.ETH, adjusted_leverage)
     signature_request = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
         price=1636.8,  # price at which you want to place order
         quantity=0.01,  # quantity
         side=ORDER_SIDE.BUY,
         orderType=ORDER_TYPE.LIMIT,
-        leverage=user_leverage,
+        leverage=adjusted_leverage,
+        expiration=int(
+            (time.time() + 864000) * 1000
+        ),  # expiry after 10 days, default expiry is a month
     )
-
-    # create signed order
     signed_order = client.create_signed_order(signature_request)
-
-    print("Placing a limit order")
-    # place signed order on orderbook
     resp = await client.post_signed_order(signed_order)
+    pprint({"msg": "placing limit order", "resp": resp})
 
-    # returned order with PENDING state
-    print(resp)
-
-    return
-
-
-async def place_market_order(client: BluefinClient):
-    # default leverage of account is set to 3 on Bluefin
-    user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
-
+    # sign and place a market order at 2x leverage
+    adjusted_leverage = 2
+    await client.adjust_leverage(MARKET_SYMBOLS.BTC, adjusted_leverage)
     signature_request = OrderSignatureRequest(
-        symbol=MARKET_SYMBOLS.ETH,
+        symbol=MARKET_SYMBOLS.BTC,
         price=0,
         quantity=1,
-        leverage=user_leverage,
+        leverage=adjusted_leverage,
         side=ORDER_SIDE.BUY,
         reduceOnly=False,
         postOnly=False,
         orderbookOnly=True,
-        expiration=1700530261000,
-        salt=1668690862116,
         orderType=ORDER_TYPE.MARKET,
     )
-
-    # create signed order
     signed_order = client.create_signed_order(signature_request)
-
-    print("Placing a market order")
-    # place signed order on orderbook
     resp = await client.post_signed_order(signed_order)
-
-    # returned order with PENDING state
-    print(resp)
-
+    pprint({"msg": "placing market order", "resp": resp})
     return
 
 
@@ -81,9 +64,7 @@ async def main():
     )
 
     await client.init(True)
-
-    await place_limit_order(client)
-    await place_market_order(client)
+    await place_orders(client)
 
     await client.close_connections()
 

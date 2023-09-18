@@ -1,13 +1,8 @@
-import os
-import sys
-
-# sys.path.append(os.getcwd() + "/src/")
-
 from config import TEST_ACCT_KEY, TEST_NETWORK
-
-from bluefin_v2_client import BluefinClient, Networks
 from pprint import pprint
 import asyncio
+
+from bluefin_v2_client import BluefinClient, Networks
 
 
 async def main():
@@ -23,12 +18,11 @@ async def main():
 
     print("Account Address:", client.get_public_address())
 
-    # # gets user account data on-chain
+    # gets user account data on-chain
     data = await client.get_user_account_data()
+    pprint(data)
 
     await client.close_connections()
-
-    pprint(data)
 
 
 if __name__ == "__main__":

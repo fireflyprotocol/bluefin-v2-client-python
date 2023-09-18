@@ -19,8 +19,6 @@ from bluefin_v2_client import (
 )
 import asyncio
 
-TEST_NETWORK = "SUI_STAGING"
-
 event_received = False
 
 

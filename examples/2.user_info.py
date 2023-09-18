@@ -1,14 +1,10 @@
-import sys, os
-
-# sys.path.append(os.getcwd() + "/src/")
-from config import TEST_ACCT_KEY, TEST_NETWORK
-from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS
 from pprint import pprint
 import asyncio
+from config import TEST_ACCT_KEY, TEST_NETWORK
+from bluefin_v2_client import BluefinClient, Networks, MARKET_SYMBOLS
 
 
 async def main():
-    # create client instance
     client = BluefinClient(
         True,  # agree to terms and conditions
         Networks[TEST_NETWORK],  # network to connect with
@@ -21,18 +17,13 @@ async def main():
 
     # gets user account data on Bluefin exchange
     data = await client.get_user_account_data()
-
     pprint(data)
 
     position = await client.get_user_position({"symbol": MARKET_SYMBOLS.ETH})
-
-    # returns {} when user has no position
-    pprint(position)
+    pprint(position)  # returns {} when user has no position
 
     position = await client.get_user_position({"symbol": MARKET_SYMBOLS.BTC})
-
-    # returns user position if exists
-    pprint(position)
+    pprint(position)  # returns user position if exists
 
     await client.close_connections()
 

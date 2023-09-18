@@ -1,8 +1,7 @@
-import sys, os, random
-
-# sys.path.append(os.getcwd() + "/src/")
-
+from pprint import pprint
+import asyncio
 import time
+import random
 from config import TEST_ACCT_KEY, TEST_NETWORK
 from bluefin_v2_client import (
     BluefinClient,
@@ -13,56 +12,60 @@ from bluefin_v2_client import (
     ORDER_STATUS,
     OrderSignatureRequest,
 )
-from pprint import pprint
-import asyncio
 
 
 async def main():
     client = BluefinClient(True, Networks[TEST_NETWORK], TEST_ACCT_KEY)
     await client.init(True)
 
-    # client.create_order_to_sign()
-    await client.adjust_leverage(MARKET_SYMBOLS.ETH, 1)
-    user_leverage = await client.get_user_leverage(MARKET_SYMBOLS.ETH)
-
-    # creates a LIMIT order to be signed
+    leverage = 1
+    await client.adjust_leverage(MARKET_SYMBOLS.ETH, leverage)
     order = OrderSignatureRequest(
         symbol=MARKET_SYMBOLS.ETH,  # market symbol
         price=2905,  # price at which you want to place order
         quantity=0.01,  # quantity
         side=ORDER_SIDE.BUY,
         orderType=ORDER_TYPE.LIMIT,
-        leverage=user_leverage,
+        leverage=leverage,
         salt=random.randint(0, 100000000),
         expiration=int(time.time() + (30 * 24 * 60 * 60)) * 1000,
     )
-
     signed_order = client.create_signed_order(order)
-    resp = await client.post_signed_order(signed_order)
-    print("sleeping for two seconds")
+    post_resp = await client.post_signed_order(signed_order)
+    pprint(post_resp)
+    time.sleep(2)
 
-    # sign order for cancellation using order hash
-    # you can pass a list of hashes to be signed for cancellation, good to be used when multiple orders are to be cancelled
+    # cancel placed order
     cancellation_request = client.create_signed_cancel_orders(
-        MARKET_SYMBOLS.ETH, order_hash=[resp["hash"]]
+        MARKET_SYMBOLS.ETH, order_hash=[post_resp["hash"]]
     )
-    pprint(cancellation_request)
-
-    # # or sign the order for cancellation using order data
     cancellation_request = client.create_signed_cancel_order(order)
-    pprint(cancellation_request)  # same as above cancellation request
+    pprint(cancellation_request)
+    cancel_resp = await client.post_cancel_order(cancellation_request)
+    pprint(cancel_resp)
 
-    # post order to exchange for cancellation
-    resp = await client.post_cancel_order(cancellation_request)
+    # post order again
+    await client.adjust_leverage(MARKET_SYMBOLS.ETH, leverage)
+    order = OrderSignatureRequest(
+        symbol=MARKET_SYMBOLS.ETH,  # market symbol
+        price=2905,  # price at which you want to place order
+        quantity=0.01,  # quantity
+        side=ORDER_SIDE.BUY,
+        orderType=ORDER_TYPE.LIMIT,
+        leverage=leverage,
+        salt=random.randint(0, 100000000),
+        expiration=int(time.time() + (30 * 24 * 60 * 60)) * 1000,
+    )
+    signed_order = client.create_signed_order(order)
+    post_resp = await client.post_signed_order(signed_order)
+    pprint(post_resp)
+    time.sleep(2)
 
-    pprint(resp)
-
-    # cancels all open orders, returns false if there is no open order to cancel
+    # this time cancel all open orders
     resp = await client.cancel_all_orders(
         MARKET_SYMBOLS.ETH, [ORDER_STATUS.OPEN, ORDER_STATUS.PARTIAL_FILLED]
     )
-
-    if resp == False:
+    if resp is False:
         print("No open order to cancel")
     else:
         pprint(resp)
