@@ -3,13 +3,14 @@ import json
 
 
 def rpc_unsafe_moveCall(
-    url,
-    params,
+    url: str,
+    params: list,
     function_name: str,
     function_library: str,
-    userAddress,
-    packageId,
-    gasBudget=100000000,
+    userAddress: str,
+    packageId: str,
+    gasBudget: int = 100000000,
+    typeArguments: list = [],
 ):
     """
     Does the RPC call to SUI chain
@@ -21,6 +22,7 @@ def rpc_unsafe_moveCall(
       userAddress: Address of the signer
       packageId: package id in which the module exists
       gasBudget(optional): gasBudget defaults to 100000000
+      typeArguments (optional): type arguments if any in list format [your_arg_1]
 
     Output:
       Returns the request form serialised in bytes ready to be signed.
@@ -34,7 +36,9 @@ def rpc_unsafe_moveCall(
     base_dict["params"].extend(
         [userAddress, packageId, function_library, function_name]
     )
-    base_dict["params"].append([])
+
+    # Optional type arguments for wormhole related calls
+    base_dict["params"].append(typeArguments)
     base_dict["params"].append(params)
 
     base_dict["params"].append(None)

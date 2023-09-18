@@ -50,6 +50,7 @@ class BluefinClient:
             api_token(string, optional): API token to initialize client in read-only mode
         """
         contract_info = await self.get_contract_addresses()
+
         self.contracts.set_contract_addresses(contract_info)
 
         if api_token:
@@ -354,6 +355,7 @@ class BluefinClient:
             "margin_bank",
             user_address,
             package_id,
+            typeArguments=[self.contracts.get_currency_type()],
         )
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
@@ -389,6 +391,7 @@ class BluefinClient:
             "margin_bank",
             self.account.getUserAddress(),
             self.contracts.get_package_id(),
+            typeArguments=[self.contracts.get_currency_type()],
         )
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
@@ -418,6 +421,7 @@ class BluefinClient:
             "margin_bank",
             self.account.getUserAddress(),
             self.contracts.get_package_id(),
+            typeArguments=[self.contracts.get_currency_type()],
         )
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
@@ -462,6 +466,7 @@ class BluefinClient:
                 "exchange",
                 self.account.getUserAddress(),
                 self.contracts.get_package_id(),
+                typeArguments=[self.contracts.get_currency_type()],
             )
             signature = self.contract_signer.sign_tx(txBytes, self.account)
             result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
@@ -525,6 +530,7 @@ class BluefinClient:
                 "exchange",
                 self.account.getUserAddress(),
                 self.contracts.get_package_id(),
+                typeArguments=[self.contracts.get_currency_type()],
             )
 
         else:
@@ -633,7 +639,7 @@ class BluefinClient:
                 self.url, call_args, method="suix_getDynamicFieldObject"
             )
 
-            balance = from1e18(
+            balance = fromUsdcBase(
                 result["data"]["content"]["fields"]["value"]["fields"]["balance"]
             )
             return balance
@@ -960,10 +966,10 @@ class BluefinClient:
         await self.apis.close_session()
         await self.dms_api.close_session()
 
-    def _get_coin_having_balance(usdc_coin_list: list, balance: int) -> str:
+    def _get_coin_having_balance(self, usdc_coin_list: list, balance: int) -> str:
         balance = toSuiBase(balance)
         for coin in usdc_coin_list:
-            if coin["balance"] <= balance:
+            if int(coin["balance"]) >= balance:
                 return coin["coinObjectId"]
         raise Exception(
             "Not enough balance available, please merge your coins for get usdc"
