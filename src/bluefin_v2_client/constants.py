@@ -68,6 +68,7 @@ SERVICE_URLS = {
         "TRANSFER_HISTORY": "/userTransferHistory",
         "FUNDING_HISTORY": "/userFundingHistory",
         "CANCEL_ON_DISCONNECT": "/dms-countdown",
+        "USER_TRADES_HISTORY": "/userTradesHistory",
     },
     "GROWTH": {
         "REFERRER_INFO": "/growth/getReferrerInfo",
