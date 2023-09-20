@@ -9,7 +9,7 @@ Networks = {
         "UUID": ""
     },
     "SUI_PROD": {
-        "url": "https://fullnode.testnet.sui.io:443",
+        "url": "https://fullnode.mainnet.sui.io:443",
         "apiGateway": "https://dapi.api.sui-prod.bluefin.io",
         "socketURL": "wss://dapi.api.sui-prod.bluefin.io",
         "dmsURL": "https://api.sui-prod.bluefin.io/dead-man-switch",
