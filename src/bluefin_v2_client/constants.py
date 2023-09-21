@@ -9,7 +9,7 @@ Networks = {
         "UUID": ""
     },
     "SUI_PROD": {
-        "url": "https://fullnode.testnet.sui.io:443",
+        "url": "https://fullnode.mainnet.sui.io:443",
         "apiGateway": "https://dapi.api.sui-prod.bluefin.io",
         "socketURL": "wss://dapi.api.sui-prod.bluefin.io",
         "dmsURL": "https://api.sui-prod.bluefin.io/dead-man-switch",
@@ -68,6 +68,7 @@ SERVICE_URLS = {
         "TRANSFER_HISTORY": "/userTransferHistory",
         "FUNDING_HISTORY": "/userFundingHistory",
         "CANCEL_ON_DISCONNECT": "/dms-countdown",
+        "USER_TRADES_HISTORY": "/userTradesHistory",
     },
     "GROWTH": {
         "REFERRER_INFO": "/growth/getReferrerInfo",
