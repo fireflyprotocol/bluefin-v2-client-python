@@ -359,11 +359,13 @@ class BluefinClient:
         )
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-
-        if res["result"]["effects"]["status"]["status"] == "success":
-            return True
-        else:
-            return False
+        try:
+            if res["result"]["effects"]["status"]["status"] == "success":
+                return True
+            else:
+                return False
+        except Exception as e:
+            return res
 
     async def withdraw_margin_from_bank(self, amount: Union[float, int]) -> bool:
         """
@@ -395,11 +397,13 @@ class BluefinClient:
         )
         signature = self.contract_signer.sign_tx(txBytes, self.account)
         res = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-
-        if res["result"]["effects"]["status"]["status"] == "success":
-            return True
-        else:
-            return False
+        try:
+            if res["result"]["effects"]["status"]["status"] == "success":
+                return True
+            else:
+                return False
+        except Exception as e:
+            return res
 
     async def withdraw_all_margin_from_bank(self):
         """

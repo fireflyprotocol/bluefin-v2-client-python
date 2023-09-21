@@ -1,5 +1,10 @@
 import requests
 import json
+import time
+
+LOCKED_OBJECT_ERROR_CODE = (
+    "Failed to sign transaction by a quorum of validators because of locked objects"
+)
 
 
 def rpc_unsafe_moveCall(
@@ -52,7 +57,7 @@ def rpc_unsafe_moveCall(
     return result["result"]["txBytes"]
 
 
-def rpc_sui_executeTransactionBlock(url, txBytes, signature):
+def rpc_sui_executeTransactionBlock(url, txBytes, signature, maxRetries=5):
     """
     Execute the SUI call on sui chain
     Input:
@@ -84,8 +89,17 @@ def rpc_sui_executeTransactionBlock(url, txBytes, signature):
     payload = json.dumps(base_dict)
 
     headers = {"Content-Type": "application/json"}
-    response = requests.request("POST", url, headers=headers, data=payload)
-    result = json.loads(response.text)
+
+    for i in range(0, maxRetries):
+        response = requests.request("POST", url, headers=headers, data=payload)
+        result = json.loads(response.text)
+        if "error" in result:
+            if result["error"]["message"].find(LOCKED_OBJECT_ERROR_CODE) == -1:
+                return result
+        else:
+            return result
+
+        time.sleep(1)
     return result
 
 
@@ -108,3 +122,20 @@ def rpc_call_sui_function(url, params, method="suix_getCoins"):
     response = requests.request("POST", url, headers=headers, data=payload)
     result = json.loads(response.text)
     return result["result"]
+
+
+def rpc_sui_executeTransactionBlockWithRetries(*args, maxRetries=5):
+    """
+    Make the RPC call to SUI chain with retries
+    Input:
+      *args: All argument which are to be passed to rpc_sui_executeTransactionBlock
+      maxRetries: (optional): by default set to 5
+
+    Output:
+      result of transaction
+    """
+
+    """
+      First try to get the result if it is locked object error then try again for maxRetries time
+      then give the result
+    """
