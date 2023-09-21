@@ -122,20 +122,3 @@ def rpc_call_sui_function(url, params, method="suix_getCoins"):
     response = requests.request("POST", url, headers=headers, data=payload)
     result = json.loads(response.text)
     return result["result"]
-
-
-def rpc_sui_executeTransactionBlockWithRetries(*args, maxRetries=5):
-    """
-    Make the RPC call to SUI chain with retries
-    Input:
-      *args: All argument which are to be passed to rpc_sui_executeTransactionBlock
-      maxRetries: (optional): by default set to 5
-
-    Output:
-      result of transaction
-    """
-
-    """
-      First try to get the result if it is locked object error then try again for maxRetries time
-      then give the result
-    """
