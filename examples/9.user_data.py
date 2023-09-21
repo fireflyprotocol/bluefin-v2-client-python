@@ -48,9 +48,9 @@ async def main():
     pprint(trades)
 
     # fetches user trades history
-    trades = await client.get_user_trades_hostory({"symbol":MARKET_SYMBOLS.BTC})
+    trades = await client.get_user_trades_history({"symbol":MARKET_SYMBOLS.BTC})
     print("User trades history:")    
-    pprint(trades.data)
+    pprint(trades["data"])
 
     # fetches user account's general data like leverage, pnl etc.
     account_data = await client.get_user_account_data()
