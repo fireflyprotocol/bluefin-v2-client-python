@@ -181,6 +181,7 @@ class BluefinClient:
             orderType=sui_params["orderType"],
             maker=order["maker"],
             orderbookOnly=default_value(sui_params, "orderbookOnly", True),
+            postOnly=default_value(sui_params, "postOnly", False),
         )
 
     def create_signed_cancel_order(
@@ -886,21 +887,18 @@ class BluefinClient:
         params = extract_enums(params, ["symbol", "type"])
         return await self.apis.get(SERVICE_URLS["USER"]["USER_TRADES"], params, True)
 
-    async def get_user_trades_history(self,params:GetUserTradesHistoryRequest):
+    async def get_user_trades_history(self, params: GetUserTradesHistoryRequest):
         """
-            Returns a list of user trades history.
-            Inputs:
-                params(GetUserTradesHistoryRequest): params to query trades (e.g. symbol) 
-            Returns:
-                list: a list of positions
+        Returns a list of user trades history.
+        Inputs:
+            params(GetUserTradesHistoryRequest): params to query trades (e.g. symbol)
+        Returns:
+            list: a list of positions
         """
-        params = extract_enums(params,["symbol","type"])
+        params = extract_enums(params, ["symbol", "type"])
         return await self.apis.get(
-            SERVICE_URLS["USER"]["USER_TRADES_HISTORY"],
-            params,
-            True
+            SERVICE_URLS["USER"]["USER_TRADES_HISTORY"], params, True
         )
-
 
     async def get_user_account_data(self, parentAddress: str = ""):
         """
