@@ -82,7 +82,7 @@ class OrderSigner(Signer):
         Returns:
             str: generated signature
         """
-        order_hash = hashlib.sha256(
+        msg_hash = hashlib.sha256(
             self.get_serialized_order(order).hex().encode("utf-8")
         ).digest()
-        return self.sign_hash(order_hash, private_key, "")
+        return self.sign_hash(msg_hash, private_key, "")
