@@ -32,7 +32,7 @@ class OrderSigner(Signer):
             flag += 16
         return flag
 
-    def get_order_hash(self, order: Order, withBufferHex=True):
+    def get_serialized_order(self, order: Order):
         """
         Returns order hash.
         Inputs:
@@ -64,14 +64,11 @@ class OrderSigner(Signer):
             + flags
             + bluefin
         )
+        return buffer
 
-        # for cancel order signature verification we use buffer directly
-        # for placing order we use buffer.hex().encode("utf-8")
-        if withBufferHex:
-            order_hash = hashlib.sha256(buffer.hex().encode("utf-8")).digest()
-        else:
-            order_hash = hashlib.sha256(buffer).digest()
-        return order_hash
+    def get_order_hash(self, order: Order):
+        buffer = self.get_serialized_order(order)
+        return hashlib.sha256(buffer).digest()
 
     def sign_order(self, order: Order, private_key):
         """
@@ -85,5 +82,7 @@ class OrderSigner(Signer):
         Returns:
             str: generated signature
         """
-        order_hash = self.get_order_hash(order)
+        order_hash = hashlib.sha256(
+            self.get_serialized_order(order).hex().encode("utf-8")
+        ).digest()
         return self.sign_hash(order_hash, private_key, "")

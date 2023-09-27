@@ -204,7 +204,7 @@ class BluefinClient:
         sui_params["leverage"] = to1e18(params["leverage"])
 
         order_to_sign = self.create_order_to_sign(sui_params)
-        hash_val = self.order_signer.get_order_hash(order_to_sign, withBufferHex=False)
+        hash_val = self.order_signer.get_order_hash(order_to_sign)
         return self.create_signed_cancel_orders(
             params["symbol"], hash_val.hex(), parentAddress
         )
