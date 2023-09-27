@@ -175,6 +175,7 @@ class BluefinClient:
             side=sui_params["side"],
             leverage=sui_params["leverage"],
             reduceOnly=default_value(sui_params, "reduceOnly", False),
+            postOnly=default_value(sui_params, "postOnly", False),
             salt=order["salt"],
             expiration=order["expiration"],
             orderSignature=order_signature,
