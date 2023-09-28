@@ -182,7 +182,6 @@ class BluefinClient:
             orderType=sui_params["orderType"],
             maker=order["maker"],
             orderbookOnly=default_value(sui_params, "orderbookOnly", True),
-            postOnly=default_value(sui_params, "postOnly", False),
         )
 
     def create_signed_cancel_order(
