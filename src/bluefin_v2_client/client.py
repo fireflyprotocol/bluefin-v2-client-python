@@ -158,9 +158,9 @@ class BluefinClient:
             OrderSignatureResponse: order raw info and generated signature
         """
         sui_params = deepcopy(req)
-        sui_params["price"] = to1e18(req["price"])
-        sui_params["quantity"] = to1e18(req["quantity"])
-        sui_params["leverage"] = to1e18(req["leverage"])
+        sui_params["price"] = to_base18(req["price"])
+        sui_params["quantity"] = to_base18(req["quantity"])
+        sui_params["leverage"] = to_base18(req["leverage"])
 
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
@@ -200,9 +200,9 @@ class BluefinClient:
             OrderSignatureResponse: generated cancel signature
         """
         sui_params = deepcopy(params)
-        sui_params["price"] = to1e18(params["price"])
-        sui_params["quantity"] = to1e18(params["quantity"])
-        sui_params["leverage"] = to1e18(params["leverage"])
+        sui_params["price"] = to_base18(params["price"])
+        sui_params["quantity"] = to_base18(params["quantity"])
+        sui_params["leverage"] = to_base18(params["leverage"])
 
         order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign)
@@ -463,7 +463,7 @@ class BluefinClient:
             callArgs.append(self.contracts.get_bank_id())
             callArgs.append(self.contracts.get_sub_account_id())
             callArgs.append(account_address)
-            callArgs.append(str(to1e18(leverage)))
+            callArgs.append(str(to_base18(leverage)))
             callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
             txBytes = rpc_unsafe_moveCall(
                 self.url,
@@ -486,7 +486,7 @@ class BluefinClient:
             {
                 "symbol": symbol.value,
                 "address": account_address,
-                "leverage": to1e18(leverage),
+                "leverage": to_base18(leverage),
                 "marginType": MARGIN_TYPE.ISOLATED.value,
             },
             auth_required=True,
@@ -526,7 +526,7 @@ class BluefinClient:
 
         callArgs.append(self.contracts.get_sub_account_id())
         callArgs.append(self.account.getUserAddress())
-        callArgs.append(str(to1e18(amount)))
+        callArgs.append(str(to_base18(amount)))
         callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
         if operation == ADJUST_MARGIN.ADD:
             txBytes = rpc_unsafe_moveCall(
