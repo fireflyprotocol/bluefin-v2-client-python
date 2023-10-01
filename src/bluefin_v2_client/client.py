@@ -28,7 +28,7 @@ class BluefinClient:
         self.network = network
         if private_key != "":
             if private_key.startswith("0x"):
-                # currently we only support seed phrase
+                private_key = private_key[2:]
                 self.account = SuiWallet(privateKey=private_key)
             else:
                 # currently we only support seed phrase
