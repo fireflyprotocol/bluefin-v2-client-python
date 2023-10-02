@@ -27,8 +27,11 @@ class BluefinClient:
         self.are_terms_accepted = are_terms_accepted
         self.network = network
         if private_key != "":
-            # currently we only support seed phrase
-            self.account = SuiWallet(seed=private_key)
+            if private_key.startswith("0x"):
+                private_key = private_key[2:]
+                self.account = SuiWallet(privateKey=private_key)
+            else:
+                self.account = SuiWallet(seed=private_key)
             # self.account = Account.from_key(private_key)
         self.apis = APIService(
             self.network["apiGateway"], default_value(self.network, "UUID", "")
