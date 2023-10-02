@@ -31,7 +31,6 @@ class BluefinClient:
                 private_key = private_key[2:]
                 self.account = SuiWallet(privateKey=private_key)
             else:
-                # currently we only support seed phrase
                 self.account = SuiWallet(seed=private_key)
             # self.account = Account.from_key(private_key)
         self.apis = APIService(
