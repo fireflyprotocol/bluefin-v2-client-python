@@ -1,5 +1,6 @@
 import binascii
 from datetime import datetime
+import math
 from random import randint
 
 # from web3 import Web3
@@ -73,7 +74,7 @@ def privateKeyToPublicKey(privateKey: str) -> str:
         privateKeyBytes = binascii.unhexlify(privateKey)
     else:
         privateKeyBytes = bytes(privateKey)
-        
+
     bip32_ctx = bip_utils.Bip32Slip10Ed25519.FromPrivateKey(privateKeyBytes)
     public_key: str = bip32_ctx.PublicKey().RawCompressed()
     return public_key
@@ -158,3 +159,9 @@ def config_logging(logging, logging_level, log_file: str = None):
         format="%(asctime)s.%(msecs)03d UTC %(levelname)s %(name)s: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+def to_base18(number: Union[int, float], num_decimals=6) -> int:
+    """Takes in a number and multiples it by 1e18"""
+    num_zeroes = 18 - num_decimals
+    a = int(number * math.pow(10, num_decimals))
+    return int(str(a) + "0"*num_zeroes)
