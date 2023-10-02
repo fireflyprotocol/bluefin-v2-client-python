@@ -1,3 +1,4 @@
+import binascii
 from datetime import datetime
 from random import randint
 
@@ -6,7 +7,7 @@ import time
 from typing import Union
 import bip_utils
 import hashlib
-import math
+
 
 BASE_1E18 = 1000000000000000000
 BASE_1E6 = 1000000  # 1e6 for USDC token
@@ -16,13 +17,6 @@ BASE_1E9 = 1000000000
 def to1e18(number: Union[int, float]) -> int:
     """Takes in a number and multiples it by 1e18"""
     return int(number * BASE_1E18)
-
-def to_base18(number: Union[int, float], num_decimals=6) -> int:
-    """Takes in a number and multiples it by 1e18"""
-    num_zeroes = 18 - num_decimals
-    a = int(number * math.pow(10, num_decimals))
-    return int(str(a) + "0"*num_zeroes)
-
 
 
 def from1e18(number: Union[str, int]) -> float:
@@ -75,7 +69,11 @@ def mnemonicToPrivateKey(seedPhrase: str) -> str:
 
 
 def privateKeyToPublicKey(privateKey: str) -> str:
-    privateKeyBytes = bytes(privateKey)
+    if type(privateKey) is str:
+        privateKeyBytes = binascii.unhexlify(privateKey)
+    else:
+        privateKeyBytes = bytes(privateKey)
+        
     bip32_ctx = bip_utils.Bip32Slip10Ed25519.FromPrivateKey(privateKeyBytes)
     public_key: str = bip32_ctx.PublicKey().RawCompressed()
     return public_key
