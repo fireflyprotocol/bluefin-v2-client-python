@@ -19,6 +19,11 @@ def to1e18(number: Union[int, float]) -> int:
     """Takes in a number and multiples it by 1e18"""
     return int(number * BASE_1E18)
 
+def to_base18(number: Union[int, float], num_decimals=6) -> int:
+    """Takes in a number and multiples it by 1e18"""
+    num_zeroes = 18 - num_decimals
+    a = int(number * math.pow(10, num_decimals))
+    return int(str(a) + "0"*num_zeroes)
 
 def from1e18(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e18"""
@@ -160,8 +165,3 @@ def config_logging(logging, logging_level, log_file: str = None):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-def to_base18(number: Union[int, float], num_decimals=6) -> int:
-    """Takes in a number and multiples it by 1e18"""
-    num_zeroes = 18 - num_decimals
-    a = int(number * math.pow(10, num_decimals))
-    return int(str(a) + "0"*num_zeroes)
