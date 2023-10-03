@@ -46,6 +46,7 @@ async def place_orders(client: BluefinClient):
         side=ORDER_SIDE.BUY,
         reduceOnly=False,
         postOnly=False,
+        cancelOnRevert= False,
         orderbookOnly=True,
         orderType=ORDER_TYPE.MARKET,
     )

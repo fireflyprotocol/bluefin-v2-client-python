@@ -9,6 +9,7 @@ class Order(TypedDict):
     reduceOnly: bool
     quantity: int
     postOnly: bool
+    cancelOnRevert: bool
     orderbookOnly: bool
     leverage: int
     expiration: int
@@ -37,6 +38,7 @@ class OrderSignatureRequest(RequiredOrderFields):
     maker: str  # (optional) maker of the order, if not provided the account used to initialize the client will be default maker
     # isBuy: bool
     postOnly: bool
+    cancelOnRevert: bool
     orderBookOnly: bool
     ioc: bool
 
@@ -95,6 +97,7 @@ class OrderResponse(TypedDict):
 class GetOrderResponse(OrderResponse):
     fee: str
     postOnly: bool
+    cancelOnRevert: bool
     triggerPrice: str
 
 
