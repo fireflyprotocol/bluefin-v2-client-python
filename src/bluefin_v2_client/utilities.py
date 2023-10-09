@@ -2,28 +2,37 @@ import binascii
 from datetime import datetime
 import math
 from random import randint
+import time
+import random
 
 # from web3 import Web3
 import time
 from typing import Union
 import bip_utils
 import hashlib
-
+import json
 
 BASE_1E18 = 1000000000000000000
 BASE_1E6 = 1000000  # 1e6 for USDC token
 BASE_1E9 = 1000000000
 
 
+def getsha256Hash(callArgs: list) -> str:
+    callArgsJson = json.dumps(callArgs).encode("utf-8")
+    return hashlib.sha256(callArgsJson).digest().hex()
+
+
 def to1e18(number: Union[int, float]) -> int:
     """Takes in a number and multiples it by 1e18"""
     return int(number * BASE_1E18)
+
 
 def to_base18(number: Union[int, float], num_decimals=6) -> int:
     """Takes in a number and multiples it by 1e18"""
     num_zeroes = 18 - num_decimals
     a = int(number * math.pow(10, num_decimals))
-    return int(str(a) + "0"*num_zeroes)
+    return int(str(a) + "0" * num_zeroes)
+
 
 def from1e18(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e18"""
@@ -59,6 +68,15 @@ def numberToHex(num, pad=32):
     # padding it with zero to make the size 32 bytes
     padHex = hexNum[2:].zfill(pad)
     return padHex
+
+
+def getSalt() -> int:
+    return (
+        int(time.time())
+        + random.randint(0, 1000000)
+        + random.randint(0, 1000000)
+        + random.randint(0, 1000000)
+    )
 
 
 def hexToByteArray(hexStr):
@@ -164,4 +182,3 @@ def config_logging(logging, logging_level, log_file: str = None):
         format="%(asctime)s.%(msecs)03d UTC %(levelname)s %(name)s: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-
