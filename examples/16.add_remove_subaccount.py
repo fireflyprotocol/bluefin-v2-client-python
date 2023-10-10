@@ -26,7 +26,7 @@ async def main():
 
   # remove child account as subaccount
   status = await clientParent.update_sub_account(
-      clientChild.get_public_address(), True
+      clientChild.get_public_address(), False
     )
   print("Sub account removed: {}\n".format(status))
 
