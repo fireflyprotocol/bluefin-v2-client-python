@@ -998,3 +998,7 @@ class BluefinClient:
         raise Exception(
             "Not enough balance available, please merge your coins for get usdc"
         )
+
+    def set_uuid(self, uuid):
+        self.apis.set_uuid(uuid)
+        self.dms_api.set_uuid(uuid)
