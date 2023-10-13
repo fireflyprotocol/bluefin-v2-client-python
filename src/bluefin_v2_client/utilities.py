@@ -23,13 +23,13 @@ def to_base18(number: Union[int, float], num_decimals=6) -> int:
 
 def from1e18(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e18"""
-    return float(from_wei(number, "ether"))
+    return float(from_wei(int(number), "ether"))
 
 
 def fromSuiBase(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e9"""
     ## gwei is base9 and sui is also base9
-    return float(from_wei(number, "gwei"))
+    return float(from_wei(int(number), "gwei"))
 
 
 def toSuiBase(number: Union[str, int]) -> int:
