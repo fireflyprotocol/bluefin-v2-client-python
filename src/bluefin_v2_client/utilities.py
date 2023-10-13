@@ -16,7 +16,7 @@ BASE_1E6 = 1000000  # 1e6 for USDC token
 BASE_1E9 = 1000000000
 
 
-def to_base18(number: Union[int, float], num_decimals=6) -> int:
+def to_base18(number: Union[int, float]) -> int:
     """Takes in a number and multiples it by 1e18"""
     return to_wei(number, "ether")
 

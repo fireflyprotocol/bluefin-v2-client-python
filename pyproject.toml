@@ -39,7 +39,8 @@ dependencies = [
   'websocket-client ~= 1.6.2',
   'yarl ~= 1.9.2',
   'zope.event ~= 5.0',
-  'zope.interface ~= 6.0'
+  'zope.interface ~= 6.0',
+  'eth-utils==2.2.2'
 ]
 
 [project.urls]
