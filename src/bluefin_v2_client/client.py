@@ -664,6 +664,27 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
 
+    async def get_user_position_from_chain(self, market: MARKET_SYMBOLS):
+        """
+        Returns the user positions from chain
+        """
+        try:
+            call_args = []
+            call_args.append(self.contracts.get_position_table_id(market))
+            call_args.append(
+                {"type": "address", "value": self.account.getUserAddress()}
+            )
+            result = rpc_call_sui_function(
+                self.url, call_args, method="suix_getDynamicFieldObject"
+            )
+            if "error" in result:
+                if result["error"]["code"] == "dynamicFieldNotFound":
+                    return "Given user have no position open"
+            return result["data"]["content"]["fields"]["value"]["fields"]
+
+        except Exception as e:
+            raise (Exception("Failed to get positions, Exception: {}".format(e)))
+
     async def get_margin_bank_balance(self) -> float:
         """
         Returns user's Margin Bank balance.
