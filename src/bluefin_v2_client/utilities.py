@@ -5,6 +5,8 @@ from random import randint
 import time
 import random
 
+from eth_utils import from_wei, to_wei
+
 # from web3 import Web3
 import time
 from typing import Union
@@ -22,45 +24,35 @@ def getsha256Hash(callArgs: list) -> str:
     return hashlib.sha256(callArgsJson).digest().hex()
 
 
-def to1e18(number: Union[int, float]) -> int:
+def to_base18(number: Union[int, float]) -> int:
     """Takes in a number and multiples it by 1e18"""
-    return int(number * BASE_1E18)
-
-
-def to_base18(number: Union[int, float], num_decimals=6) -> int:
-    """Takes in a number and multiples it by 1e18"""
-    num_zeroes = 18 - num_decimals
-    a = int(number * math.pow(10, num_decimals))
-    return int(str(a) + "0" * num_zeroes)
+    return to_wei(number, "ether")
 
 
 def from1e18(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e18"""
-    number = float(number)
-    return number / float(BASE_1E18)
+    return float(from_wei(int(number), "ether"))
 
 
 def fromSuiBase(number: Union[str, int]) -> float:
     """Takes in a number and divides it by 1e9"""
-    number = float(number)
-    return number / float(BASE_1E9)
+    ## gwei is base9 and sui is also base9
+    return float(from_wei(int(number), "gwei"))
 
 
 def toSuiBase(number: Union[str, int]) -> int:
     """Takes in a number and multiplies it by 1e9"""
-    number = int(number)
-    return number * BASE_1E9
+    return to_wei(number, "gwei")
 
 
 def toUsdcBase(number: Union[int, float]) -> int:
     """Converts a number to usdc contract onchain representation i.e. multiply it by 1e6"""
-    return int(number * BASE_1E6)
+    return to_wei(number, "mwei")
 
 
 def fromUsdcBase(number: Union[str, int]) -> float:
     """Converts a usdc quantity to number i.e. divide it by 1e6"""
-    number = float(number)
-    return number / float(BASE_1E6)
+    return float(from_wei(number, "mwei"))
 
 
 def numberToHex(num, pad=32):
