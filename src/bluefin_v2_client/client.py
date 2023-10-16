@@ -678,7 +678,7 @@ class BluefinClient:
                 self.url, call_args, method="suix_getDynamicFieldObject"
             )
             if "error" in result:
-                if result["error"]["codee"] == "dynamicFieldNotFound":
+                if result["error"]["code"] == "dynamicFieldNotFound":
                     return "Given user have no position open"
             return result["data"]["content"]["fields"]["value"]["fields"]
 
