@@ -2,6 +2,9 @@ import binascii
 from datetime import datetime
 import math
 from random import randint
+import time
+import random
+
 from eth_utils import from_wei, to_wei
 
 # from web3 import Web3
@@ -9,11 +12,16 @@ import time
 from typing import Union
 import bip_utils
 import hashlib
-
+import json
 
 BASE_1E18 = 1000000000000000000
 BASE_1E6 = 1000000  # 1e6 for USDC token
 BASE_1E9 = 1000000000
+
+
+def getsha256Hash(callArgs: list) -> str:
+    callArgsJson = json.dumps(callArgs).encode("utf-8")
+    return hashlib.sha256(callArgsJson).digest().hex()
 
 
 def to_base18(number: Union[int, float]) -> int:
@@ -52,6 +60,15 @@ def numberToHex(num, pad=32):
     # padding it with zero to make the size 32 bytes
     padHex = hexNum[2:].zfill(pad)
     return padHex
+
+
+def getSalt() -> int:
+    return (
+        int(time.time())
+        + random.randint(0, 1000000)
+        + random.randint(0, 1000000)
+        + random.randint(0, 1000000)
+    )
 
 
 def hexToByteArray(hexStr):

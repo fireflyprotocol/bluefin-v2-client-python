@@ -35,3 +35,6 @@ class Contracts:
 
     def get_perpetual_id(self, market: MARKET_SYMBOLS):
         return self.contract_info[market.value]["Perpetual"]["id"]
+
+    def get_sequencer_id(self) -> str:
+        return self.contract_info["objects"]["Sequencer"]["id"]

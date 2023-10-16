@@ -351,9 +351,16 @@ class BluefinClient:
         user_address = self.account.getUserAddress()
         callArgs = []
         callArgs.append(self.contracts.get_bank_id())
+
+        callArgs.append(self.contracts.get_sequencer_id())
+        callArgs.append(getSalt())
+
         callArgs.append(self.account.getUserAddress())
         callArgs.append(str(toUsdcBase(amount)))
         callArgs.append(coin_id)
+
+        callArgs[2] = getsha256Hash(callArgs)
+
         txBytes = rpc_unsafe_moveCall(
             self.url,
             callArgs,
@@ -389,9 +396,13 @@ class BluefinClient:
 
         callArgs = [
             bank_id,
+            self.contracts.get_sequencer_id(),
+            getSalt(),
             account_address,
             str(toUsdcBase(amount)),
         ]
+
+        callArgs[2] = getsha256Hash(callArgs)
         txBytes = rpc_unsafe_moveCall(
             self.url,
             callArgs,
@@ -423,7 +434,14 @@ class BluefinClient:
         bank_id = self.contracts.get_bank_id()
         account_address = self.account.getUserAddress()
 
-        callArgs = [bank_id, account_address]
+        callArgs = [
+            bank_id,
+            self.contracts.get_sequencer_id(),
+            getSalt(),
+            account_address,
+        ]
+
+        callArgs[2] = getsha256Hash(callArgs)
         txBytes = rpc_unsafe_moveCall(
             self.url,
             callArgs,
@@ -466,9 +484,13 @@ class BluefinClient:
             callArgs.append(self.contracts.get_perpetual_id(symbol))
             callArgs.append(self.contracts.get_bank_id())
             callArgs.append(self.contracts.get_sub_account_id())
+            callArgs.append(self.contracts.get_sequencer_id())
+
+            callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
             callArgs.append(account_address)
             callArgs.append(str(to_base18(leverage)))
-            callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
+
+            callArgs.append(getsha256Hash(callArgs + [getSalt()]))
             txBytes = rpc_unsafe_moveCall(
                 self.url,
                 callArgs,
@@ -529,9 +551,15 @@ class BluefinClient:
         callArgs.append(self.contracts.get_bank_id())
 
         callArgs.append(self.contracts.get_sub_account_id())
+        callArgs.append(self.contracts.get_sequencer_id())
+
+        callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
+
         callArgs.append(self.account.getUserAddress())
         callArgs.append(str(to_base18(amount)))
-        callArgs.append(self.contracts.get_price_oracle_object_id(symbol))
+
+        callArgs.append(getsha256Hash(callArgs + [getSalt()]))
+
         if operation == ADJUST_MARGIN.ADD:
             txBytes = rpc_unsafe_moveCall(
                 self.url,
