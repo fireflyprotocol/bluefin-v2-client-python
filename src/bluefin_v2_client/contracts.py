@@ -38,3 +38,6 @@ class Contracts:
 
     def get_sequencer_id(self) -> str:
         return self.contract_info["objects"]["Sequencer"]["id"]
+
+    def get_position_table_id(self, market: MARKET_SYMBOLS) -> str:
+        return self.contract_info[market.value]["Objects"]["PositionsTable"]["id"]
