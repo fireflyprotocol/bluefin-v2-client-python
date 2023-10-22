@@ -119,6 +119,7 @@ class Sockets:
             Allows user to subscribe to orderbook depth stream for the desired symbol.
             Inputs:
                 - symbol: market symbol of market user wants orderbook depth stream for. (e.g. DOT-PERP)
+                - depth: depth of orderbook depth stream (optional)
         """
         try:
             resp = await sio.call('SUBSCRIBE', [
@@ -136,9 +137,10 @@ class Sockets:
 
     async def unsubscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
         """
-            Allows user to subscribe to orderbook depth stream for the desired symbol.
+            Allows user to unsubscribe to orderbook depth stream for the desired symbol.
             Inputs:
                 - symbol: market symbol of market user wants orderbook depth stream for. (e.g. DOT-PERP)
+                - depth: depth of orderbook depth stream (optional)
         """
         try:
             resp = await sio.call('UNSUBSCRIBE', [
