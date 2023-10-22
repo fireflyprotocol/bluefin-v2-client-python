@@ -114,6 +114,48 @@ class Sockets:
             print("Error: ", e)
             return False
 
+    async def subscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
+        """
+            Allows user to subscribe to orderbook depth stream for the desired symbol.
+            Inputs:
+                - symbol: market symbol of market user wants orderbook depth stream for. (e.g. DOT-PERP)
+                - depth: depth of orderbook depth stream (optional)
+        """
+        try:
+            resp = await sio.call('SUBSCRIBE', [
+                {
+                    "e": SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM.value,
+                    "p": symbol.value,
+                    "d": depth
+                    
+                },
+            ])
+            return resp["success"]
+        except Exception as e:
+            print("Error: ", e)
+            return False
+
+    async def unsubscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
+        """
+            Allows user to unsubscribe to orderbook depth stream for the desired symbol.
+            Inputs:
+                - symbol: market symbol of market user wants orderbook depth stream for. (e.g. DOT-PERP)
+                - depth: depth of orderbook depth stream (optional)
+        """
+        try:
+            resp = await sio.call('UNSUBSCRIBE', [
+                {
+                    "e": SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM.value,
+                    "p": symbol.value,
+                    "d": depth
+                    
+                },
+            ])
+            return resp["success"]
+        except Exception as e:
+            print("Error: ", e)
+            return False
+
     async def unsubscribe_global_updates_by_symbol(self, symbol: MARKET_SYMBOLS):
         """
             Allows user to unsubscribe to global updates for the desired symbol.

@@ -74,11 +74,13 @@ class SOCKET_EVENTS(Enum):
     GET_LAST_KLINE_WITH_INTERVAL = "{symbol}@kline@{interval}"
     # rooms that can be joined
     GLOBAL_UPDATES_ROOM = "globalUpdates"
+    ORDERBOOK_DEPTH_STREAM_ROOM = "orderbookDepthStream"
     USER_UPDATES_ROOM = "userUpdates"
     # events that can be listened
     MARKET_DATA_UPDATE = "MarketDataUpdate"
     RECENT_TRADES = "RecentTrades"
     ORDERBOOK_UPDATE = "OrderbookUpdate"
+    ORDERBOOK_DEPTH_UPDATES = "OrderbookDepthUpdate"
     ADJUST_MARGIN = "AdjustMargin"
     MARKET_HEALTH = "MarketHealth"
     EXCHANGE_HEALTH = "ExchangeHealth"
