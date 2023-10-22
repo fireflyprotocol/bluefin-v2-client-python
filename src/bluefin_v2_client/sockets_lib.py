@@ -114,7 +114,7 @@ class Sockets:
             print("Error: ", e)
             return False
 
-    async def subscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth):
+    async def subscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
         """
             Allows user to subscribe to orderbook depth stream for the desired symbol.
             Inputs:
@@ -134,7 +134,7 @@ class Sockets:
             print("Error: ", e)
             return False
 
-    async def unsubscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth):
+    async def unsubscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
         """
             Allows user to subscribe to orderbook depth stream for the desired symbol.
             Inputs:
