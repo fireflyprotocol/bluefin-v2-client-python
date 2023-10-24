@@ -164,7 +164,9 @@ class BluefinClient:
         if "ioc" in req:
             if req["ioc"]:
                 req["timeInForce"] = TIME_IN_FORCE.IMMEDIATE_OR_CANCEL
-
+        if "timeInForce" in req:
+            if req["timeInForce"] == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL:
+                req["ioc"] = True
         sui_params = deepcopy(req)
         sui_params["price"] = to_base18(req["price"])
         sui_params["quantity"] = to_base18(req["quantity"])
