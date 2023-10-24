@@ -161,6 +161,10 @@ class BluefinClient:
         Returns:
             OrderSignatureResponse: order raw info and generated signature
         """
+        if "ioc" in req:
+            if req["ioc"]:
+                req["timeInForce"] = TIME_IN_FORCE.IMMEDIATE_OR_CANCEL
+
         sui_params = deepcopy(req)
         sui_params["price"] = to_base18(req["price"])
         sui_params["quantity"] = to_base18(req["quantity"])
@@ -187,6 +191,9 @@ class BluefinClient:
             orderType=sui_params["orderType"],
             maker=order["maker"],
             orderbookOnly=default_value(sui_params, "orderbookOnly", True),
+            timeInForce=default_value(
+                sui_params, "timeInForce", TIME_IN_FORCE.GOOD_TILL_TIME
+            ),
         )
 
     def create_signed_cancel_order(
