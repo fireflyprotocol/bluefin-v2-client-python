@@ -128,6 +128,47 @@ class WebsocketClient:
             return True
         except:
             return False
+    
+    async def subscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
+        """
+            Allows user to subscribe to orderbook depth stream for the desired symbol.
+            Inputs:
+                - symbol: market symbol of market user wants orderbook depth stream for. (e.g. DOT-PERP)
+                - depth: depth of orderbook depth stream (optional)
+        """
+        try:
+            self.socket_manager.send_message(json.dumps((['SUBSCRIBE', [
+                {
+                    "e": SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM.value,
+                    "p": symbol.value,
+                    "d": depth
+                    
+                },
+            ]])))
+            return True
+        except:
+            return False
+
+    async def subscribe_orderbook_depth_streams_by_symbol(self, symbol: MARKET_SYMBOLS, depth=""):
+        """
+            Allows user to subscribe to orderbook depth stream for the desired symbol.
+            Inputs:
+                - symbol: market symbol of market user wants orderbook depth stream for. (e.g. DOT-PERP)
+                - depth: depth of orderbook depth stream (optional)
+        """
+        try:
+            self.socket_manager.send_message(json.dumps((['UNSUBSCRIBE', [
+                {
+                    "e": SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM.value,
+                    "p": symbol.value,
+                    "d": depth
+                    
+                },
+            ]])))
+            return True
+        except:
+            return False
+
 
     def subscribe_user_update_by_token(self, user_token: str = None):
         """
