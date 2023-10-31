@@ -4,6 +4,8 @@ from enum import Enum
 class ORDER_TYPE(Enum):
     LIMIT = "LIMIT"
     MARKET = "MARKET"
+    STOP_LIMIT = "STOP_LIMIT"
+    STOP_MARKET = "STOP_MARKET"
 
 
 class ORDER_SIDE(Enum):

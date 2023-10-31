@@ -172,7 +172,8 @@ class BluefinClient:
         sui_params["price"] = to_base18(req["price"])
         sui_params["quantity"] = to_base18(req["quantity"])
         sui_params["leverage"] = to_base18(req["leverage"])
-
+        if "triggerPrice" in sui_params:
+            sui_params["triggerPrice"] = to_base18(sui_params["triggerPrice"])
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
         order_signature = self.order_signer.sign_order(
@@ -197,6 +198,7 @@ class BluefinClient:
             timeInForce=default_value(
                 sui_params, "timeInForce", TIME_IN_FORCE.GOOD_TILL_TIME
             ),
+            triggerPrice=default_value(sui_params, "triggerPrice", 0),
         )
 
     def create_signed_cancel_order(
@@ -337,6 +339,7 @@ class BluefinClient:
                 "clientId": "bluefin-v2-client-python: {}".format(
                     default_value(params, "clientId", "bluefin-python-client")
                 ),
+                "triggerPrice": default_value(params, "triggerPrice", 0),
             },
             auth_required=True,
         )
