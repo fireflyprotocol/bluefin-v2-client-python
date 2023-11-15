@@ -38,7 +38,6 @@ async def place_orders(client: BluefinClient):
             (time.time() + 864000) * 1000
         ),  # expiry after 10 days, default expiry is a month
         triggerPrice=500,
-        salt=123,
     )
     signed_order = client.create_signed_order(signature_request)
     resp = await client.post_signed_order(signed_order)
@@ -51,9 +50,6 @@ async def place_orders(client: BluefinClient):
         MARKET_SYMBOLS.BTC, [resp["hash"]]
     )
 
-    pprint(cancellation_request)
-
-    cancellation_request = client.create_signed_cancel_order(signature_request)
     cancel_resp = await client.post_cancel_order(cancellation_request)
 
     pprint(cancel_resp)
