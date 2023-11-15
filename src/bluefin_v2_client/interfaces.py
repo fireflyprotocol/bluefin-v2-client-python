@@ -44,6 +44,9 @@ class OrderSignatureRequest(RequiredOrderFields):
     ioc: bool
     timeInForce: TIME_IN_FORCE
 
+    # for stop orders
+    triggerPrice: float
+
 
 class OrderSignatureResponse(RequiredOrderFields):
     maker: str
