@@ -530,11 +530,29 @@ class BluefinClient:
                 typeArguments=[self.contracts.get_currency_type()],
             )
             signature = self.contract_signer.sign_tx(txBytes, self.account)
-            result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-            if result["result"]["effects"]["status"]["status"] == "success":
-                return True
-            else:
-                return False
+            separator = "||||"  # Choose a separator that won't appear in txBytes or signature
+            combined_data = f"{txBytes}{separator}{signature}"
+            encoded_data = combined_data.encode().hex()
+            res = await self.apis.post(
+                SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
+                {
+                    "symbol": symbol.value,
+                    "address": account_address,
+                    "leverage": to_base18(leverage),
+                    "marginType": MARGIN_TYPE.ISOLATED.value,
+                    "signedTransaction": encoded_data
+                },
+                auth_required=True,
+            )
+            # If API is unsuccessful make direct contract call to update the leverage
+            if 'error' in res:
+                result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
+                if result["result"]["effects"]["status"]["status"] == "success":
+                    return True
+                else:
+                    return False
+            
+            return res
 
         res = await self.apis.post(
             SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
