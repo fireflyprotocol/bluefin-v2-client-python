@@ -713,15 +713,17 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get positions, Exception: {}".format(e)))
 
-    async def get_margin_bank_balance(self) -> float:
+    async def get_margin_bank_balance(self, userAddress: str = "") -> float:
         """
         Returns user's Margin Bank balance.
         """
         try:
+            if userAddress == "":
+                userAddress = self.account.getUserAddress()
             call_args = []
             call_args.append(self.contracts.get_bank_table_id())
             call_args.append(
-                {"type": "address", "value": self.account.getUserAddress()}
+                {"type": "address", "value": userAddress}
             )
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
