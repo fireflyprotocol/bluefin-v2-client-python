@@ -19,6 +19,8 @@ pip install bluefin_v2_client
 Alternatively, you could run:
 
 ```
+python -m venv .venv
+source .venv/bin/activate
 pip install .
 ```
 
