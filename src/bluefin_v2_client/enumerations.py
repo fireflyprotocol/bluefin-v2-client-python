@@ -4,6 +4,8 @@ from enum import Enum
 class ORDER_TYPE(Enum):
     LIMIT = "LIMIT"
     MARKET = "MARKET"
+    STOP_MARKET = "STOP_MARKET"
+    STOP_LIMIT = "STOP_LIMIT"
 
 
 class ORDER_SIDE(Enum):
@@ -35,6 +37,8 @@ class ORDER_STATUS(Enum):
     CANCELLED = "CANCELLED"
     REJECTED = "REJECTED"
     EXPIRED = "EXPIRED"
+    STAND_BY = "STAND_BY"
+    STAND_BY_PENDING = "STAND_BY_PENDING"
 
 
 class CANCEL_REASON(Enum):

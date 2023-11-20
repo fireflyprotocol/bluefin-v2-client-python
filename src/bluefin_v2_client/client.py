@@ -123,7 +123,11 @@ class BluefinClient:
         Returns:
             Order: order raw info
         """
-        expiration = current_unix_timestamp()
+        expiration = None
+        if "expiration" not in params:
+            expiration = current_unix_timestamp()
+        else:
+            expiration = params["expiration"]
         # MARKET ORDER set expiration of 1 minute
         if params["orderType"] == ORDER_TYPE.MARKET:
             expiration += TIME["SECONDS_IN_A_MINUTE"]
@@ -173,6 +177,9 @@ class BluefinClient:
         sui_params["quantity"] = to_base18(req["quantity"])
         sui_params["leverage"] = to_base18(req["leverage"])
 
+        if "triggerPrice" in sui_params:
+            sui_params["triggerPrice"] = to_base18(sui_params["triggerPrice"])
+
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
         order_signature = self.order_signer.sign_order(
@@ -197,6 +204,7 @@ class BluefinClient:
             timeInForce=default_value(
                 sui_params, "timeInForce", TIME_IN_FORCE.GOOD_TILL_TIME
             ),
+            triggerPrice=default_value(sui_params, "triggerPrice", None),
         )
 
     def create_signed_cancel_order(
@@ -213,10 +221,20 @@ class BluefinClient:
         Returns:
             OrderSignatureResponse: generated cancel signature
         """
+        if "ioc" in params and params["ioc"]:
+            params["timeInForce"] = TIME_IN_FORCE.IMMEDIATE_OR_CANCEL
+        if (
+            "timeInForce" in params
+            and params["timeInForce"] == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL
+        ):
+            params["ioc"] = True
         sui_params = deepcopy(params)
         sui_params["price"] = to_base18(params["price"])
         sui_params["quantity"] = to_base18(params["quantity"])
         sui_params["leverage"] = to_base18(params["leverage"])
+
+        if "triggerPrice" in sui_params:
+            sui_params["triggerPrice"] = to_base18(sui_params["triggerPrice"])
 
         order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign)
@@ -337,6 +355,7 @@ class BluefinClient:
                 "clientId": "bluefin-v2-client-python: {}".format(
                     default_value(params, "clientId", "bluefin-python-client")
                 ),
+                "triggerPrice": default_value(params, "triggerPrice", 0),
             },
             auth_required=True,
         )

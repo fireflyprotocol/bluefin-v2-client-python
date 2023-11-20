@@ -52,7 +52,7 @@ def toUsdcBase(number: Union[int, float]) -> int:
 
 def fromUsdcBase(number: Union[str, int]) -> float:
     """Converts a usdc quantity to number i.e. divide it by 1e6"""
-    return float(from_wei(number, "mwei"))
+    return float(from_wei(int(number), "mwei"))
 
 
 def numberToHex(num, pad=32):
