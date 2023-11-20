@@ -666,13 +666,13 @@ class BluefinClient:
         else:
             return False
 
-    async def get_native_chain_token_balance(self) -> float:
+    async def get_native_chain_token_balance(self, userAddress: str = None) -> float:
         """
         Returns user's native chain token (SUI) balance
         """
         try:
             callArgs = []
-            callArgs.append(self.account.getUserAddress())
+            callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append("0x2::sui::SUI")
 
             result = rpc_call_sui_function(
@@ -682,26 +682,26 @@ class BluefinClient:
         except Exception as e:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
-    def get_usdc_coins(self):
+    def get_usdc_coins(self, userAddress: str = None):
         """
         Returns the list of the usdc coins owned by user
         """
         try:
             callArgs = []
-            callArgs.append(self.account.getUserAddress())
+            callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
             result = rpc_call_sui_function(self.url, callArgs, method="suix_getCoins")
             return result
         except Exception as e:
             raise (Exception("Failed to get USDC coins, Exception: {}".format(e)))
 
-    async def get_usdc_balance(self) -> float:
+    async def get_usdc_balance(self, userAddress: str = None) -> float:
         """
         Returns user's USDC token balance on Bluefin.
         """
         try:
             callArgs = []
-            callArgs.append(self.account.getUserAddress())
+            callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
@@ -711,7 +711,7 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
 
-    async def get_user_position_from_chain(self, market: MARKET_SYMBOLS):
+    async def get_user_position_from_chain(self, market: MARKET_SYMBOLS, userAddress: str = None):
         """
         Returns the user positions from chain
         """
@@ -719,7 +719,7 @@ class BluefinClient:
             call_args = []
             call_args.append(self.contracts.get_position_table_id(market))
             call_args.append(
-                {"type": "address", "value": self.account.getUserAddress()}
+                {"type": "address", "value": userAddress or self.account.getUserAddress()}
             )
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
@@ -732,7 +732,7 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get positions, Exception: {}".format(e)))
 
-    async def get_margin_bank_balance(self) -> float:
+    async def get_margin_bank_balance(self, userAddress: str = None) -> float:
         """
         Returns user's Margin Bank balance.
         """
@@ -740,7 +740,7 @@ class BluefinClient:
             call_args = []
             call_args.append(self.contracts.get_bank_table_id())
             call_args.append(
-                {"type": "address", "value": self.account.getUserAddress()}
+                {"type": "address", "value": userAddress or self.account.getUserAddress()}
             )
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
