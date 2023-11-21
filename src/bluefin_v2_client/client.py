@@ -139,7 +139,8 @@ class BluefinClient:
 
         return Order(
             market=default_value(
-                params, "market", self.contracts.get_perpetual_id(params["symbol"])
+                params, "market", self.contracts.get_perpetual_id(
+                    params["symbol"])
             ),
             isBuy=params["side"] == ORDER_SIDE.BUY,
             price=params["price"],
@@ -257,9 +258,11 @@ class BluefinClient:
         """
         if isinstance(order_hash, list) is False:
             order_hash = [order_hash]
-        cancel_hash = self.order_signer.encode_message({"orderHashes": order_hash})
+        cancel_hash = self.order_signer.encode_message(
+            {"orderHashes": order_hash})
         hash_sig = (
-            self.order_signer.sign_hash(cancel_hash, self.account.privateKeyBytes, "")
+            self.order_signer.sign_hash(
+                cancel_hash, self.account.privateKeyBytes, "")
             + self.account.publicKeyBase64.decode()
         )
         return OrderCancellationRequest(
@@ -315,7 +318,8 @@ class BluefinClient:
             hashes.append(i["hash"])
 
         if len(hashes) > 0:
-            req = self.create_signed_cancel_orders(symbol, hashes, parentAddress)
+            req = self.create_signed_cancel_orders(
+                symbol, hashes, parentAddress)
             return await self.post_cancel_order(req)
 
         return False
@@ -360,7 +364,7 @@ class BluefinClient:
             auth_required=True,
         )
 
-    ## Contract calls
+    # Contract calls
     async def deposit_margin_to_bank(self, amount: int, coin_id: str = "") -> bool:
         """
         Deposits given amount of USDC from user's account to margin bank
@@ -546,12 +550,13 @@ class BluefinClient:
             )
             # If API is unsuccessful make direct contract call to update the leverage
             if 'error' in res:
-                result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
+                result = rpc_sui_executeTransactionBlock(
+                    self.url, txBytes, signature)
                 if result["result"]["effects"]["status"]["status"] == "success":
                     return True
                 else:
                     return False
-            
+
             return res
 
         res = await self.apis.post(
@@ -690,7 +695,8 @@ class BluefinClient:
             callArgs = []
             callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
-            result = rpc_call_sui_function(self.url, callArgs, method="suix_getCoins")
+            result = rpc_call_sui_function(
+                self.url, callArgs, method="suix_getCoins")
             return result
         except Exception as e:
             raise (Exception("Failed to get USDC coins, Exception: {}".format(e)))
@@ -753,7 +759,7 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
 
-    ## Market endpoints
+    # Market endpoints
     async def get_orderbook(self, params: GetOrderbookRequest):
         """
         Returns a dictionary containing the orderbook snapshot.
@@ -919,7 +925,7 @@ class BluefinClient:
         """
         return await self.apis.get(SERVICE_URLS["MARKET"]["CONTRACT_ADDRESSES"])
 
-    ## User endpoints
+    # User endpoints
 
     def get_account(self):
         """
@@ -1094,6 +1100,298 @@ class BluefinClient:
         raise Exception(
             "Not enough balance available, please merge your coins for get usdc"
         )
+
+  # Growth endpoints
+     async def generate_referral_code(self,params:GenerateReferralCodeRequest):
+        """
+            Inputs:
+                params(GenerateReferralCodeRequest): params required to generate referral code
+            Returns:
+                - GenerateReferralCodeResponse
+                    - referralAddress
+                    - referralCode
+                    - message?
+        """
+        return await self.apis.post(
+            SERVICE_URLS["GROWTH"]["GENERATE_CODE"],
+            params,
+            True
+        )
+    
+    async def link_referred_user(self,params:LinkReferredUserRequest):
+        """
+            Inputs:
+                params(LinkReferredUserRequest): params required to link referred user
+            Returns:
+                - LinkReferredUserResponse
+                    - referralCode
+                    - refereeAddress
+                    - campaignId
+                    - message
+        """
+        return await self.apis.post(
+            SERVICE_URLS["GROWTH"]["LINK_REFERRED_USER"],
+            params,
+            True
+        )
+    
+    async def get_referrer_info(self,campaignId:int, parentAddress:str):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch referrer info for
+            Returns:
+                - GetReferrerInfoResponse
+                    - isReferee
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["REFERRER_INFO"],
+            {"campaignId": campaignId, "parentAddress":parentAddress},
+            True
+        )
+    
+    async def get_campaign_details(self):
+        """
+            Returns:
+                - list of GetCampaignDetailsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["CAMPAIGN_DETAILS"]
+        )
+    
+    async def get_campaign_rewards(self,campaignId:int, parentAddress: str):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch rewards of
+            Returns:
+                - GetCampaignRewardsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["CAMPAIGN_REWARDS"],
+            {"campaignId": campaignId, "parentAddress":parentAddress },
+            True
+        )
+    
+    async def get_affiliate_payouts(self,campaignId:int,parentAddress:str ):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch payouts of
+            Returns:
+                - List of GetAffiliatePayoutsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["AFFILIATE_PAYOUTS"],
+            {"campaignId": campaignId,"parentAddress":parentAddress},
+            True
+        )
+    
+    async def get_affiliate_referee_details(self,params:GetAffiliateRefereeDetailsRequest):
+        """
+            Inputs:
+                params: GetAffiliateRefereeDetailsRequest
+            Returns:
+                - GetAffiliateRefereeDetailsRequestGetAffiliatePayoutsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["AFFILIATE_REFEREE_DETAILS"],
+            params,
+            True
+        )
+    
+    async def get_affiliate_referee_count(self,campaignId:int, parentAddress:str):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch referee count of
+            Returns:
+                - GetAffiliateRefereeCountResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["AFFILIATE_REFEREE_DETAILS"],
+            {"campaignId": campaignId, "parentAddress":parentAddress},
+            True
+        )
+    
+    async def get_user_rewards_history(self,params:GetUserRewardsHistoryRequest):
+        """
+            Inputs:
+                params: GetUserRewardsHistoryRequest
+            Returns:
+                - GetUserRewardsHistoryResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["USER_REWARDS_HISTORY"],
+            params,
+            True
+        )
+    
+    async def get_user_rewards_summary(self,parentAddress:str):
+        """
+            Returns:
+                - List of GetUserRewardsSummaryResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["USER_REWARDS_SUMMARY"],
+            { "parentAddress":parentAddress},
+            True
+        )
+    
+    async def get_trade_and_earn_rewards_overview(self,campaignId:int, parentAddress:str):
+        """
+            Inputs:
+                campaignId: represents campaign id for which user wants to fetch rewards overview of
+            Returns:
+                - GetTradeAndEarnRewardsOverviewResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["REWARDS_OVERVIEW"],
+            {"campaignId": campaignId, "parentAddress": parentAddress},
+            True
+        )
+    
+    async def get_trade_and_earn_rewards_detail(self,params:GetTradeAndEarnRewardsDetailRequest):
+        """
+            Inputs:
+                params: GetTradeAndEarnRewardsDetailRequest
+            Returns:
+                - GetTradeAndEarnRewardsDetailResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["REWARDS_DETAILS"],
+            params,
+            True
+        )
+    
+    async def get_total_historical_trading_rewards(self, parentAddress:str):
+        """
+            Returns:
+                - GetTotalHistoricalTradingRewardsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["TOTAL_HISTORICAL_TRADING_REWARDS"],
+            {"parentAddress":parentAddress},
+            True
+        )
+    
+    async def get_maker_rewards_summary(self, parentAddress: str):
+        """
+            Returns:
+                - GetMakerRewardsSummaryResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["MAKER_REWARDS_SUMMARY"],
+            {"parentAddress":parentAddress},
+            True
+        )
+    
+    async def get_maker_reward_details(self,params:GetMakerRewardDetailsRequest):
+        """
+            Inputs:
+                params: GetMakerRewardDetailsRequest
+            Returns:
+                - GetMakerRewardDetailsResponse
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["MAKER_REWARDS_DETAILS"],
+            params,
+            True
+        )
+
+    async def get_user_white_list_status_for_market_maker(self):
+        """
+            Returns:
+                - GetUserWhiteListStatusForMarkeMaker
+        """
+        return await self.apis.get(
+            SERVICE_URLS["GROWTH"]["MAKER_WHITELIST_STATUS"],
+            {},
+            True
+        )
+    
+    #open referral program
+
+    async def get_open_referral_referee_details(self, params: CursorPaginationPayload):
+        """
+        Get open referral referee details.
+
+        Args:
+            params (CursorPaginationPayload): Parameters for pagination.
+
+        Returns:
+            dict: Response containing referee details.
+        """
+        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_REFEREE_DETAILS"]
+        response = self.apis.get(url, params, True)
+        return response  # Returns a dictionary containing referee details.
+
+    async def get_open_referral_details(self, campaignId, parentAddress: str)):
+        """
+        Get open referral details.
+
+        Args:
+            campaignId: The campaign ID.
+
+        Returns:
+            dict: Response containing open referral details.
+        """
+        params = {"campaignId": campaignId, "parentAddress": parentAddress}
+        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_REFEREES_COUNT"]
+        response = self.apis.get(url, params, True)
+        return response  # Returns a dictionary containing open referral details.
+
+    async def get_open_referral_payouts(self, params: CursorPaginationPayload):
+        """
+        Get open referral payouts.
+
+        Args:
+            params (CursorPaginationPayload): Parameters for pagination.
+
+        Returns:
+            dict: Response containing open referral payouts.
+        """
+        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_PAYOUTS"]
+        response = self.apis.get(url, params, True)
+        return response  # Returns a dictionary containing open referral payouts.
+
+    async def generate_open_referral_referral_code(self, campaignId, parentAddress:str):
+        """
+        Generate open referral referral code.
+
+        Args:
+            campaignId: The campaign ID.
+
+        Returns:
+            dict: Response containing the generated referral code.
+        """
+        data = {"campaignId": campaignId, "parentAddress":parentAddress}
+        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_GENERATE_CODE"]
+        response = self.apis.post(url, data, True)
+        return response  # Returns a dictionary containing the generated referral code.
+
+    async def get_open_referral_overview(self,parentAddress:str ):
+        """
+        Get open referral overview.
+
+        Returns:
+        dict: Response containing an overview of open referrals.
+        """
+        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_OVERVIEW"]
+        response = self.apis.get(url, {"parentAddress":parentAddress}, True)
+        return response  # Returns a dictionary containing an overview of open referrals.
+
+    async def open_referral_link_referred_user(self, referralCode):
+        """
+        Link an open referral to a referred user.
+
+        Args:
+            referralCode: The referral code.
+
+        Returns:
+            bool: True if the linking was successful, False otherwise.
+        """
+        data = {"referralCode": referralCode}
+        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_LINK_REFERRED_USER"]
+        response = self.apis.post(url, data, True)
+        return response  # Returns a boolean indicating success or failure.
+
 
     def set_uuid(self, uuid):
         self.apis.set_uuid(uuid)
