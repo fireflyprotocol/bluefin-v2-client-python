@@ -123,7 +123,11 @@ class BluefinClient:
         Returns:
             Order: order raw info
         """
-        expiration = current_unix_timestamp()
+        expiration = None
+        if "expiration" not in params:
+            expiration = current_unix_timestamp()
+        else:
+            expiration = params["expiration"]
         # MARKET ORDER set expiration of 1 minute
         if params["orderType"] == ORDER_TYPE.MARKET:
             expiration += TIME["SECONDS_IN_A_MINUTE"]
@@ -173,6 +177,9 @@ class BluefinClient:
         sui_params["quantity"] = to_base18(req["quantity"])
         sui_params["leverage"] = to_base18(req["leverage"])
 
+        if "triggerPrice" in sui_params:
+            sui_params["triggerPrice"] = to_base18(sui_params["triggerPrice"])
+
         order = self.create_order_to_sign(sui_params)
         symbol = sui_params["symbol"].value
         order_signature = self.order_signer.sign_order(
@@ -197,6 +204,7 @@ class BluefinClient:
             timeInForce=default_value(
                 sui_params, "timeInForce", TIME_IN_FORCE.GOOD_TILL_TIME
             ),
+            triggerPrice=default_value(sui_params, "triggerPrice", None),
         )
 
     def create_signed_cancel_order(
@@ -213,10 +221,20 @@ class BluefinClient:
         Returns:
             OrderSignatureResponse: generated cancel signature
         """
+        if "ioc" in params and params["ioc"]:
+            params["timeInForce"] = TIME_IN_FORCE.IMMEDIATE_OR_CANCEL
+        if (
+            "timeInForce" in params
+            and params["timeInForce"] == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL
+        ):
+            params["ioc"] = True
         sui_params = deepcopy(params)
         sui_params["price"] = to_base18(params["price"])
         sui_params["quantity"] = to_base18(params["quantity"])
         sui_params["leverage"] = to_base18(params["leverage"])
+
+        if "triggerPrice" in sui_params:
+            sui_params["triggerPrice"] = to_base18(sui_params["triggerPrice"])
 
         order_to_sign = self.create_order_to_sign(sui_params)
         hash_val = self.order_signer.get_order_hash(order_to_sign)
@@ -337,6 +355,7 @@ class BluefinClient:
                 "clientId": "bluefin-v2-client-python: {}".format(
                     default_value(params, "clientId", "bluefin-python-client")
                 ),
+                "triggerPrice": default_value(params, "triggerPrice", 0),
             },
             auth_required=True,
         )
@@ -511,11 +530,29 @@ class BluefinClient:
                 typeArguments=[self.contracts.get_currency_type()],
             )
             signature = self.contract_signer.sign_tx(txBytes, self.account)
-            result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
-            if result["result"]["effects"]["status"]["status"] == "success":
-                return True
-            else:
-                return False
+            separator = "||||"  # Choose a separator that won't appear in txBytes or signature
+            combined_data = f"{txBytes}{separator}{signature}"
+            encoded_data = combined_data.encode().hex()
+            res = await self.apis.post(
+                SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
+                {
+                    "symbol": symbol.value,
+                    "address": account_address,
+                    "leverage": to_base18(leverage),
+                    "marginType": MARGIN_TYPE.ISOLATED.value,
+                    "signedTransaction": encoded_data
+                },
+                auth_required=True,
+            )
+            # If API is unsuccessful make direct contract call to update the leverage
+            if 'error' in res:
+                result = rpc_sui_executeTransactionBlock(self.url, txBytes, signature)
+                if result["result"]["effects"]["status"]["status"] == "success":
+                    return True
+                else:
+                    return False
+            
+            return res
 
         res = await self.apis.post(
             SERVICE_URLS["USER"]["ADJUST_LEVERAGE"],
@@ -629,13 +666,13 @@ class BluefinClient:
         else:
             return False
 
-    async def get_native_chain_token_balance(self) -> float:
+    async def get_native_chain_token_balance(self, userAddress: str = None) -> float:
         """
         Returns user's native chain token (SUI) balance
         """
         try:
             callArgs = []
-            callArgs.append(self.account.getUserAddress())
+            callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append("0x2::sui::SUI")
 
             result = rpc_call_sui_function(
@@ -645,26 +682,26 @@ class BluefinClient:
         except Exception as e:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
-    def get_usdc_coins(self):
+    def get_usdc_coins(self, userAddress: str = None):
         """
         Returns the list of the usdc coins owned by user
         """
         try:
             callArgs = []
-            callArgs.append(self.account.getUserAddress())
+            callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
             result = rpc_call_sui_function(self.url, callArgs, method="suix_getCoins")
             return result
         except Exception as e:
             raise (Exception("Failed to get USDC coins, Exception: {}".format(e)))
 
-    async def get_usdc_balance(self) -> float:
+    async def get_usdc_balance(self, userAddress: str = None) -> float:
         """
         Returns user's USDC token balance on Bluefin.
         """
         try:
             callArgs = []
-            callArgs.append(self.account.getUserAddress())
+            callArgs.append(userAddress or self.account.getUserAddress())
             callArgs.append(self.contracts.get_currency_type())
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
@@ -674,7 +711,7 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
 
-    async def get_user_position_from_chain(self, market: MARKET_SYMBOLS):
+    async def get_user_position_from_chain(self, market: MARKET_SYMBOLS, userAddress: str = None):
         """
         Returns the user positions from chain
         """
@@ -682,7 +719,7 @@ class BluefinClient:
             call_args = []
             call_args.append(self.contracts.get_position_table_id(market))
             call_args.append(
-                {"type": "address", "value": self.account.getUserAddress()}
+                {"type": "address", "value": userAddress or self.account.getUserAddress()}
             )
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
@@ -695,7 +732,7 @@ class BluefinClient:
         except Exception as e:
             raise (Exception("Failed to get positions, Exception: {}".format(e)))
 
-    async def get_margin_bank_balance(self) -> float:
+    async def get_margin_bank_balance(self, userAddress: str = None) -> float:
         """
         Returns user's Margin Bank balance.
         """
@@ -703,7 +740,7 @@ class BluefinClient:
             call_args = []
             call_args.append(self.contracts.get_bank_table_id())
             call_args.append(
-                {"type": "address", "value": self.account.getUserAddress()}
+                {"type": "address", "value": userAddress or self.account.getUserAddress()}
             )
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
