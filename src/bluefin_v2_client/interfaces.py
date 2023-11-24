@@ -444,4 +444,9 @@ class GetMakerRewardDetailsResponse(TypedDict):
 
 
 class GetUserWhiteListStatusForMarkeMakerResponse(TypedDict):
-    isWhitelist: bool
+  isWhitelist: bool
+
+
+class CursorPaginationPayload(TypedDict):
+  pageSize: int  # will get only provided number of orders must be <= 50
+  cursor: int 
