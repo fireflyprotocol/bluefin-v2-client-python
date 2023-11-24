@@ -943,35 +943,6 @@ class BluefinClient:
         response = self.apis.get(url, params, True)
         return response  # Returns a dictionary containing referee details.
 
-    async def get_open_referral_details(self, campaignId):
-        """
-        Get open referral details.
-
-        Args:
-            campaignId: The campaign ID.
-
-        Returns:
-            dict: Response containing open referral details.
-        """
-        params = {"campaignId": campaignId}
-        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_REFEREES_COUNT"]
-        response = self.apis.get(url, params, True)
-        return response  # Returns a dictionary containing open referral details.
-
-    async def get_open_referral_payouts(self, params: CursorPaginationPayload):
-        """
-        Get open referral payouts.
-
-        Args:
-            params (CursorPaginationPayload): Parameters for pagination.
-
-        Returns:
-            dict: Response containing open referral payouts.
-        """
-        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_PAYOUTS"]
-        response = self.apis.get(url, params, True)
-        return response  # Returns a dictionary containing open referral payouts.
-
     async def generate_open_referral_referral_code(self, campaignId):
         """
         Generate open referral referral code.
@@ -986,17 +957,6 @@ class BluefinClient:
         url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_GENERATE_CODE"]
         response = self.apis.post(url, data, True)
         return response  # Returns a dictionary containing the generated referral code.
-
-    async def get_open_referral_overview(self):
-        """
-        Get open referral overview.
-
-        Returns:
-        dict: Response containing an overview of open referrals.
-        """
-        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_OVERVIEW"]
-        response = self.apis.get(url, None, True)
-        return response  # Returns a dictionary containing an overview of open referrals.
 
     async def open_referral_link_referred_user(self, referralCode):
         """
@@ -1404,21 +1364,6 @@ class BluefinClient:
         )
     
     #open referral program
-
-    async def get_open_referral_referee_details(self, params: CursorPaginationPayload):
-        """
-        Get open referral referee details.
-
-        Args:
-            params (CursorPaginationPayload): Parameters for pagination.
-
-        Returns:
-            dict: Response containing referee details.
-        """
-        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_REFEREE_DETAILS"]
-        response = self.apis.get(url, params, True)
-        return response  # Returns a dictionary containing referee details.
-
     async def get_open_referral_details(self, campaignId, parentAddress: str=""):
         """
         Get open referral details.
@@ -1448,22 +1393,6 @@ class BluefinClient:
         url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_PAYOUTS"]
         response = self.apis.get(url, params, True)
         return response  # Returns a dictionary containing open referral payouts.
-
-    async def generate_open_referral_referral_code(self, campaignId, parentAddress:str=""):
-        """
-        Generate open referral referral code.
-
-        Args:
-            campaignId: The campaign ID.
-            parentAddress (Optional)
-
-        Returns:
-            dict: Response containing the generated referral code.
-        """
-        data = {"campaignId": campaignId, "parentAddress":parentAddress}
-        url = SERVICE_URLS["GROWTH"]["OPEN_REFERRAL_GENERATE_CODE"]
-        response = self.apis.post(url, data, True)
-        return response  # Returns a dictionary containing the generated referral code.
 
     async def get_open_referral_overview(self,parentAddress:str="" ):
         """
