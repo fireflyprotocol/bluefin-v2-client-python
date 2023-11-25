@@ -275,8 +275,6 @@ class GenerateReferralCodeResponse(TypedDict):
 
 class LinkReferredUserRequest(TypedDict):
     referralCode: str
-    campaignId: int
-
 
 class LinkReferredUserResponse(TypedDict):
     referralCode: str
