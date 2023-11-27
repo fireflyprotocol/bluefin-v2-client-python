@@ -263,177 +263,163 @@ class PostTimerResponse(TypedDict):
 
 
 class GenerateReferralCodeRequest(TypedDict):
-    referralCode: str
-    campaignId: int
-
+  referralCode: str
+  campaignId: int
 
 class GenerateReferralCodeResponse(TypedDict):
-    referralAddress: str
-    referralCode: str
-    message: str
-
+  referralAddress: str
+  referralCode: str
+  message: str
 
 class LinkReferredUserRequest(TypedDict):
     referralCode: str
 
 class LinkReferredUserResponse(TypedDict):
-    referralCode: str
-    refereeAddress: str
-    campaignId: int
-    message: str
-
+  referralCode: str
+  refereeAddress: str
+  campaignId: int
+  message: str
 
 class GetReferrerInfoResponse(TypedDict):
-    isReferee: bool
+  isReferee: bool
 
 
 class CampaignDetailsConfig(TypedDict):
-    cashShare: str
-    tokenShare: str
-    shareOfFees: str
-    refereeDiscount: str
-
+  cashShare: str
+  tokenShare: str
+  shareOfFees: str
+  refereeDiscount: str
 
 class GetCampaignDetailsResponse(TypedDict):
-    id: str
-    campaignName: str
-    parentCampaignName: str
-    startDate: str
-    endDate: str
-    isActive: bool
-    epochDurationSeconds: int
-    config: CampaignDetailsConfig
-    createdAt: str
-    updatedAt: str
-
+  id: str
+  campaignName: str
+  parentCampaignName: str
+  startDate: str
+  endDate: str
+  isActive: bool
+  epochDurationSeconds: int
+  config: CampaignDetailsConfig
+  createdAt: str
+  updatedAt: str
 
 class GetCampaignRewardsResponse(TypedDict):
-    campaignName: str
-    campaignConfig: CampaignDetailsConfig
-    cashReward: str
-    tokenReward: str
-
+  campaignName: str
+  campaignConfig: CampaignDetailsConfig
+  cashReward: str
+  tokenReward: str
 
 class GetAffiliatePayoutsResponse(TypedDict):
-    epStartDate: str
-    epEndDate: str
-    isActive: bool
-    totalReferralFees: str
-    cashReward: str
-    tokenReward: str
-    epochNumber: str
-
+  epStartDate: str
+  epEndDate: str
+  isActive: bool
+  totalReferralFees: str
+  cashReward: str
+  tokenReward: str
+  epochNumber: str
 
 class GetAffiliateRefereeDetailsRequest(TypedDict):
-    campaignId: int
-    pageNumber: int
-    pageSize: int
-
-
+  campaignId: int
+  pageNumber: int
+  pageSize: int
+  parentAddress: str 
 class AffiliateRefereeDetailsData(TypedDict):
-    userAddress: str
-    lastTraded: str
-    dateJoined: str
-    feesPaid: str
-
+  userAddress: str
+  lastTraded: str
+  dateJoined: str
+  feesPaid: str
 
 class GetAffiliateRefereeDetailsResponse(TypedDict):
-    data: List[AffiliateRefereeDetailsData]
-    nextCursor: int
-    isMoreDataAvailable: bool
+  data: List[AffiliateRefereeDetailsData]
+  nextCursor: int
+  isMoreDataAvailable: bool
 
 
 class GetAffiliateRefereeCountResponse(TypedDict):
-    referralCode: str
-    referralCount: int
+  referralCode: str
+  referralCount: int
 
 
 class GetUserRewardsHistoryRequest(TypedDict):
-    pageSize: int
-    cursor: int
-
+  pageSize: int
+  cursor: int
+  parentAddress: str 
 
 class UserRewardsHistoryData(TypedDict):
-    programName: str
-    parentProgramName: str
-    startDate: str
-    endDate: str
-    cashReward: str
-    tokenReward: str
-    isActive: bool
-    cursor: str
-    epochNumber: str
-
+  programName: str
+  parentProgramName: str
+  startDate: str
+  endDate: str
+  cashReward: str
+  tokenReward: str
+  isActive: bool
+  cursor: str
+  epochNumber: str
 
 class GetUserRewardsHistoryResponse(TypedDict):
-    data: List[UserRewardsHistoryData]
-    nextCursor: int
-    isMoreDataAvailable: bool
-
+  data: List[UserRewardsHistoryData]
+  nextCursor: int
+  isMoreDataAvailable: bool
 
 class RewardsSummaryData(TypedDict):
-    campaignName: str
-    totalCashReward: str
-    totalTokenReward: str
-
+  campaignName: str
+  totalCashReward: str
+  totalTokenReward: str
 
 class GetUserRewardsSummaryResponse(TypedDict):
-    totalTokenReward: str
-    totalCashReward: str
-    campaignData: List[RewardsSummaryData]
-
+  totalTokenReward: str
+  totalCashReward: str
+  campaignData: List[RewardsSummaryData]
 
 class GetTradeAndEarnRewardsOverviewResponse(TypedDict):
-    totalHistoricalRewards: str
-    totalActiveRewards: str
-    totalFeePaid: str
-    latestEpochNumber: str
-    latestEpochStart: int
-    latestEpochEnd: int
-    latestEpochTotalFee: str
-    latestEpochTotalRewards: str
+  totalHistoricalRewards: str
+  totalActiveRewards: str
+  totalFeePaid: str
+  latestEpochNumber: str
+  latestEpochStart: int
+  latestEpochEnd: int
+  latestEpochTotalFee: str
+  latestEpochTotalRewards: str
 
 
 class GetTradeAndEarnRewardsDetailRequest(TypedDict):
-    campaignId: int
-    pageSize: int
-    cursor: int
-
+  campaignId: int
+  pageSize: int
+  cursor: int
+  parentAddress: str 
 
 class TradeAndEarnRewardsDetailData(TypedDict):
-    tradingRewards: str
-    feePaid: str
-    cursor: str
-    id: int
-    isActive: bool
-    startDate: str
-    endDate: str
-    epochNumber: str
-
+  tradingRewards: str
+  feePaid: str
+  cursor: str
+  id: int
+  isActive: bool
+  startDate: str
+  endDate: str
+  epochNumber: str
 
 class GetTradeAndEarnRewardsDetailResponse(TypedDict):
-    data: List[TradeAndEarnRewardsDetailData]
-    nextCursor: str
-    isMoreDataAvailable: bool
-
+  data: List[TradeAndEarnRewardsDetailData]
+  nextCursor: str
+  isMoreDataAvailable: bool
 
 class GetTotalHistoricalTradingRewardsResponse(TypedDict):
-    totalTokenRewards: str
-
+  totalTokenRewards: str
 
 class GetMakerRewardsSummaryResponse(TypedDict):
-    latestEpochStart: int
-    latestEpochEnd: int
-    latestEpochNumber: str
-    latestEpochTotalRewards: str
-    totalActiveRewards: str
-    totalHistoricalRewards: str
-
+  latestEpochStart: int
+  latestEpochEnd: int
+  latestEpochNumber: str
+  latestEpochTotalRewards: str
+  totalActiveRewards: str
+  totalHistoricalRewards: str
 
 class GetMakerRewardDetailsRequest(TypedDict):
-    symbol: str
-    pageSize: int
-    cursor: int
+  symbol: str
+  pageSize: int
+  cursor: int
+  parentAddress: str 
+
+
 
 
 class MakerRewardDetailsData(TypedDict):
