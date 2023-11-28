@@ -272,8 +272,7 @@ class GenerateReferralCodeResponse(TypedDict):
   message: str
 
 class LinkReferredUserRequest(TypedDict):
-  referralCode: str
-  campaignId: int
+    referralCode: str
 
 class LinkReferredUserResponse(TypedDict):
   referralCode: str
