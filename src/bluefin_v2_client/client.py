@@ -1154,7 +1154,7 @@ class BluefinClient:
         )
 
   # Growth endpoints
-     async def generate_referral_code(self,params:GenerateReferralCodeRequest):
+    async def generate_referral_code(self,params:GenerateReferralCodeRequest):
         """
             Inputs:
                 params(GenerateReferralCodeRequest): params required to generate referral code
