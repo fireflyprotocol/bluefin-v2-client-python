@@ -22,7 +22,7 @@ Alternatively, you could run:
 pip install .
 ```
 
-The package currently supports python `>=3.8`. Find complete documentation on the library at https://docs.bluefin.io/.
+The package currently supports python `>=3.8`. Find complete documentation on the library at https://bluefin-exchange.readme.io/v2.0/reference/introduction.
 
 ### Getting Started
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
   loop.close()
 ```
 
-​Here is the [list](https://docs.bluefin.io/8/2.readonly-access-data) of APIs that can be accessed in `read-only` mode.
+​Here is the [list](https://bluefin-exchange.readme.io/v2.0/reference/read-only-token-permissions) of APIs that can be accessed in `read-only` mode.
 
 **Placing Orders:**
 
