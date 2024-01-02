@@ -16,6 +16,8 @@ class ORDER_SIDE(Enum):
 class MARKET_SYMBOLS(Enum):
     BTC = "BTC-PERP"
     ETH = "ETH-PERP"
+    SOL = "SOL-PERP"
+    SUI = "SUI-PERP"
 
 
 class TIME_IN_FORCE(Enum):
