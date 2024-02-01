@@ -1,6 +1,6 @@
 [project]
 name = "bluefin_v2_client"
-version = "4.2.9"
+version = "4.2.10"
 description = "Library to interact with Bluefin exchange protocol including its off-chain api-gateway and on-chain contracts"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -22,8 +22,8 @@ dependencies = [
   'ecdsa ~= 0.18.0',
   'ed25519-blake2b ~= 1.4',
   'frozenlist ~= 1.4.0',
-  'gevent ~= 23.7.0',
-  'greenlet ~= 2.0.2',
+  'gevent ~= 23.9.1',
+  'greenlet ~= 3.0.3',
   'idna ~= 3.4',
   'multidict ~= 6.0.4',
   'netifaces ~= 0.10.6',
