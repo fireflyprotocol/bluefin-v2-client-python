@@ -8,13 +8,12 @@ bip-utils==2.7.1
 cbor2==5.4.6
 cffi==1.15.1
 charset-normalizer==3.2.0
-coincurve==17.0.0
 crcmod==1.7
 ecdsa==0.18.0
 ed25519-blake2b==1.4
 frozenlist==1.4.0
-gevent==23.7.0
-greenlet==2.0.2
+gevent>=23.9.1
+greenlet>=3.0.3
 idna==3.4
 multidict==6.0.4
 netifaces==0.10.6
