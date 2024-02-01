@@ -35,7 +35,6 @@ dependencies = [
   'python-socketio ~= 5.8.0',
   'six ~= 1.16.0',
   'socketio ~= 0.2.1',
-  'websocket ~= 0.2.1',
   'websocket-client ~= 1.6.2',
   'yarl ~= 1.9.2',
   'zope.event ~= 5.0',
