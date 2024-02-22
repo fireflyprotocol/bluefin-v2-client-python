@@ -18,7 +18,6 @@ class MARKET_SYMBOLS(Enum):
     ETH = "ETH-PERP"
     SOL = "SOL-PERP"
     SUI = "SUI-PERP"
-
     ARB = "ARB-PERP"
     APT = "APT-PERP"
     AVAX = "AVAX-PERP"
