@@ -18,8 +18,13 @@ class MARKET_SYMBOLS(Enum):
     ETH = "ETH-PERP"
     SOL = "SOL-PERP"
     SUI = "SUI-PERP"
-
-
+    ARB = "ARB-PERP"
+    APT = "APT-PERP"
+    AVAX = "AVAX-PERP"
+    TIA = "TIA-PERP"
+    MATIC = "MATIC-PERP"
+    SEI = "SEI-PERP"
+    
 class TIME_IN_FORCE(Enum):
     IMMEDIATE_OR_CANCEL = "IOC"
     GOOD_TILL_TIME = "GTT"
