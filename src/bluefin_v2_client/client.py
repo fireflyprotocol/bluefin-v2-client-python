@@ -1089,8 +1089,8 @@ class BluefinClient:
                 return from1e18(int(i["selectedLeverage"]))
             
         exchange_info_by_market = await self.get_exchange_info(symbol.value)
-        # todo fetch from exchange info route
-        return exchange_info_by_market.defaultLeverage
+        
+        return from1e18(int(exchange_info_by_market['defaultLeverage']))
 
     async def get_cancel_on_disconnect_timer(
         self, params: GetCancelOnDisconnectTimerRequest = None
