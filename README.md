@@ -13,7 +13,7 @@ Python Client for the Bluefin Exchange API and SUI Contracts.
 The package can be installed from [PyPi](https://pypi.org/project/bluefin-v2-client-python/) using pip:
 
 ```
-pip install bluefin_v2_client
+pip install bluefin_v2_client_sui
 ```
 
 Alternatively, you could run:
