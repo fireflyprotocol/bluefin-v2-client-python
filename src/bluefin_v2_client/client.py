@@ -335,6 +335,9 @@ class BluefinClient:
         Returns:
             OrderSignatureResponse: order raw info and generated signature
         """
+        
+        if params["reduceOnly"]:
+            print("Warning: Reduce Only feature is deprecated until further notice. Reduce Only orders will be rejected from the API.")
 
         return await self.apis.post(
             SERVICE_URLS["ORDERS"]["ORDERS"],
