@@ -24,6 +24,8 @@ class MARKET_SYMBOLS(Enum):
     TIA = "TIA-PERP"
     POL = "POL-PERP"
     SEI = "SEI-PERP"
+    SEND = "SEND-PERP"
+    DEEP = "DEEP-PERP"
     
 class TIME_IN_FORCE(Enum):
     IMMEDIATE_OR_CANCEL = "IOC"
