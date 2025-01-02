@@ -26,6 +26,7 @@ class MARKET_SYMBOLS(Enum):
     SEI = "SEI-PERP"
     SEND = "SEND-PERP"
     DEEP = "DEEP-PERP"
+    BLUE = "BLUE-PERP"
     
 class TIME_IN_FORCE(Enum):
     IMMEDIATE_OR_CANCEL = "IOC"
