@@ -840,6 +840,24 @@ class BluefinClient:
             SERVICE_URLS["USER"]["FUNDING_HISTORY"], params, auth_required=True
         )
 
+    async def get_off_chain_settlement_updates(self, params: GetOffchainSettlementUpdatesRequest):
+        """
+        Returns a list of the user's offchain settlement updates records, a boolean indicating if there is/are more page(s),
+            and the next page number
+        Inputs:
+            params(GetOffchainSettlementUpdatesRequest): params are optional to filter out the data
+        Returns:
+            GetOffchainSettlementUpdatesResponse:
+                isMoreDataAvailable: boolean indicating if there is/are more page(s)
+                nextCursor: the next page number
+                data: a list of the user's offchain settlement updates
+        """
+        params = extract_enums(params, ["symbol"])
+        
+        return await self.apis.get(
+            SERVICE_URLS["USER"]["OFFCHAIN_SETTLEMENT_UPDATES"], params, auth_required=True
+        )
+
     async def get_market_meta_info(self, symbol: MARKET_SYMBOLS = None):
         """
         Returns a dictionary containing market meta info.
