@@ -217,7 +217,39 @@ class GetTransferHistoryRequest(TypedDict):
     cursor: int  # will fetch particular page records. A single page contains 50 records.
     action: str  # (optional) Deposit / Withdraw
 
+class GetOffchainSettlementUpdatesRequest(TypedDict):
+    symbol: MARKET_SYMBOLS # (optional) will fetch settlements of provided market
+    orderHash: str # (optional) will fetch settlement updates of provided order hash
+    action: List[str] # (optional) if not given provides all "SENT_FOR_SETTLEMENT", "REQUEUING_ORDER", "CANCELLING_ORDER" updates
+    pageSize: int # (optional) will get only provided number of records, default is 100
+    pageNumber: int # (optional) will fetch particular page records. A single page contains 50 records.
+    parentAddress: str # (optional) provide if you wish to fetch updates from sub account for parent account
 
+class MatchedOrderData(TypedDict):
+    fillPrice: str
+    quantity: str
+
+class OffchainSettlementUpdatesResponse(TypedDict):
+    id: int # unique id
+    symbol: str # market symbol name
+    orderHash: str # unique order hash
+    userAddress: str # user public address
+    quantity: str # Quantity of the order
+    actionType: str # latest action performed on the order hash
+    fillId: str # fill id / settlement id
+    isMaker: bool # is order maker
+    avgFillPrice: str # order average fill price
+    matchedOrders: List[MatchedOrderData] # list of matched orders
+    createdAt: int # Time of creation
+    updatedAt: int # Updation time
+    createdAtInMs: int # Time of creation in ms
+    updatedAtInMs: int # Updation time in ms
+
+class GetOffchainSettlementUpdatesResponse(TypedDict):
+    isMoreDataAvailable: bool  # boolean indicating if there is more data available
+    nextCursor: int  # next page number
+    data: List[OffchainSettlementUpdatesResponse]
+    
 class UserTransferHistoryResponse(TypedDict):
     id: int  # unique id
     status: str  # status of transaction

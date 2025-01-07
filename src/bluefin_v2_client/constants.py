@@ -71,6 +71,7 @@ SERVICE_URLS = {
         "FUNDING_HISTORY": "/userFundingHistory",
         "CANCEL_ON_DISCONNECT": "/dms-countdown",
         "USER_TRADES_HISTORY": "/userTradesHistory",
+        "OFFCHAIN_SETTLEMENT_UPDATES": "/off-chain-settlement-updates",
     },
     "GROWTH": {
     "REFERRER_INFO": "/growth/getReferrerInfo",
