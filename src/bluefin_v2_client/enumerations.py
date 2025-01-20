@@ -27,6 +27,7 @@ class MARKET_SYMBOLS(Enum):
     SEND = "SEND-PERP"
     DEEP = "DEEP-PERP"
     BLUE = "BLUE-PERP"
+    TRUMP = "TRUMP-PERP"
     
 class TIME_IN_FORCE(Enum):
     IMMEDIATE_OR_CANCEL = "IOC"
