@@ -9,9 +9,8 @@ from .constants import SUI_CLOCK_OBJECT_ID, TIME, SERVICE_URLS
 from .sockets_lib import Sockets
 from .websocket_client import WebsocketClient
 from .signer import Signer
-from .utilities import *
+from sui_utils import *
 from .rpc import *
-from .account import *
 from .interfaces import *
 from .enumerations import *
 
