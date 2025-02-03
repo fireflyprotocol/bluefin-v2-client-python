@@ -130,8 +130,12 @@ Initializes the RFQClient.
 - `url` (str): RPC URL of the chain node.
 - `rfq_contracts` (RFQContracts): Instance of RFQContracts.
 
+### `create_quote(...) -> Quote`
+### `sign_quote(quote: Quote) -> str`
 ### `create_and_sign_quote(...) -> Tuple[Quote, str]`
-Creates and signs a quote.
+
+
+Creates (and signs) a quote.
 
 #### Parameters:
 - `vault` (str): On-chain vault object ID.
