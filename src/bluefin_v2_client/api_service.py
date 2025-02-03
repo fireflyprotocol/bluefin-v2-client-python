@@ -1,4 +1,3 @@
-import json
 import aiohttp
 from .interfaces import *
 

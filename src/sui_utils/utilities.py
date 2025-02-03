@@ -1,6 +1,5 @@
 import binascii
 from datetime import datetime
-import math
 from random import randint
 import time
 import random
@@ -174,3 +173,32 @@ def config_logging(logging, logging_level, log_file: str = None):
         format="%(asctime)s.%(msecs)03d UTC %(levelname)s %(name)s: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+def decimal_to_bcs(self, num):
+        # Initialize an empty list to store the BCS bytes
+        bcs_bytes = []
+        while num > 0:
+            # Take the last 7 bits of the number
+            bcs_byte = num & 0x7F
+
+            # Set the most significant bit (MSB) to 1 if there are more bytes to follow
+            if num > 0x7F:
+                bcs_byte |= 0x80
+
+            # Append the BCS byte to the list
+            bcs_bytes.append(bcs_byte)
+
+            # Right-shift the number by 7 bits to process the next portion
+            num >>= 7
+
+        return bcs_bytes
+
+def read_json(file_path: str = None):
+    try:
+        if file_path is None:
+            file_path = './contracts.json'
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return data
+    except Exception as e:
+        print(f"could not read JSON: {e}")

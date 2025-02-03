@@ -1,7 +1,5 @@
 import socketio
-import time
 from .enumerations import MARKET_SYMBOLS, SOCKET_EVENTS
-import asyncio
 sio = socketio.AsyncClient()
 
 

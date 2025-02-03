@@ -1,5 +1,5 @@
 from .interfaces import *
-from .signer import Signer
+from sui_utils import Signer
 import hashlib
 import json
 

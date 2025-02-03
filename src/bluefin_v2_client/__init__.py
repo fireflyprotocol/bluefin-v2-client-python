@@ -3,4 +3,4 @@ from .client import *
 from .constants import *
 from .enumerations import *
 from .interfaces import *
-from .utilities import *
+from sui_utils import *
