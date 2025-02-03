@@ -1,6 +1,5 @@
 import binascii
 from datetime import datetime
-import math
 from random import randint
 import time
 import random
@@ -193,3 +192,13 @@ def decimal_to_bcs(self, num):
             num >>= 7
 
         return bcs_bytes
+
+def read_json(file_path: str = None):
+    try:
+        if file_path is None:
+            file_path = './contracts.json'
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return data
+    except Exception as e:
+        print(f"could not read JSON: {e}")

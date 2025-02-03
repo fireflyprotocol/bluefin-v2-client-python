@@ -30,13 +30,13 @@ def rpc_unsafe_moveCall(
       typeArguments (optional): type arguments if any in list format [your_arg_1]
 
     Output:
-      Returns the request form serialised in bytes ready to be signed.
+      Returns the request form serialized in bytes ready to be signed.
 
     """
     base_dict = {}
     base_dict["jsonrpc"] = "2.0"
-    base_dict["id"] = 1689764924887
     base_dict["method"] = "unsafe_moveCall"
+    base_dict["id"] = 1
     base_dict["params"] = []
     base_dict["params"].extend(
         [userAddress, packageId, function_library, function_name]
@@ -121,4 +121,46 @@ def rpc_call_sui_function(url, params, method="suix_getCoins"):
     headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=payload)
     result = json.loads(response.text)
-    return result["result"]
+    return result["result"]["data"]
+
+def get_coins(user_address: str = None, coin_type: str = "0x::sui::SUI", url: str = None):
+        """
+        Returns the list of the coins of type tokenType owned by user
+        """
+        try:
+            callArgs = []
+            callArgs.append(user_address)
+            callArgs.append(coin_type)
+            result = rpc_call_sui_function(
+                url, callArgs, method="suix_getCoins")
+            return result
+        except Exception as e:
+            raise (Exception("Failed to get coins, Exception: {}".format(e)))
+        
+async def get_coin_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", url: str = None) -> str:
+        """
+        Returns user's token balance.
+        """
+        try:
+            callArgs = []
+            callArgs.append(user_address)
+            callArgs.append(coin_type)
+            result = rpc_call_sui_function(
+                url, callArgs, method="suix_getBalance"
+            )["totalBalance"]
+            return result
+        except Exception as e:
+            raise (Exception("Failed to get coin balance, Exception: {}".format(e)))
+
+
+def get_coin_having_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", balance: str = None , url: str = None, exact_match: bool = False) -> str:
+        coin_list = get_coins(user_address, coin_type, url)
+        for coin in coin_list:
+            if exact_match:
+                 if int(coin["balance"]) == int(balance):
+                      return coin["coinObjectId"]
+            elif int(coin["balance"]) >= balance:
+                return coin["coinObjectId"]
+        raise Exception(
+            "Not enough balance available in single coin, please merge your coins"
+        )

@@ -2,7 +2,7 @@ import nacl
 import nacl.signing
 from .utilities import *
 import base64
-from bcs import *
+from .bcs import *
 
 
 class SuiWallet:
@@ -73,4 +73,4 @@ class SuiWallet:
         serializer.serialize_u8(ED25519_SCHEME_FLAG)
         
         # Construct Signature in accurate format (scheme + signature + publicKey)
-        return serializer.get_bytes()+ signature + self.publicKeyBytes
+        return serializer.get_bytes()+ signature + self.publicKeyBytes[1:]

@@ -1,5 +1,4 @@
-from .utilities import numberToHex, hexToByteArray
-from .signer import Signer
+from sui_utils import numberToHex, hexToByteArray, Signer
 from .interfaces import Order
 import hashlib
 

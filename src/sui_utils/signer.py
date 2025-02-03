@@ -2,8 +2,7 @@ import nacl
 import hashlib
 import json
 import base64
-from sui_utils import *
-from sui_utils import *
+from .account import *
 
 
 class Signer:

@@ -1,5 +1,5 @@
 
-from sui_utils import BCSSerializer
+from sui_utils.bcs import BCSSerializer
 from typing import Self
 
 
