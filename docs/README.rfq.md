@@ -122,22 +122,20 @@ rfq_client.withdraw_from_vault(
 
 ## API Reference
 
-### `RFQClient(wallet: SuiWallet, url: str, rfq_contracts: RFQContracts)`
+#### `RFQClient(wallet: SuiWallet, url: str, rfq_contracts: RFQContracts)`
 Initializes the RFQClient.
 
-#### Parameters:
+##### Parameters:
 - `wallet` (SuiWallet): Instance of SuiWallet.
 - `url` (str): RPC URL of the chain node.
 - `rfq_contracts` (RFQContracts): Instance of RFQContracts.
 
-### `create_quote(...) -> Quote`
-### `sign_quote(quote: Quote) -> str`
-### `create_and_sign_quote(...) -> Tuple[Quote, str]`
+#### `create_quote(...) -> Quote`</br>`sign_quote(quote: Quote) -> str`</br> `create_and_sign_quote(...) -> Tuple[Quote, str]`
 
 
-Creates (and signs) a quote.
+Creates or/and signs a quote.
 
-#### Parameters:
+##### Parameters:
 - `vault` (str): On-chain vault object ID.
 - `quote_id` (str): Unique quote ID.
 - `taker` (str): Address of the receiver.
@@ -148,10 +146,10 @@ Creates (and signs) a quote.
 - `created_at_utc_ms` (int, optional): Creation UTC timestamp in milliseconds (default: current time).
 - `expires_at_utc_ms` (int, optional): Expiry UTC timestamp in milliseconds (default: 10 seconds after creation timestamp).
 
-### `deposit_in_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
+#### `deposit_in_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
 Deposits a token amount into the vault.
 
-### `withdraw_from_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
+#### `withdraw_from_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
 Withdraws a token amount from the vault (only vault manager can withdraw).
 
 
