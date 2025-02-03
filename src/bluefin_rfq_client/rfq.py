@@ -137,7 +137,7 @@ class RFQClient:
             token_out_amount=token_out_amount,
             token_in_type=token_in_type,
             token_out_type=token_out_type,
-            expires_at=created_at_utc_ms,
+            expires_at=expires_at_utc_ms,
             created_at=created_at_utc_ms,
         )
 
