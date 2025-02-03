@@ -1,3 +1,4 @@
+from datetime import timezone
 from typing import Tuple
 from .quote import Quote
 from sui_utils import *
@@ -5,6 +6,17 @@ from .contracts import RFQContracts
 
 class RFQClient:
     def __init__(self, wallet: SuiWallet = None , url: str = None, rfq_contracts : RFQContracts = None):
+        """
+        Initializes the RFQClient instance with provided input fields.
+
+        Parameters:
+        wallet (SuiWallet): instance of SuiWallet class.
+        url (str): RPC url of chain node (e.g https://fullnode.<SUI-NETWORK-VERSION>.sui.io:443)
+        rfq_contracts (RFQContracts): instance of RFQContracts class.
+
+        Returns:
+        instance of RFQClient.
+        """
         if wallet is None:
             raise ValueError(
                 "Initialize SuiWallet to use RFQClient")
@@ -20,6 +32,7 @@ class RFQClient:
         self.signer = Signer()
 
     @staticmethod
+    
     def create_quote(
         vault: str,
         quote_id: str,
@@ -28,13 +41,30 @@ class RFQClient:
         token_out_amount: int,
         token_in_type: str,
         token_out_type: str,
-        created_at_utc_sec: int = None,
-        expires_at_utc_sec: int = None ) -> Quote:
+        created_at_utc_ms: int = None,
+        expires_at_utc_ms: int = None ) -> Quote:
+        """
+        Creates an instance of Quote with provided params.
 
-        if created_at_utc_sec is None:
-            created_at_utc_sec = int(datetime.now(timezone.utc).timestamp())
-        if expires_at_utc_sec is None:
-            expires_at_utc_sec = created_at_utc_sec + 10 # 10 seconds expiration
+        Parameters:
+        vault (str): on chain vault object ID.
+        quote_id (int): unique quote ID assigned for on chain verification and security.
+        taker (str): address of the reciever account.
+        token_in_amount (int): amount of the input token reciever is willing to swap [scaled to default base of the coin (i.e for 1 USDC(1e6) , provide input as 1000000 )]
+        token_out_amount (int): amount of the output token to be paid by quote initiator [scaled to default base of the coin (i.e for 1 SUI(1e9) , provide input as 1000000000 )]
+        token_in_type (str): on chain token type of input coin (i.e for SUI , 0x2::sui::SUI)
+        token_out_type (str): on chain token type of output coin (i.e for USDC , usdc_Address::usdc::USDC)
+        created_at_utc_ms (int): the unix timestamp at which the quote was created in milliseconds (Defaults to current timestamp)
+        expires_at_utc_ms (int): the unix timestamp at which the quote is to be expired in milliseconds ( Defaults to 10 seconds of creation timestamp )
+
+        Returns:
+        instance of Quote Class and signature in hex format.
+        """
+
+        if created_at_utc_ms is None:
+            created_at_utc_ms = int(datetime.now(timezone.utc).timestamp()) * 1000
+        if expires_at_utc_ms is None:
+            expires_at_utc_ms = created_at_utc_ms + 10000 # 10 seconds expiration
 
         return Quote(
             vault=vault,
@@ -44,11 +74,19 @@ class RFQClient:
             token_out_amount=token_out_amount,
             token_in_type=token_in_type,
             token_out_type=token_out_type,
-            expires_at=expires_at_utc_sec,
-            created_at=created_at_utc_sec,
+            expires_at=expires_at_utc_ms,
+            created_at=created_at_utc_ms,
         )
 
     def sign_quote(self, quote: Quote) -> str:
+        """
+        Signs the input Quote instance.
+
+        :param quote (Quote): instance of Quote class.
+
+        Returns:
+        Signature in hex format.
+        """
         bcs_serialized_bytes = Quote.get_bcs_serialized_quote(quote)
 
         # Sign bcs serialized quote bytes
@@ -65,13 +103,31 @@ class RFQClient:
         token_out_amount: int,
         token_in_type: str,
         token_out_type: str,
-        created_at_utc_sec: int = None,
-        expires_at_utc_sec: int = None ) -> Tuple[Quote,str]:
+        created_at_utc_ms: int = None,
+        expires_at_utc_ms: int = None ) -> Tuple[Quote,str]:
 
-        if created_at_utc_sec is None:
-            created_at_utc_sec = int(datetime.now(timezone.utc).timestamp())
-        if expires_at_utc_sec is None:
-            expires_at_utc_sec = created_at_utc_sec + 10 # 10 seconds expiration
+        """
+        Creates an instance of Quote with provided params and signs it.
+
+        Parameters:
+        vault (str): on chain vault object ID.
+        quote_id (int): unique quote ID assigned for on chain verification and security.
+        taker (str): address of the reciever account.
+        token_in_amount (int): amount of the input token reciever is willing to swap [scaled to default base of the coin (i.e for 1 USDC(1e6) , provide input as 1000000 )]
+        token_out_amount (int): amount of the output token to be paid by quote initiator [scaled to default base of the coin (i.e for 1 SUI(1e9) , provide input as 1000000000 )]
+        token_in_type (str): on chain token type of input coin (i.e for SUI , 0x2::sui::SUI)
+        token_out_type (str): on chain token type of output coin (i.e for USDC , usdc_Address::usdc::USDC)
+        created_at_utc_ms (int): the unix timestamp at which the quote was created in milliseconds (Defaults to current timestamp)
+        expires_at_utc_ms (int): the unix timestamp at which the quote is to be expired in milliseconds ( Defaults to 10 seconds of creation timestamp )
+
+        Returns:
+        Tuple of Quote instance and signature.
+        """
+
+        if created_at_utc_ms is None:
+            created_at_utc_ms = int(datetime.now(timezone.utc).timestamp())
+        if expires_at_utc_ms is None:
+            expires_at_utc_ms = created_at_utc_ms + 10000 # 10 seconds expiration
 
         quote = Quote(
             vault=vault,
@@ -81,8 +137,8 @@ class RFQClient:
             token_out_amount=token_out_amount,
             token_in_type=token_in_type,
             token_out_type=token_out_type,
-            expires_at=expires_at_utc_sec,
-            created_at=created_at_utc_sec,
+            expires_at=created_at_utc_ms,
+            created_at=created_at_utc_ms,
         )
 
         bcs_serialized_bytes = Quote.get_bcs_serialized_quote(quote)
@@ -97,7 +153,17 @@ class RFQClient:
         amount: str,
         token_type: str
         ) -> tuple[bool, dict] :
-        
+        """
+        Deposits coin amount in the vault.
+
+        Parameters:
+        vault (str): on chain vault object ID.
+        amount (str): amount of the coin that is to be deposited [scaled to default base of the coin (i.e for 1 USDC(1e6) , provide input as 1000000 )]
+        token_type (str): on chain token type of input coin (i.e for USDC , usdc_Address::usdc::USDC)
+
+        Returns:
+        Tuple of bool (indicating status of execution) and sui chain response (dict).
+        """
 
         coin_id = get_coin_having_balance(
             user_address=self.wallet.getUserAddress(),
@@ -139,6 +205,17 @@ class RFQClient:
         amount: str,
         token_type: str
         ) -> tuple[bool, dict] :
+        """
+        Withdraws coin amount from the vault (Note: Only vault manager can withdraw from vault)
+
+        Parameters:
+        vault (str): on chain vault object ID.
+        amount (str): amount of the coin that is to be withdrawn [scaled to default base of the coin (i.e for 1 USDC(1e6) , provide input as 1000000 )]
+        token_type (str): on chain token type of the coin (i.e for USDC , usdc_Address::usdc::USDC)
+
+        Returns:
+        Tuple of bool (indicating status of execution) and sui chain response (dict).
+        """
         
 
     

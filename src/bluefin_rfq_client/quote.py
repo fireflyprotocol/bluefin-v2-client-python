@@ -17,6 +17,23 @@ class Quote:
         created_at: int = None,
         expires_at: int = None
     ):
+        """
+        Initialize the Quote instance with provided input fields.
+
+        Parameters:
+        vault (str): on chain vault object ID.
+        id (int): unique quote ID assigned for on chain verification and security.
+        taker (str): address of the reciever account.
+        token_in_amount (int): amount of the input token reciever is willing to swap [scaled to default base of the coin (i.e for 1 USDC(1e6) , provide input as 1000000 )]
+        token_out_amount (int): amount of the output token to be paid by quote initiator [scaled to default base of the coin (i.e for 1 SUI(1e9) , provide input as 1000000000 )]
+        token_in_type (str): on chain token type of input coin (i.e for SUI , 0x2::sui::SUI)
+        token_out_type (str): on chain token type of output coin (i.e for USDC , usdc_Address::usdc::USDC)
+        created_at (int): the unix timestamp at which the quote was created in milliseconds
+        expires_at (int): the unix timestamp at which the quote is to be expired in milliseconds
+
+        Returns:
+        instance of Quote
+        """
         self.vault = vault
         self.id = id
         self.taker = taker
@@ -29,6 +46,14 @@ class Quote:
 
     @staticmethod
     def get_bcs_serialized_quote(quote: Self) -> bytes:
+        """
+        Returns BCS serialized bytes of the quote.
+
+        :param quote (Quote): instance of Quote class.
+
+        Returns:
+        bytes
+        """
         serializer = BCSSerializer()
 
         # Apply BCS serialization to the Quote in correct order
