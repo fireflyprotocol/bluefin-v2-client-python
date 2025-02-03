@@ -1,6 +1,6 @@
 [project]
 name = "bluefin_v2_client_sui"
-version = "1.1.0"
+version = "1.1.1"
 description = "Library to interact with Bluefin exchange protocol including its off-chain api-gateway and on-chain contracts"
 readme = "README.md"
 requires-python = ">=3.8"
