@@ -251,7 +251,7 @@ class RFQClient:
         manager: str
         ) -> tuple[bool, dict] :
         """
-        Create new vault on bluefin RFQ protocol with provided vault manager
+        Creates new vault on bluefin RFQ protocol with provided vault manager
 
         Parameters:
         manager (str): address of the account that needs to be manager of vault.
