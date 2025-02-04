@@ -196,7 +196,7 @@ def decimal_to_bcs(self, num):
 def read_json(file_path: str = None):
     try:
         if file_path is None:
-            file_path = './contracts.json'
+            file_path = './rfq-contracts.json'
         with open(file_path, 'r') as file:
             data = json.load(file)
         return data

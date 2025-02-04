@@ -49,7 +49,7 @@ TEST_NETWORK = "https://fullnode.mainnet.sui.io:443"
 # Initialize SuiWallet using seed
 wallet = SuiWallet(seed=TEST_ACCT_PHRASE)
 
-# Read the contracts config (you can also specify filepath as an argument to read_json, by default it looks for contracts.json at root of working directory )
+# Read the contracts config (you can also specify filepath as an argument to read_json, by default it looks for rfq-contracts.json at root of working directory )
 contracts_config = read_json()
 
 # Initialize RFQContracts instance using the contract conffigs
