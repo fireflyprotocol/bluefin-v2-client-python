@@ -273,7 +273,7 @@ class RFQClient:
             userAddress=self.wallet.getUserAddress(),
             packageId=self.rfq_contracts.get_package(),
             gasBudget=100000000,
-            typeArguments=None
+            typeArguments=[]
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)

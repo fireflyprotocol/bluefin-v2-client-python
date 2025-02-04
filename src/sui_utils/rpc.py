@@ -53,8 +53,10 @@ def rpc_unsafe_moveCall(
 
     headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=payload)
-    result = json.loads(response.text)
-    return result["result"]["txBytes"]
+    responseJson = json.loads(response.text)
+    if "result" not in responseJson or "txBytes" not in responseJson["result"] :
+            raise (Exception(f"Failed to create transaction bytes due to: {responseJson}"))
+    return responseJson["result"]["txBytes"]
 
 
 def rpc_sui_executeTransactionBlock(url, txBytes, signature, maxRetries=5):
