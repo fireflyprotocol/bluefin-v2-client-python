@@ -49,7 +49,7 @@ TEST_NETWORK = "https://fullnode.mainnet.sui.io:443"
 # Initialize SuiWallet using seed
 wallet = SuiWallet(seed=TEST_ACCT_PHRASE)
 
-# Read the contracts config (you can also specify filepath as an argument to read_json, by default it looks for contracts.json at root of working directory )
+# Read the contracts config (you can also specify filepath as an argument to read_json, by default it looks for rfq-contracts.json at root of working directory )
 contracts_config = read_json()
 
 # Initialize RFQContracts instance using the contract conffigs
@@ -120,6 +120,13 @@ rfq_client.withdraw_from_vault(
 )
 ```
 
+### Creating a new Vault
+```python
+rfq_client.create_vault(
+    manager="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
+)
+```
+
 ## API Reference
 
 #### `RFQClient(wallet: SuiWallet, url: str, rfq_contracts: RFQContracts)`
@@ -151,6 +158,9 @@ Deposits a token amount into the vault.
 
 #### `withdraw_from_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
 Withdraws a token amount from the vault (only vault manager can withdraw).
+
+#### `def create_vault(self, manager: str ) -> tuple[bool, dict]`
+Creates a new vault on bluefin rfq protocol with provided vault manager.
 
 
 ## Contact

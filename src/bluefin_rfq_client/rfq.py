@@ -188,7 +188,7 @@ class RFQClient:
             function_library='gateway',
             userAddress=self.wallet.getUserAddress(),
             packageId=self.rfq_contracts.get_package(),
-            gasBudget=1000000000,
+            gasBudget=100000000,
             typeArguments=move_function_type_arguments
         )
 
@@ -235,7 +235,7 @@ class RFQClient:
             function_library='gateway',
             userAddress=self.wallet.getUserAddress(),
             packageId=self.rfq_contracts.get_package(),
-            gasBudget=1000000000,
+            gasBudget=100000000,
             typeArguments=move_function_type_arguments
         )
 
@@ -246,4 +246,42 @@ class RFQClient:
             return success, res
         except Exception as e:
             return False , res
+    
+    def create_vault(self, 
+        manager: str
+        ) -> tuple[bool, dict] :
+        """
+        Creates new vault on bluefin RFQ protocol with provided vault manager
+
+        Parameters:
+        manager (str): address of the account that needs to be manager of vault.
+
+        Returns:
+        Tuple of bool (indicating status of execution) and sui chain response (dict).
+        """
+        
+        move_function_params = [
+                    self.rfq_contracts.get_protocol_config(),
+                    manager
+                ]
+        
+        tx_bytes = rpc_unsafe_moveCall(
+            url=self.url,
+            params=move_function_params,
+            function_name='create_rfq_vault',
+            function_library='gateway',
+            userAddress=self.wallet.getUserAddress(),
+            packageId=self.rfq_contracts.get_package(),
+            gasBudget=100000000,
+            typeArguments=[]
+        )
+
+        signature = self.signer.sign_tx(tx_bytes, self.wallet)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        try:
+            success = res["result"]["effects"]["status"]["status"] == "success"
+            return success, res
+        except Exception as e:
+            return False , res
+        
         
