@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: Request for quote.
+  description: API specifications for market-makers to request for quote.
+  version: "1.0.0"
+
+paths:
+  /api/rfq:
+    post:
+      operationId: RequestForQuote
+      summary: Request a swap quote
+      description: >
+        Sends a request to get a signed quote for swapping a specified pay coin 
+        into a target coin, including slippage constraints.
+      parameters:
+        - name: x-api-key
+          in: header
+          description: "Optional header for additional security"
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+      responses:
+        '200':
+          description: Successfully retrieved quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        '400':
+          description: Bad request - invalid or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing payCoinAddress parameter."
+
+components:
+  schemas:
+    QuoteRequest:
+      type: object
+      required:
+        - quoteId
+        - taker
+        - tokenInType
+        - tokenOutType
+        - tokenInAmount
+        - quoteRequestExpiresAtUtcMillis
+        - createdAtUtcMillis
+      properties:
+        quoteId:
+          type: string
+          description: Unique ID of the quote.
+          example: "59db3e19-c7b0-4753-a8aa-206701004498"
+        taker:
+          type: string
+          description: The address of the taker’s account.
+          example: "0xTakerAddress"
+        tokenInType:
+          type: string
+          description: >
+            The coin type to pay with (e.g., USDC).  
+            Expressed as a fully-qualified on-chain type.
+          example: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+        tokenOutType:
+          type: string
+          description: >
+            The coin type to receive (e.g., SUI).  
+            Expressed as a fully-qualified on-chain type.
+          example: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+        tokenInAmount:
+          type: string
+          description: >
+            Amount to pay, scaled by the coin's decimals.  
+            For example, 0.1 USDC with 6 decimals equals "100000".
+          example: "100000"
+        quoteRequestExpiresAtUtcMillis:
+          type: integer
+          format: int64
+          description: Quote request expiration timestamp in milliseconds
+          example: 1734946742563
+
+    Quote:
+      type: object
+      required:
+        - quoteId
+        - taker
+        - tokenInType
+        - tokenOutType
+        - tokenInAmount
+        - tokenOutAmount
+        - signature
+        - vault
+        - marketMakerAddress
+        - quoteExpiresAtUtcMillis
+        - createdAtUtcMillis
+      properties:
+        quoteId:
+          type: string
+          description: >
+            Unique ID of the quote. Matches the request.
+          example: "59db3e19-c7b0-4753-a8aa-206701004498"
+        taker:
+          type: string
+          description: The address of the taker’s account.
+          example: "0xTakerrAddress"
+        tokenInType:
+          type: string
+          description: >
+            Coin type to pay with (e.g., USDC). Matches the request.
+          example: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+        tokenOutType:
+          type: string
+          description: >
+            Coin type to receive (e.g., SUI). Matches the request.
+          example: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+        tokenInAmount:
+          type: string
+          description: >
+            Amount to pay, scaled by the coin's decimals (e.g., "100000" for 0.1 USDC).
+          example: "100000"
+        tokenOutAmount:
+          type: string
+          description: >
+            Amount received, scaled by the coin's decimals (e.g., "100000000" for 0.1 SUI).
+          example: "100000000"
+        signature:
+          type: string
+          description: >
+            Signature for executing the swap transaction, verifying authenticity of the quote.
+          example: "MEUCIQDPsB7bCrOz7..."
+        vault:
+          type: string
+          description: Address of the vault to execute the transaction against.
+          example: "0x123"
+        marketMakerAddress:
+          type: string
+          description: Address of the market maker.
+          example: "0x124"
+        quoteExpiresAtUtcMillis:
+          type: integer
+          format: int64
+          description: >
+            Unix timestamp in milliseconds indicating when 
+            the quote expires (UTC).
+          example: 1734946742563
+        createdAtUtcMillis:
+          type: integer
+          format: int64
+          description: >
+            Unix timestamp in milliseconds indicating when 
+            the quote was created (UTC).
+          example: 1734946742563
