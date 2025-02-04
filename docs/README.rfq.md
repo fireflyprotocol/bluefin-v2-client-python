@@ -25,7 +25,7 @@ from bluefin_rfq_client import *
 ```
 
 ### RFQ Contracts config 
-At the root of your working directory, create `contacts.json` and add the contract configs, eg.
+At the root of your working directory, create `rfq-contracts.json` and add the contract configs, eg.
 ```json
 {
     "UpgradeCap": "0x23cffdc270102d2dbb36546ef202e7be100d1a56cc0e508eef505efd240988e3",
