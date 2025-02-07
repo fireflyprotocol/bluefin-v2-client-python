@@ -41,7 +41,7 @@ At the root of your working directory, create `rfq-contracts.json` and add the c
 
 ### Initializing the Client
 ```python
-# Seed phrase (mnemonic) of the wallet
+# Seed phrase (mnemonic) of the wallet (currently supports only ED25519)
 TEST_ACCT_PHRASE = "wallet seed phrase" 
 # RPC URL of the chain
 TEST_NETWORK = "https://fullnode.mainnet.sui.io:443"
@@ -60,7 +60,10 @@ rfq_client = RFQClient(wallet=wallet, url=TEST_NETWORK, rfq_contracts=rfq_contra
 
 ```
 
-### Creating and Signing a Quote
+### Creating and Signing a Quote 
+
+#### Supported wallets (No hashing required):
+- `ED25519`
 
 #### Parameters:
 - `vault` (str): On-chain vault object ID.
@@ -75,7 +78,7 @@ rfq_client = RFQClient(wallet=wallet, url=TEST_NETWORK, rfq_contracts=rfq_contra
 
 ```python
 
-# To only create the quote use
+# To only create the quote, use
 quote = rfq_client.create_quote(
     vault="0x67399451f127894ee0f9ff7182cbe914008a0197a97b54e86226d1c33635c368",
     quote_id="quote-123",
@@ -84,9 +87,12 @@ quote = rfq_client.create_quote(
     token_out_amount=200000000,
     token_in_type="0x2::sui::SUI",
     token_out_type="0x2::example::TOKEN",
-    created_at_utc_ms=1699765400,
+    expired_at_utc_ms=1699765400,
     created_at_utc_ms=1698765400,
 )
+
+# To sign the created quote , use
+quote.sign(rfq_client.wallet)
 
 #To create quote and sign it at the same time, use
 quote, signature = rfq_client.create_and_sign_quote(
@@ -97,12 +103,16 @@ quote, signature = rfq_client.create_and_sign_quote(
     token_out_amount=200000000,
     token_in_type="0x2::sui::SUI",
     token_out_type="0x2::example::TOKEN",
-    created_at_utc_ms=1699765400,
+    expired_at_utc_ms=1699765400,
     created_at_utc_ms=1698765400,
 )
 ```
 
 ### Depositing Tokens into a Vault
+
+#### Supported wallets (blake2b hashing required, since its a sui transaction):
+- `ED25519`
+
 ```python
 rfq_client.deposit_in_vault(
     vault="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
@@ -112,6 +122,10 @@ rfq_client.deposit_in_vault(
 ```
 
 ### Withdrawing Tokens from a Vault
+
+#### Supported wallets (blake2b hashing required, since its a sui transaction):
+- `ED25519`
+
 ```python
 rfq_client.withdraw_from_vault(
     vault="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
@@ -121,6 +135,10 @@ rfq_client.withdraw_from_vault(
 ```
 
 ### Creating a new Vault
+
+#### Supported wallets (blake2b hashing required, since its a sui transaction):
+- `ED25519`
+
 ```python
 rfq_client.create_vault(
     manager="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
@@ -137,7 +155,7 @@ Initializes the RFQClient.
 - `url` (str): RPC URL of the chain node.
 - `rfq_contracts` (RFQContracts): Instance of RFQContracts.
 
-#### `create_quote(...) -> Quote`</br>`sign_quote(quote: Quote) -> str`</br> `create_and_sign_quote(...) -> Tuple[Quote, str]`
+#### `create_quote(...) -> Quote`</br> `create_and_sign_quote(...) -> Tuple[Quote, str]`
 
 
 Creates or/and signs a quote.

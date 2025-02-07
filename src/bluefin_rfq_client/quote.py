@@ -1,5 +1,5 @@
 
-from sui_utils.bcs import BCSSerializer
+from sui_utils import *
 from typing import Self
 
 
@@ -43,9 +43,9 @@ class Quote:
         self.token_out_type = token_out_type
         self.expires_at = expires_at
         self.created_at = created_at
+        self.signer = Signer()
 
-    @staticmethod
-    def get_bcs_serialized_quote(quote: Self) -> bytes:
+    def get_bcs_serialized_quote(self) -> bytes:
         """
         Returns BCS serialized bytes of the quote.
 
@@ -57,15 +57,32 @@ class Quote:
         serializer = BCSSerializer()
 
         # Apply BCS serialization to the Quote in correct order
-        serializer.serialize_address(quote.vault)  
-        serializer.serialize_str(quote.id) 
-        serializer.serialize_address(quote.taker)  
-        serializer.serialize_u64(quote.token_in_amount) 
-        serializer.serialize_u64(quote.token_out_amount)  
-        serializer.serialize_str(quote.token_in_type) 
-        serializer.serialize_str(quote.token_out_type)  
-        serializer.serialize_u64(quote.expires_at)  
-        serializer.serialize_u64(quote.created_at)  
+        serializer.serialize_address(self.vault)  
+        serializer.serialize_str(self.id) 
+        serializer.serialize_address(self.taker)  
+        serializer.serialize_u64(self.token_in_amount) 
+        serializer.serialize_u64(self.token_out_amount)  
+        serializer.serialize_str(self.token_in_type) 
+        serializer.serialize_str(self.token_out_type)  
+        serializer.serialize_u64(self.expires_at)  
+        serializer.serialize_u64(self.created_at)  
 
         return serializer.get_bytes()
+    
+    def sign(self, wallet: SuiWallet) -> bytes:
+        serializedBytes = self.get_bcs_serialized_quote()
+        signature = self.signer.sign_bytes(serializedBytes,wallet.privateKeyBytes)
+        scheme = wallet.getKeyScheme()
+
+        signatureBytes = bytearray()
+        if scheme == WALLET_SCHEME.ED25519:
+            signatureBytes.append(0)
+        else:
+            signatureBytes.append(1)
+        
+        signatureBytes.extend(signature)
+        signatureBytes.extend(wallet.publicKeyBytes)
+
+        return signatureBytes
+
 

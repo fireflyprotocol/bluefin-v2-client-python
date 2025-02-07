@@ -77,22 +77,6 @@ class RFQClient:
             expires_at=expires_at_utc_ms,
             created_at=created_at_utc_ms,
         )
-
-    def sign_quote(self, quote: Quote) -> str:
-        """
-        Signs the input Quote instance.
-
-        :param quote (Quote): instance of Quote class.
-
-        Returns:
-        Signature in hex format.
-        """
-        bcs_serialized_bytes = Quote.get_bcs_serialized_quote(quote)
-
-        # Sign bcs serialized quote bytes
-        signature = self.wallet.sign_personal_msg(bcs_serialized_bytes)
-    
-        return signature.hex()
     
     def create_and_sign_quote(
         self, 
@@ -141,10 +125,7 @@ class RFQClient:
             created_at=created_at_utc_ms,
         )
 
-        bcs_serialized_bytes = Quote.get_bcs_serialized_quote(quote)
-
-        # Sign bcs serialized quote bytes
-        signature = self.wallet.sign_personal_msg(bcs_serialized_bytes)
+        signature = quote.sign(self.wallet)
     
         return (quote, signature.hex())
     

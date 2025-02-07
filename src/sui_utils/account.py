@@ -1,12 +1,11 @@
-import nacl
-import nacl.signing
+from .enumerations import WALLET_SCHEME
 from .utilities import *
 import base64
 from .bcs import *
 
 
 class SuiWallet:
-    def __init__(self, seed="", privateKey=""):
+    def __init__(self, seed="", privateKey="",scheme:WALLET_SCHEME = WALLET_SCHEME.ED25519):
         if seed == "" and privateKey == "":
             return "Error"
         if seed != "":
@@ -16,6 +15,7 @@ class SuiWallet:
             self.publicKeyBase64 = base64.b64encode(self.publicKey.ToBytes()[1:])
             self.privateKeyBase64 = base64.b64encode(self.privateKey.ToBytes()[1:])
             self.privateKeyBytes = self.privateKey.ToBytes()
+            self.scheme = scheme
 
         elif privateKey != "":
             self.privateKey = privateKey
@@ -24,12 +24,13 @@ class SuiWallet:
             self.publicKeyBase64 = base64.b64encode(self.publicKey.ToBytes()[1:])
             self.privateKeyBase64 = base64.b64encode(binascii.unhexlify(self.privateKey)[1:])
             self.privateKeyBytes = binascii.unhexlify(self.privateKey)
+            self.scheme = scheme
 
         else:
             return "error"
             
 
-        self.publicKeyBytes = self.publicKey.ToBytes()
+        self.publicKeyBytes = self.publicKey.ToBytes()[1:]
         self.address = getAddressFromPublicKey(self.publicKey)
 
     def getPublicKey(self):
@@ -48,29 +49,7 @@ class SuiWallet:
     def getUserAddress(self):
         return self.address
     
-    def sign_personal_msg(self, serialized_bytes: bytearray):
-        serializer = BCSSerializer()
-        # this function adds len as an Unsigned Little Endian Base 128 similar to mysten SDK
-        serializer.serialize_uint8_array(list(serialized_bytes))
-        serialized_bytes = serializer.get_bytes()
-
-        # Add personal message intent bytes
-        intent = bytearray()
-        intent.extend([ 3, 0, 0]) # Intent scope for personal message
-
-        # Combine the intent and msg_bytes
-        intent = intent + serialized_bytes
-
-        # Combine blake2b hash
-        blake2bHash = hashlib.blake2b(intent, digest_size=32).digest()
-
-        # Sign the hash
-        signature = nacl.signing.SigningKey(self.privateKeyBytes).sign(blake2bHash)[:64]
-
-        
-        ED25519_SCHEME_FLAG = 0
-        serializer = BCSSerializer()
-        serializer.serialize_u8(ED25519_SCHEME_FLAG)
-        
-        # Construct Signature in accurate format (scheme + signature + publicKey)
-        return serializer.get_bytes()+ signature + self.publicKeyBytes[1:]
+    def getKeyScheme(self):
+        return self.scheme
+    
+    
