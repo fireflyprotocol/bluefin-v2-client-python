@@ -3,7 +3,8 @@ info:
   title: Request for quote.
   description: API specifications for market-makers to request for quote.
   version: "1.0.0"
-
+servers:
+  - url: https://spot.api.sui-prod.bluefin.io/
 paths:
   /api/rfq:
     post:

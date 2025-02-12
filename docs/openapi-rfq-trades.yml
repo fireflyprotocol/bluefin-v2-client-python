@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: RFQ Vault Swaps API
+  version: "1.0.0"
+  description: API to query RFQ vault swap records.
+servers:
+  - url: https://swap.api.sui-prod.bluefin.io/
+
+paths:
+  /api/rfq/swaps:
+    get:
+      summary: Retrieve RFQ Vault Swaps
+      description: >
+        Retrieve swap records filtered by one or more vault IDs and quote IDs.
+        Supports cursor-based pagination. Records are paginated based on the block_timestamp.
+        Query Parameters:
+          - **vault_ids**: An array of vault IDs.
+          - **quote_ids**: An array of quote IDs.
+          - **cursor**: A block_timestamp value. Only records with a block_timestamp greater than this value will be returned.
+          - **limit**: The maximum number of records to return.
+      parameters:
+        - in: query
+          name: vault_ids
+          description: List of vault IDs to filter by.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+        - in: query
+          name: quote_ids
+          description: List of quote IDs to filter by.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+        - in: query
+          name: cursor
+          description: >
+            The block_timestamp value to start retrieving records from.
+            Only records with a block_timestamp greater than this value will be returned.
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: limit
+          description: Maximum number of swap records to return.
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+      responses:
+        "200":
+          description: Successful operation returning a paginated list of swap records.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSwaps'
+        "400":
+          description: Bad Request – Invalid query parameters.
+        "500":
+          description: Server Error – Unexpected error occurred.
+
+components:
+  schemas:
+    Swap:
+      type: object
+      description: A swap record.
+      properties:
+        vault_id:
+          type: string
+          description: Vault address.
+        quote_id:
+          type: string
+          description: Quote identifier.
+        taker:
+          type: string
+          description: Address of the taker.
+        token_in_type:
+          type: string
+          description: Type of token being swapped in.
+        token_out_type:
+          type: string
+          description: Type of token being swapped out.
+        token_in_amount:
+          type: string
+          description: Amount of the token being swapped in. Adjusted to token decimals.
+        token_out_amount:
+          type: string
+          description: Amount of the token being swapped out. Adjusted to token decimals.
+        fee:
+          type: string
+          description: Fee applied to the swap in E9 format.
+        tx_hash:
+          type: string
+          description: Transaction hash.
+        tx_index:
+          type: string
+          description: Transaction index.
+        log_index:
+          type: string
+          description: Log index within the transaction.
+        block_timestamp:
+          type: integer
+          format: int64
+          description: Block timestamp when the swap occurred.
+      required:
+        - vault_id
+        - quote_id
+        - taker
+        - token_in_type
+        - token_out_type
+        - token_in_amount
+        - token_out_amount
+        - fee
+        - tx_hash
+        - tx_index
+        - log_index
+        - block_timestamp
+    PaginatedSwaps:
+      type: object
+      description: A paginated response for swap records.
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Swap'
+        next_cursor:
+          type: integer
+          format: int64
+          nullable: true
+          description: >
+            The block_timestamp value to be used as the cursor for the next page.
+            If null, there are no additional records.
+      required:
+        - data
