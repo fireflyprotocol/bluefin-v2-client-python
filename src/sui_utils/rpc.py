@@ -104,6 +104,43 @@ def rpc_sui_executeTransactionBlock(url, txBytes, signature, maxRetries=5):
         time.sleep(1)
     return result
 
+def rpc_sui_getDynamicFieldObject(url:str, parentObjectId: str, fieldName: str,fieldSuiObjectType:str, maxRetries=5):
+    """
+    Fetches the on-chain dynamic field object corresponding to specified input params
+    Input:
+      url: url of the sui chain node
+      parentObjectId: id of the parent object for which dynamic field needs to be queried
+      fieldName: name of the dynamic field
+      fieldSuiObjectType: sui object type for the dynamic field name (eg. for string use , `0x1::string::String`)
+
+    Output:
+      sui result object for the dynamic field
+    """
+    base_dict = {}
+    base_dict["jsonrpc"] = "2.0"
+    base_dict["id"] = 5
+    base_dict["method"] = "suix_getDynamicFieldObject"
+    base_dict["params"] = []
+    base_dict["params"].append(parentObjectId)
+    base_dict["params"].append({
+         "type": fieldSuiObjectType,
+         "value": fieldName
+    })
+    payload = json.dumps(base_dict)
+
+    headers = {"Content-Type": "application/json"}
+
+    for i in range(0, maxRetries):
+        response = requests.request("POST", url, headers=headers, data=payload)
+        result = json.loads(response.text)
+        if "error" in result:
+            if result["error"]["message"].find(LOCKED_OBJECT_ERROR_CODE) == -1:
+                return result
+        else:
+            return result
+
+        time.sleep(1)
+    return result
 
 def rpc_call_sui_function(url, params, method="suix_getCoins"):
     """

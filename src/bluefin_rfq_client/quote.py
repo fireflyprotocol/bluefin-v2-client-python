@@ -1,6 +1,5 @@
 
 from sui_utils import *
-from typing import Self
 
 
 # Defines the Quote class
