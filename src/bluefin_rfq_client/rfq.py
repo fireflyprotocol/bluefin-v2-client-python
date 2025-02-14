@@ -196,10 +196,7 @@ class RFQClient:
 
         Returns:
         Tuple of bool (indicating status of execution) and sui chain response (dict).
-        """
-        
-
-    
+        """    
         move_function_params = [
                     vault,
                     self.rfq_contracts.get_protocol_config(),
@@ -227,6 +224,32 @@ class RFQClient:
             return success, res
         except Exception as e:
             return False , res
+    
+    def get_vault_coin_balance(self, 
+        vault: str,
+        token_type: str
+        ) -> str :
+        """
+        get balance of specified token type locked in the vault 
+
+        Parameters:
+        vault (str): on chain vault object ID.
+        token_type (str): on chain token type of the coin (i.e for USDC , usdc_Address::usdc::USDC)
+
+        Returns:
+        balance(str): balance of the coin scaled by coin decimals.
+        """
+
+        res = rpc_sui_getDynamicFieldObject(
+            self.url,
+            vault,
+            strip_hex_prefix(token_type),
+            SUI_STRING_OBJECT_TYPE)
+        try:
+            balance = res["result"]["data"]["content"]["fields"]["value"]
+            return balance
+        except Exception as e:
+            raise Exception("Could not fetch coin balance",e)
     
     def create_vault(self, 
         manager: str
