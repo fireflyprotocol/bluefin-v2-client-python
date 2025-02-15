@@ -244,9 +244,9 @@ class RFQClient:
             self.url,
             vault,
             strip_hex_prefix(token_type),
-            SUI_STRING_OBJECT_TYPE)
+            SUI_CUSTOM_OBJECT_TYPE)
         try:
-            balance = res["result"]["data"]["content"]["fields"]["value"]
+            balance = res["result"]["data"]["content"]["fields"]["value"]["fields"]["swaps"]
             return balance
         except Exception as e:
             raise Exception("Could not fetch coin balance",e)
