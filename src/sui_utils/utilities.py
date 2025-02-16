@@ -17,6 +17,7 @@ BASE_1E18 = 1000000000000000000
 BASE_1E6 = 1000000  # 1e6 for USDC token
 BASE_1E9 = 1000000000
 SUI_STRING_OBJECT_TYPE = "0x1::string::String"
+SUI_CUSTOM_OBJECT_TYPE = "0x1::type_name::TypeName"
 
 
 def getsha256Hash(callArgs: list) -> str:
