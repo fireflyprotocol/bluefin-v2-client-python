@@ -127,7 +127,7 @@ class RFQClient:
 
         signature = quote.sign(self.wallet)
     
-        return (quote, signature.hex())
+        return (quote, base64.b64encode(signature).decode('utf-8'))
     
     def deposit_in_vault(self, 
         vault: str,

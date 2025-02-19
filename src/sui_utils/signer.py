@@ -2,7 +2,7 @@ import nacl
 import hashlib
 import json
 import base64
-import nacl.signing
+from nacl.signing import *
 from .enumerations import WALLET_SCHEME
 from .account import SuiWallet
 from .utilities import *
@@ -85,6 +85,57 @@ class Signer:
         """
         result = nacl.signing.SigningKey(private_key).sign(bytes)[:64]
         return result
+
+    def verify_signature(self, message: bytes, signature: bytes, public_key: bytes, scheme: str) -> bool:
+        """
+        Verifies the signature using the specified scheme.
+
+        Parameters:
+        message (bytes): The message to verify.
+        signature (bytes): The signature to verify.
+        public_key (bytes): The public key to use for verification.
+        scheme (str): The signature scheme.
+
+        Returns:
+        bool: True if the signature is valid, False otherwise.
+        """
+        if scheme == "ED25519":
+            verify_key = VerifyKey(public_key)
+            try:
+                verify_key.verify(message, signature)
+                return True
+            except Exception:
+                print("Exception")
+                return False
+        else:
+            raise ValueError("Invalid signature scheme")
+        
+    def parse_serialized_signature(self, signature: bytes) -> dict:
+        """
+        Parses the serialized signature to extract the scheme, signature, and public key.
+
+        Parameters:
+        signature (bytes): The serialized signature.
+
+        Returns:
+        dict: A dictionary containing the signature scheme, signature, and public key.
+        """
+        scheme = signature[0]
+        signature_bytes = signature[1:65]
+        public_key = signature[65:]
+
+        if scheme == 0:
+            signature_scheme = "ED25519"
+        else:
+            raise ValueError("Invalid signature scheme")
+
+        return {
+            "signatureScheme": signature_scheme,
+            "signature": signature_bytes,
+            "publicKey": public_key
+        }
+
+    
 
 
     

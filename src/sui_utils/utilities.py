@@ -97,8 +97,12 @@ def privateKeyToPublicKey(privateKey: str) -> str:
 
 
 def getAddressFromPublicKey(publicKey: str) -> str:
+    if type(publicKey) is str:
+        publicKeyBytes = binascii.unhexlify(publicKey)
+    else:
+        publicKeyBytes = bytes(publicKey)
     address: str = (
-        "0x" + hashlib.blake2b(publicKey.ToBytes(), digest_size=32).digest().hex()[:]
+        "0x" + hashlib.blake2b(publicKeyBytes, digest_size=32).digest().hex()[:]
     )
     return address
 

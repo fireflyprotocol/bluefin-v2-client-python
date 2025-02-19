@@ -84,4 +84,24 @@ class Quote:
 
         return signatureBytes
 
+    def verify_signature(self, signature_hex: str, signer: str) -> bool:
+        try:
+            signature_bytes = bytes.fromhex(signature_hex)
+            parsed = self.signer.parse_serialized_signature(signature_bytes)
+            verified = self.signer.verify_signature(
+                self.get_bcs_serialized_quote(),
+                parsed['signature'],
+                parsed['publicKey'],
+                parsed['signatureScheme']
+            )
+
+            if not verified:
+                return False
+            
+            address = getAddressFromPublicKey(f"00{parsed['publicKey'].hex()}")
+
+            return address == signer
+        except Exception as e:
+            return False
+
 
