@@ -14,7 +14,7 @@ class CoinUtils:
 
     def create_coin_with_balance(self, coin_type: str, balance: int, wallet: SuiWallet) -> str:
         """
-        Creates a new coin with the specified balance by splitting the primary coin.
+        Creates a new coin with the specified balance by splitting/merging coins if required.
 
         Parameters:
         coin_type (str): The type of the coin.
