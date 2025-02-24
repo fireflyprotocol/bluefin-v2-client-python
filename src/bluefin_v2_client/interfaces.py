@@ -268,6 +268,27 @@ class GetUserTransferHistoryResponse(TypedDict):
     nextCursor: int  # next page number
     data: List[UserTransferHistoryResponse]
 
+class UserTradeHistoryResponse(TypedDict):
+    id: int
+    symbol: str
+    commission: str
+    commissionAsset: str
+    maker: bool
+    orderHash: str
+    side: str
+    price: str
+    quantity: str
+    quoteQty: str
+    realizedPnl: str
+    time: int
+    clientId: str
+    orderId: int
+    tradeType: str
+
+class GetUserTradeHistoryResponse(TypedDict):
+    isMoreDataAvailable: bool  # boolean indicating if there is more data available
+    nextCursor: int  # next page number
+    data: List[UserTradeHistoryResponse]
 
 class CountDown(TypedDict):
     symbol: str
