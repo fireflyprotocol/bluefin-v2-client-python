@@ -1067,18 +1067,21 @@ class BluefinClient:
         Inputs:
             params(GetUserTradesRequest): params to query trades (e.g. symbol)
         Returns:
-            list: a list of positions
+            list: a list of trade
         """
         params = extract_enums(params, ["symbol", "type"])
         return await self.apis.get(SERVICE_URLS["USER"]["USER_TRADES"], params, True)
 
     async def get_user_trades_history(self, params: GetUserTradesHistoryRequest):
         """
-        Returns a list of user trades history.
+        Returns a list of the user trades history records, a boolean indicating if there is/are more page(s), and the next page number.        
         Inputs:
             params(GetUserTradesHistoryRequest): params to query trades (e.g. symbol)
         Returns:
-            list: a list of positions
+            GetUserTradesHistoryResponse:
+                isMoreDataAvailable: boolean indicating if there is/are more page(s)
+                nextCursor: the next page number
+                data: a list of the user trades history record
         """
         params = extract_enums(params, ["symbol", "type"])
         return await self.apis.get(
