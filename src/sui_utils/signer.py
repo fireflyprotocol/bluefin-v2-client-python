@@ -3,23 +3,30 @@ import hashlib
 import json
 import base64
 from nacl.signing import *
+from .sui_interfaces import TransactionResult
 from .enumerations import WALLET_SCHEME
 from .account import SuiWallet
 from .utilities import *
 from .bcs import *
+from .rpc import rpc_sui_executeTransactionBlock
 
 
 class Signer:
-    def __init__(self):
-        pass
+    def __init__(self, sui_wallet: SuiWallet = None):
+        self.sui_wallet = sui_wallet
 
-    def sign_tx(self, tx_bytes_str: str, sui_wallet: SuiWallet) -> str:
+    def sign_tx(self, tx_bytes_str: str, sui_wallet: SuiWallet = None) -> str:
         """
         expects the msg in str
         expects the suiwallet object
         Signs the msg and returns the signature.
         Returns the value in b64 encoded format
         """
+        if sui_wallet is None:
+            sui_wallet = self.sui_wallet
+        if sui_wallet is None:
+            raise ValueError("SuiWallet is not provided")
+
         tx_bytes = base64.b64decode(tx_bytes_str)
 
         intent = bytearray()
@@ -34,6 +41,30 @@ class Signer:
         temp.extend(sui_wallet.publicKeyBytes)
         res = base64.b64encode(temp)
         return res.decode()
+
+    def sign_and_execute_tx(self, tx_bytes: str, sui_wallet: SuiWallet = None, url: str = None) -> TransactionResult:
+        """
+        Signs the transaction and executes it on the SUI chain.
+        
+        Parameters:
+        tx_bytes (str): The transaction bytes in string format.
+        sui_wallet (SuiWallet): The SuiWallet object.
+        url (str): The URL of the node.
+
+        Returns:
+        dict: The result of the transaction execution.
+        """
+        if sui_wallet is None:
+            sui_wallet = self.sui_wallet
+        if sui_wallet is None:
+            raise ValueError("SuiWallet is not provided")
+
+        try:
+            signature = self.sign_tx(tx_bytes, sui_wallet)
+            result = rpc_sui_executeTransactionBlock(url, tx_bytes, signature)
+            return TransactionResult(result)
+        except Exception as e:
+            raise Exception(f"Failed to sign and execute transaction, Exception: {e}")
 
     def sign_hash(self, hash, private_key, append=""):
         """
@@ -53,7 +84,12 @@ class Signer:
         hash = hashlib.blake2b(intent, digest_size=32)
         return hash.digest()
     
-    def sign_personal_msg(self, serialized_bytes: bytearray, wallet : SuiWallet ):
+    def sign_personal_msg(self, serialized_bytes: bytearray, wallet: SuiWallet = None):
+        if wallet is None:
+            wallet = self.sui_wallet
+        if wallet is None:
+            raise ValueError("SuiWallet is not provided")
+
         serializer = BCSSerializer()
         # this function adds len as an Unsigned Little Endian Base 128 similar to mysten SDK
         serializer.serialize_uint8_array(list(serialized_bytes))
@@ -61,7 +97,7 @@ class Signer:
 
         # Add personal message intent bytes
         intent = bytearray()
-        intent.extend([ 3, 0, 0]) # Intent scope for personal message
+        intent.extend([3, 0, 0]) # Intent scope for personal message
 
         # Combine the intent and msg_bytes
         intent = intent + serialized_bytes
@@ -72,17 +108,21 @@ class Signer:
         # Sign the hash
         signature = nacl.signing.SigningKey(wallet.privateKeyBytes).sign(blake2bHash)[:64]
 
-
         serializer = BCSSerializer()
         serializer.serialize_u8(WALLET_SCHEME[wallet.getKeyScheme()])
         
         # Construct Signature in accurate format (scheme + signature + publicKey)
-        return serializer.get_bytes()+ signature + wallet.publicKeyBytes
+        return serializer.get_bytes() + signature + wallet.publicKeyBytes
     
-    def sign_bytes(self, bytes: bytearray, private_key: bytes) -> bytes:
+    def sign_bytes(self, bytes: bytearray, private_key: bytes = None) -> bytes:
         """
         Signs the bytes and returns the signature bytes.
         """
+        if private_key is None:
+            if self.sui_wallet is None:
+                raise ValueError("Private key is not provided")
+            private_key = self.sui_wallet.privateKeyBytes
+
         result = nacl.signing.SigningKey(private_key).sign(bytes)[:64]
         return result
 
@@ -135,7 +175,6 @@ class Signer:
             "publicKey": public_key
         }
 
-    
 
 
-    
+
