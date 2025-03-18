@@ -25,15 +25,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/QuoteRequest'
+              $ref: "#/components/schemas/QuoteRequest"
       responses:
-        '200':
+        "200":
           description: Successfully retrieved quote
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Quote'
-        '400':
+                $ref: "#/components/schemas/Quote"
+        "400":
           description: Bad request - invalid or missing parameters
           content:
             application/json:
@@ -42,7 +42,44 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Missing payCoinAddress parameter."
+                    example: "Missing tokenInType parameter."
+  /api/rfq/swap:
+    post:
+      operationId: LastLookSwap
+      summary: Last look confirmation for swap execution
+      description: >
+        Sends request to market makers to perform a final check and optionally execute the swap transaction.
+        This is the last look API that confirms from partners before executing the transaction.
+      parameters:
+        - name: x-api-key
+          in: header
+          description: "Optional header for additional security"
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LastLookSwapRequest"
+      responses:
+        "200":
+          description: Successfully processed last look request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LastLookSwapResponse"
+        "400":
+          description: Bad request - invalid or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid request parameters"
 
 components:
   schemas:
@@ -55,7 +92,6 @@ components:
         - tokenOutType
         - tokenInAmount
         - quoteRequestExpiresAtUtcMillis
-        - createdAtUtcMillis
       properties:
         quoteId:
           type: string
@@ -63,20 +99,20 @@ components:
           example: "59db3e19-c7b0-4753-a8aa-206701004498"
         taker:
           type: string
-          description: The address of the taker’s account.
+          description: The address of the taker's account.
           example: "0xTakerAddress"
         tokenInType:
           type: string
           description: >
             The coin type to pay with (e.g., USDC).  
-            Expressed as a fully-qualified on-chain type.
-          example: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+            Expressed as a fully-qualified on-chain type without 0x prefix.
+          example: "dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
         tokenOutType:
           type: string
           description: >
             The coin type to receive (e.g., SUI).  
-            Expressed as a fully-qualified on-chain type.
-          example: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+            Expressed as a fully-qualified on-chain type without 0x prefix.
+          example: "0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
         tokenInAmount:
           type: string
           description: >
@@ -111,18 +147,18 @@ components:
           example: "59db3e19-c7b0-4753-a8aa-206701004498"
         taker:
           type: string
-          description: The address of the taker’s account.
+          description: The address of the taker's account.
           example: "0xTakerrAddress"
         tokenInType:
           type: string
           description: >
             Coin type to pay with (e.g., USDC). Matches the request.
-          example: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+          example: "dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
         tokenOutType:
           type: string
           description: >
             Coin type to receive (e.g., SUI). Matches the request.
-          example: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+          example: "0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
         tokenInAmount:
           type: string
           description: >
@@ -160,3 +196,71 @@ components:
             Unix timestamp in milliseconds indicating when 
             the quote was created (UTC).
           example: 1734946742563
+
+    LastLookSwapRequest:
+      type: object
+      required:
+        - quoteId
+        - tokenInType
+        - tokenInAmount
+        - tokenOutType
+        - tokenOutAmount
+        - quoteExpiresAtUtcMillis
+        - executionAllowed
+      properties:
+        quoteId:
+          type: string
+          description: Unique ID of the quote
+          example: "59db3e19-c7b0-4753-a8aa-206701004498"
+        tokenInType:
+          type: string
+          description: The coin type to pay with
+          example: "dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+        tokenInAmount:
+          type: string
+          description: Amount to pay, scaled by the coin's decimals
+          example: "100000"
+        tokenOutType:
+          type: string
+          description: The coin type to receive
+          example: "0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+        tokenOutAmount:
+          type: string
+          description: Amount to receive, scaled by the coin's decimals
+          example: "100000000"
+        quoteExpiresAtUtcMillis:
+          type: integer
+          format: int64
+          description: Quote expiration timestamp in milliseconds
+          example: 1734946742563
+        executionAllowed:
+          type: boolean
+          description: Whether transaction execution is allowed
+          example: true
+        transactionBytes:
+          type: string
+          description: Transaction bytes for execution (only present if executionAllowed is true)
+          example: "0x..."
+        transactionSignature:
+          type: string
+          description: Transaction signature (only present if executionAllowed is true)
+          example: "MEUCIQDPsB7bCrOz7..."
+
+    LastLookSwapResponse:
+      type: object
+      required:
+        - approved
+        - executed
+      properties:
+        approved:
+          type: boolean
+          description: Whether the market maker approves the quote
+          example: true
+        executed:
+          type: boolean
+          description: Whether the market maker executed the transaction as well
+          example: true
+        txDigest:
+          type: string
+          description: Optional transaction digest if the transaction was executed, otherwise should be null
+          example: "2ZkbmDabPt6Uj3cMqV4rffPC2Sim4xkoU9VG1hLn1oRU"
