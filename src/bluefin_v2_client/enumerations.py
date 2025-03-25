@@ -28,6 +28,7 @@ class MARKET_SYMBOLS(Enum):
     DEEP = "DEEP-PERP"
     BLUE = "BLUE-PERP"
     TRUMP = "TRUMP-PERP"
+    WAL = "WAL-PERP"
     
 class TIME_IN_FORCE(Enum):
     IMMEDIATE_OR_CANCEL = "IOC"
