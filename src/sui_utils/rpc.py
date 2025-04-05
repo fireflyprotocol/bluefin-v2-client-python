@@ -11,12 +11,12 @@ def rpc_sui_getTransactionBytes(url: str, json_rpc_payload: str) -> str:
     """
     gets transaction bytes with the given json rpc payload to get txBytes.
 
-    Parameters:
-    url (str): URL of the node.
-    payload (str): JSON payload to send in the request.
+    Inputs:
+      url (str): URL of the node.
+      payload (str): JSON payload to send in the request.
 
-    Returns:
-    str: The txBytes.
+    Output:
+      str: The txBytes.
     """
     headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=json_rpc_payload)
@@ -37,7 +37,7 @@ def rpc_unsafe_moveCall(
 ):
     """
     Does the RPC call to SUI chain
-    Input:
+    Inputs:
       url: url of the node
       params: a list of arguments to be passed to function
       function_name: name of the function to call on sui
@@ -71,10 +71,10 @@ def rpc_unsafe_moveCall(
 
     return rpc_sui_getTransactionBytes(url, payload)
 
-def rpc_sui_executeTransactionBlock(url, txBytes, signature, maxRetries=5) -> TransactionResult:
+def rpc_sui_executeTransactionBlock(url: str, txBytes: str, signature: str , maxRetries=5) -> TransactionResult:
     """
     Execute the SUI call on sui chain
-    Input:
+    Inputs:
       url: url of the node
       txBytes: the call in serialised form
       signature: txBytes signed by signer
@@ -119,7 +119,7 @@ def rpc_sui_executeTransactionBlock(url, txBytes, signature, maxRetries=5) -> Tr
 def rpc_sui_getDynamicFieldObject(url:str, parentObjectId: str, fieldName: str,fieldSuiObjectType:str, maxRetries=5):
     """
     Fetches the on-chain dynamic field object corresponding to specified input params
-    Input:
+    Inputs:
       url: url of the sui chain node
       parentObjectId: id of the parent object for which dynamic field needs to be queried
       fieldName: name of the dynamic field
@@ -156,8 +156,8 @@ def rpc_sui_getDynamicFieldObject(url:str, parentObjectId: str, fieldName: str,f
 
 def rpc_call_sui_function(url: str, params: list[Any], method: str = "suix_getCoins") -> SuiGetResponse:
     """
-    for calling sui functions:
-    Input:
+    for calling sui chain functions:
+    Inputs:
       url: url of node
       params: arguments of function
       method(optional): the name of method in sui we want to call. defaults to suix_getCoins
@@ -181,7 +181,7 @@ def rpc_sui_createSplitCoinsTransaction(owner: str, primary_coin_id: str = None,
     """
     Creates a transaction to split a coin into smaller amounts as specified in split_amounts.
     
-    Input:
+    Inputs:
       owner: Address of the owner.
       primary_coin_id: ID of the primary coin to split.
       split_amounts: List of amounts to split into (as big number strings scaled in coin decimals supported by the coin). Eg: 1000000000 for 1 SUI.
@@ -221,15 +221,15 @@ def rpc_sui_createMergeCoinsTransaction(url: str, primary_coin_id: str, coin_id:
     """
     Creates a transaction to merge a coin into a primary coin.
 
-    Parameters:
-    url (str): URL of the node.
-    primary_coin_id (str): The ID of the primary coin to merge into.
-    coin_id (str): The ID of the coin to merge.
-    userAddress (str): Address of the user.
-    gasBudget (int): Gas budget for the transaction.
+    Inputs:
+      url (str): URL of the node.
+      primary_coin_id (str): The ID of the primary coin to merge into.
+      coin_id (str): The ID of the coin to merge.
+      userAddress (str): Address of the user.
+      gasBudget (int): Gas budget for the transaction.
 
-    Returns:
-    str: The transaction bytes.
+    Output:
+      str: The transaction bytes.
     """
     base_dict = {
         "jsonrpc": "2.0",
@@ -242,49 +242,49 @@ def rpc_sui_createMergeCoinsTransaction(url: str, primary_coin_id: str, coin_id:
     return rpc_sui_getTransactionBytes(url, payload)
 
 def get_coin_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", url: str = None) -> str:
-        """
-        Gets the balance of the specified coin type for the user.
-        Input:
-            user_address (str): The address of the user.
-            coin_type (str): The type of the coin.
-            url (str): The URL of the SUI node.
-        Output:
-            str: The balance of the coin scaled to coin decimals supported by the coin. Eg: 1000000000 for 1 SUI.
-        """
-        try:
-            callArgs = []
-            callArgs.append(user_address)
-            callArgs.append(coin_type)
-            result = rpc_call_sui_function(
-                url, callArgs, method="suix_getBalance"
-            )
-            return result.raw["totalBalance"]
-        except Exception as e:
-            raise (Exception("Failed to get coin balance, Exception: {}".format(e)))
+    """
+    Gets the balance of the specified coin type for the user.
+    Input:
+        user_address (str): The address of the user.
+        coin_type (str): The type of the coin.
+        url (str): The URL of the SUI node.
+    Output:
+        str: The balance of the coin scaled to coin decimals supported by the coin. Eg: 1000000000 for 1 SUI.
+    """
+    try:
+        callArgs = []
+        callArgs.append(user_address)
+        callArgs.append(coin_type)
+        result = rpc_call_sui_function(
+            url, callArgs, method="suix_getBalance"
+        )
+        return result.raw["totalBalance"]
+    except Exception as e:
+        raise (Exception("Failed to get coin balance, Exception: {}".format(e)))
 
 
 def get_coin_having_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", balance: str = None , url: str = None, exact_match: bool = False) -> str:
-        """
-        Gets the coin having the specified balance.
-        Input:
-            user_address (str): The address of the user.
-            coin_type (str): The type of the coin.
-            balance (str): The balance of the coin scaled to coin decimals supported by the coin. Eg: 1000000000 for 1 SUI.
-            url (str): The URL of the SUI node.
-            exact_match (bool): Whether to find an exact match or a coin with balance greater than or equal to the specified balance.
-        Output:
-            str: The ID of the coin.
-        """
-        coin_list = get_coins_with_type(user_address, coin_type, url)
-        for coin in coin_list:
-            if exact_match:
-                 if int(coin.balance) == int(balance):
-                      return coin.coin_object_id
-            elif int(coin.balance) >= int(balance):
-                return coin.coin_object_id
-        raise Exception(
-            "Not enough balance available in single coin, please merge your coins"
-        )
+    """
+    Gets the coin having the specified balance.
+    Input:
+        user_address (str): The address of the user.
+        coin_type (str): The type of the coin.
+        balance (str): The balance of the coin scaled to coin decimals supported by the coin. Eg: 1000000000 for 1 SUI.
+        url (str): The URL of the SUI node.
+        exact_match (bool): Whether to find an exact match or a coin with balance greater than or equal to the specified balance.
+    Output:
+        str: The ID of the coin.
+    """
+    coin_list = get_coins_with_type(user_address, coin_type, url)
+    for coin in coin_list:
+        if exact_match:
+                if int(coin.balance) == int(balance):
+                    return coin.coin_object_id
+        elif int(coin.balance) >= int(balance):
+            return coin.coin_object_id
+    raise Exception(
+        "Not enough balance available in single coin, please merge your coins"
+    )
 
 def get_coin_metadata(url: str, coin_type: str) -> CoinMetadata:
     """

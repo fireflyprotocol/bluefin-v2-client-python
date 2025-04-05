@@ -42,12 +42,12 @@ class Effects:
 
 class TransactionResult:
     def __init__(self, result: dict):
-        self.complete_transaction = result.get("result")
-        self.digest = self.complete_transaction.get("digest")
-        self.transaction = self.complete_transaction.get("transaction")
-        self.effects = Effects(self.complete_transaction.get("effects"))
-        self.object_changes = self.complete_transaction.get("objectChanges")
-        self.events = self.complete_transaction.get("events")
+        self.full_transaction_data = result.get("result")
+        self.digest = self.full_transaction_data.get("digest")
+        self.transaction = self.full_transaction_data.get("transaction")
+        self.effects = Effects(self.full_transaction_data.get("effects"))
+        self.object_changes = self.full_transaction_data.get("objectChanges")
+        self.events = self.full_transaction_data.get("events")
 
 
 
@@ -81,7 +81,7 @@ class NextCursor:
 
 class SuiGetResponse:
     def __init__(self, response: dict):
-        self.raw : dict = response
+        self.raw_response : dict = response
         self.data : list[Any] = response.get("data", [])
         next_cursor = response.get("nextCursor")
         if isinstance(next_cursor, dict):
