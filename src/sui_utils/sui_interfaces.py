@@ -37,6 +37,7 @@ class Effects:
         self.gas_used = GasUsed(effects.get("gasUsed"))
         self.transaction_digest = effects.get("transactionDigest")
         self.mutated = [MutatedObject(m) for m in effects.get("mutated", [])]
+        self.created = [MutatedObject(m) for m in effects.get("created", [])]
         self.gas_object = GasObject(effects.get("gasObject"))
         self.events_digest = effects.get("eventsDigest")
 
@@ -75,15 +76,15 @@ class Coin:
 
 class NextCursor:
     def __init__(self, cursor: dict):
-        self.tx_digest = cursor.get("txDigest")
-        self.event_seq = cursor.get("eventSeq")
+        self.tx_digest = cursor.get("txDigest", "")
+        self.event_seq = cursor.get("eventSeq", "")
 
 
 class SuiGetResponse:
     def __init__(self, response: dict):
         self.raw_response : dict = response
         self.data : list[Any] = response.get("data", [])
-        next_cursor = response.get("nextCursor")
+        next_cursor = response.get("nextCursor", "")
         if isinstance(next_cursor, dict):
             self.next_cursor : NextCursor = NextCursor(next_cursor)
         else:

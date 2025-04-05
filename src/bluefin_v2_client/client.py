@@ -690,8 +690,8 @@ class BluefinClient:
 
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
-            )["totalBalance"]
-            return fromSuiBase(result)
+            )
+            return fromSuiBase(result.raw_response["totalBalance"])
         except Exception as e:
             raise (Exception(f"Failed to get balance, error: {e}"))
 
@@ -705,7 +705,7 @@ class BluefinClient:
             callArgs.append(self.contracts.get_currency_type())
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getCoins")
-            return result
+            return result.raw_response
         except Exception as e:
             raise (Exception("Failed to get USDC coins, Exception: {}".format(e)))
 
@@ -719,8 +719,8 @@ class BluefinClient:
             callArgs.append(self.contracts.get_currency_type())
             result = rpc_call_sui_function(
                 self.url, callArgs, method="suix_getBalance"
-            )["totalBalance"]
-            return fromUsdcBase(result)
+            )
+            return fromUsdcBase(result.raw_response["totalBalance"])
 
         except Exception as e:
             raise (Exception("Failed to get balance, Exception: {}".format(e)))
@@ -738,10 +738,10 @@ class BluefinClient:
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
             )
-            if "error" in result:
-                if result["error"]["code"] == "dynamicFieldNotFound":
+            if "error" in result.raw_response:
+                if result.raw_response["error"]["code"] == "dynamicFieldNotFound":
                     return "Given user have no position open"
-            return result["data"]["content"]["fields"]["value"]["fields"]
+            return result.raw_response["data"]["content"]["fields"]["value"]["fields"]
 
         except Exception as e:
             raise (Exception("Failed to get positions, Exception: {}".format(e)))
@@ -758,7 +758,7 @@ class BluefinClient:
             )
             result = rpc_call_sui_function(
                 self.url, call_args, method="suix_getDynamicFieldObject"
-            )
+            ).raw_response
 
             balance = fromSuiBase(
                 result["data"]["content"]["fields"]["value"]["fields"]["balance"]

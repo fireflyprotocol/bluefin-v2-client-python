@@ -231,15 +231,18 @@ def rpc_sui_createMergeCoinsTransaction(url: str, primary_coin_id: str, coin_id:
     Output:
       str: The transaction bytes.
     """
-    base_dict = {
-        "jsonrpc": "2.0",
-        "method": "unsafe_mergeCoins",
-        "id": 1,
-        "params": [userAddress, primary_coin_id, coin_id, None, str(gasBudget)]
-    }
+    try:
+        base_dict = {
+            "jsonrpc": "2.0",
+            "method": "unsafe_mergeCoins",
+            "id": 1,
+            "params": [userAddress, primary_coin_id, coin_id, None, str(gasBudget)]
+        }
 
-    payload = json.dumps(base_dict)
-    return rpc_sui_getTransactionBytes(url, payload)
+        payload = json.dumps(base_dict)
+        return rpc_sui_getTransactionBytes(url, payload)
+    except Exception as e:
+        raise Exception(f"Failed to merge coins, Exception: {e}")
 
 def get_coin_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", url: str = None) -> str:
     """

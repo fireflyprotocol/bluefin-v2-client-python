@@ -167,7 +167,8 @@ class RFQClient:
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)
-        tx_response = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        tx_response = TransactionResult(res)
         try:
             success = tx_response.effects.status == "success"
             return success, tx_response
@@ -220,7 +221,8 @@ class RFQClient:
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)
-        tx_response = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        tx_response = TransactionResult(res)
         try:
             success = tx_response.effects.status == "success"
             return success, tx_response
@@ -266,7 +268,8 @@ class RFQClient:
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)
-        tx_response = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        tx_response = TransactionResult(res)
         try:
             success = tx_response.effects.status == "success"
             return success, tx_response
@@ -307,7 +310,8 @@ class RFQClient:
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)
-        tx_response = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        tx_response = TransactionResult(res)
         try:
             success = tx_response.effects.status == "success"
             return success, tx_response
@@ -354,7 +358,8 @@ class RFQClient:
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)
-        tx_response = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        tx_response = TransactionResult(res)
         try:
             success = tx_response.effects.status == "success"
             return success, tx_response
@@ -401,7 +406,8 @@ class RFQClient:
         )
 
         signature = self.signer.sign_tx(tx_bytes, self.wallet)
-        tx_response = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        tx_response = TransactionResult(res)
         try:
             success = tx_response.effects.status == "success"
             return success, tx_response

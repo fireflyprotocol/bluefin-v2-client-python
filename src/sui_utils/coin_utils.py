@@ -56,9 +56,7 @@ class CoinUtils:
             split_amount = [str(balance)]
             tx_result = CoinUtils.split_coin(coin_id, split_amount, wallet, url)
             if tx_result.effects.status == "success":
-                for obj in tx_result.effects.mutated:
-                    if obj.reference.object_id != coin_id:
-                        return obj.reference.object_id
+                return tx_result.effects.created[0].reference.object_id
             raise Exception("Failed to create coin with balance")
         except Exception as e:
             raise Exception(f"Failed to create coin with balance, Exception: {e}")
