@@ -71,7 +71,7 @@ def rpc_unsafe_moveCall(
 
     return rpc_sui_getTransactionBytes(url, payload)
 
-def rpc_sui_executeTransactionBlock(url: str, txBytes: str, signature: str , maxRetries=5) -> TransactionResult:
+def rpc_sui_executeTransactionBlock(url: str, txBytes: str, signature: str , maxRetries=5) -> any:
     """
     Execute the SUI call on sui chain
     Inputs:
