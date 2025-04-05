@@ -200,7 +200,14 @@ def decimal_to_bcs(self, num):
 
         return bcs_bytes
 
-def read_json(file_path: str = None):
+def read_json(file_path: str | None = None) -> dict:
+    """
+    Reads a JSON file and returns the data as a dictionary.
+    Input:
+        file_path: optional path to the JSON file, defaults to './rfq-contracts.json'
+    Output:
+        Returns the data as a dictionary.
+    """
     try:
         if file_path is None:
             file_path = './rfq-contracts.json'

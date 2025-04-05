@@ -42,14 +42,14 @@ class Effects:
 
 class TransactionResult:
     def __init__(self, result: dict):
-        self.digest = result.get("digest")
-        self.transaction = result.get("transaction")
-        self.raw_transaction = result.get("rawTransaction")
-        self.effects = Effects(result.get("effects"))
-        self.object_changes = result.get("objectChanges")
+        self.complete_transaction = result.get("result")
+        self.digest = self.complete_transaction.get("digest")
+        self.transaction = self.complete_transaction.get("transaction")
+        self.effects = Effects(self.complete_transaction.get("effects"))
+        self.object_changes = self.complete_transaction.get("objectChanges")
+        self.events = self.complete_transaction.get("events")
 
-    def __repr__(self):
-        return f"TransactionResult(digest={self.digest}, status={self.effects.status}, transaction_digest={self.effects.transaction_digest})"
+
 
 class CoinMetadata:
     def __init__(self, metadata: dict):
@@ -60,8 +60,6 @@ class CoinMetadata:
         self.icon_url = metadata.get("iconUrl")
         self.id = metadata.get("id")
 
-    def __repr__(self):
-        return f"CoinMetadata(name={self.name}, symbol={self.symbol}, decimals={self.decimals})"
 
 class Coin:
     def __init__(self, coin_data: dict):
@@ -80,8 +78,6 @@ class NextCursor:
         self.tx_digest = cursor.get("txDigest")
         self.event_seq = cursor.get("eventSeq")
 
-    def __repr__(self):
-        return f"NextCursor(tx_digest={self.tx_digest}, event_seq={self.event_seq})"
 
 class SuiGetResponse:
     def __init__(self, response: dict):
@@ -93,6 +89,3 @@ class SuiGetResponse:
         else:
             self.next_cursor: str = next_cursor
         self.has_next_page: bool = response.get("hasNextPage",False)
-
-    def __repr__(self):
-        return f"CoinResponse(data={self.data}, next_cursor={self.next_cursor}, has_next_page={self.has_next_page})"

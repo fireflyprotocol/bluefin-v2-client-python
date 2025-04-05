@@ -177,15 +177,16 @@ def rpc_call_sui_function(url: str, params: list[Any], method: str = "suix_getCo
     result = json.loads(response.text)
     return SuiGetResponse(result["result"])
 
-def rpc_sui_createSplitCoinsTransaction(owner: str, primary_coin_id: str = None, split_amounts: list[str] = [], url: str = None):
+def rpc_sui_createSplitCoinsTransaction(owner: str, primary_coin_id: str = None, split_amounts: list[str] = [], url: str = None, gas_budget: int = 100000000):
     """
-    Splits the primary coin into smaller amounts as specified in split_amounts.
+    Creates a transaction to split a coin into smaller amounts as specified in split_amounts.
     
     Input:
       owner: Address of the owner.
       primary_coin_id: ID of the primary coin to split.
-      split_amounts: List of amounts to split into (as big number strings scaled in coin decimal).
+      split_amounts: List of amounts to split into (as big number strings scaled in coin decimals supported by the coin). Eg: 1000000000 for 1 SUI.
       url: URL of the node.
+      gas_budget: Gas budget for the transaction (default: 100000000).
 
     Output:
       transaction bytes of the split operation.
@@ -197,22 +198,28 @@ def rpc_sui_createSplitCoinsTransaction(owner: str, primary_coin_id: str = None,
                 raise ValueError(f"Invalid amount in split_amounts: {amount}")
             
         base_dict = {
-            "jsonrpc" : "2.0",
-            "method" : "unsafe_splitCoin",
+            "jsonrpc": "2.0",
+            "method": "unsafe_splitCoin",
             "id": 1,
-            "params": [owner, primary_coin_id, split_amounts]
+            "params": [
+                owner,
+                primary_coin_id,
+                split_amounts,
+                None,  # gas object ID, let node pick one
+                str(gas_budget)
+            ]
         }
 
         payload = json.dumps(base_dict)
 
-        tx_bytes = rpc_sui_getTransactionBytes(payload, url)
+        tx_bytes = rpc_sui_getTransactionBytes(url, payload)
         return tx_bytes
     except Exception as e:
         raise Exception(f"Failed to split coins, Exception: {e}")
 
-def rpc_sui_mergeCoins(url: str, primary_coin_id: str, coin_id: str, userAddress: str, gasBudget: int = 100000000) -> str:
+def rpc_sui_createMergeCoinsTransaction(url: str, primary_coin_id: str, coin_id: str, userAddress: str, gasBudget: int = 100000000) -> str:
     """
-    Merges a coin into a primary coin.
+    Creates a transaction to merge a coin into a primary coin.
 
     Parameters:
     url (str): URL of the node.
@@ -234,9 +241,15 @@ def rpc_sui_mergeCoins(url: str, primary_coin_id: str, coin_id: str, userAddress
     payload = json.dumps(base_dict)
     return rpc_sui_getTransactionBytes(url, payload)
 
-async def get_coin_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", url: str = None) -> str:
+def get_coin_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", url: str = None) -> str:
         """
-        Returns user's token balance.
+        Gets the balance of the specified coin type for the user.
+        Input:
+            user_address (str): The address of the user.
+            coin_type (str): The type of the coin.
+            url (str): The URL of the SUI node.
+        Output:
+            str: The balance of the coin scaled to coin decimals supported by the coin. Eg: 1000000000 for 1 SUI.
         """
         try:
             callArgs = []
@@ -251,6 +264,17 @@ async def get_coin_balance(user_address: str = None, coin_type: str = "0x::sui::
 
 
 def get_coin_having_balance(user_address: str = None, coin_type: str = "0x::sui::SUI", balance: str = None , url: str = None, exact_match: bool = False) -> str:
+        """
+        Gets the coin having the specified balance.
+        Input:
+            user_address (str): The address of the user.
+            coin_type (str): The type of the coin.
+            balance (str): The balance of the coin scaled to coin decimals supported by the coin. Eg: 1000000000 for 1 SUI.
+            url (str): The URL of the SUI node.
+            exact_match (bool): Whether to find an exact match or a coin with balance greater than or equal to the specified balance.
+        Output:
+            str: The ID of the coin.
+        """
         coin_list = get_coins_with_type(user_address, coin_type, url)
         for coin in coin_list:
             if exact_match:
@@ -266,12 +290,12 @@ def get_coin_metadata(url: str, coin_type: str) -> CoinMetadata:
     """
     Fetches the metadata for the specified coin type.
 
-    Parameters:
-    url (str): URL of the node.
-    coin_type (str): The coin type to fetch metadata for.
+    Input:
+      url (str): URL of the node.
+      coin_type (str): The coin type to fetch metadata for.
 
-    Returns:
-    CoinMetadata: The metadata of the coin.
+    Output:
+      CoinMetadata: The metadata of the coin.
     """
     base_dict = {
         "jsonrpc": "2.0",
@@ -292,13 +316,13 @@ def get_coins_with_type(user_address: str = None, coin_type: str = "0x::sui::SUI
     """
     Returns the list of the coins of type tokenType owned by user.
 
-    Parameters:
-    user_address (str): The address of the user.
-    coin_type (str): The coin type to fetch.
-    url (str): The URL of the node.
+    Input:
+      user_address (str): The address of the user.
+      coin_type (str): The coin type to fetch.
+      url (str): The URL of the node.
 
-    Returns:
-    list[Coin]: A list of Coin objects.
+    Output:
+      list[Coin]: A list of Coin objects.
     """
     try:
         coins = []
