@@ -18,6 +18,7 @@ BASE_1E6 = 1000000  # 1e6 for USDC token
 BASE_1E9 = 1000000000
 SUI_STRING_OBJECT_TYPE = "0x1::string::String"
 SUI_CUSTOM_OBJECT_TYPE = "0x1::type_name::TypeName"
+SUI_NATIVE_PACKAGE_ID = "0x2"
 
 
 def getsha256Hash(callArgs: list) -> str:
@@ -199,7 +200,14 @@ def decimal_to_bcs(num):
 
         return bcs_bytes
 
-def read_json(file_path: str = None):
+def read_json(file_path: str | None = None) -> dict:
+    """
+    Reads a JSON file and returns the data as a dictionary.
+    Input:
+        file_path: optional path to the JSON file, defaults to './rfq-contracts.json'
+    Output:
+        Returns the data as a dictionary.
+    """
     try:
         if file_path is None:
             file_path = './rfq-contracts.json'
