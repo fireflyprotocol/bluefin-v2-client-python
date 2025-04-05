@@ -55,8 +55,8 @@ class RFQClient:
           taker (str): address of the reciever account.
           token_in_amount (int): amount of the input token (scaled to supported coin decimals, eg. 1000000000 for 1 Sui).
           token_out_amount (int): amount of the output token (scaled to supported coin decimals, eg. 1000000 for 1 USDC).
-          token_in_type (str): on chain token type of input coin (i.e for SUI , 0x2::sui::SUI).
-          token_out_type (str): on chain token type of output coin (i.e for USDC , usdc_Address::usdc::USDC).
+          token_in_type (str): on chain token type of input coin, without 0x prefix (i.e for SUI , 0000000000000000000000000000000000000000000000000000000000000002::sui::SUI).
+          token_out_type (str): on chain token type of output coin, without 0x prefix (i.e for USDC , dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC).
           created_at_utc_ms (int): the unix timestamp at which the quote was created in milliseconds (Defaults to current timestamp).
           expires_at_utc_ms (int): the unix timestamp at which the quote is to be expired in milliseconds (Defaults to 30 seconds after creation timestamp).
 
@@ -102,8 +102,8 @@ class RFQClient:
           taker (str): address of the reciever account.
           token_in_amount (int): amount of the input token (scaled to supported coin decimals, eg. 1000000000 for 1 Sui).
           token_out_amount (int): amount of the output token (scaled to supported coin decimals, eg. 1000000 for 1 USDC).
-          token_in_type (str): on chain token type of input coin (i.e for SUI , 0x2::sui::SUI).
-          token_out_type (str): on chain token type of output coin (i.e for USDC , usdc_Address::usdc::USDC).
+          token_in_type (str): on chain token type of input coin, without 0x prefix (i.e for SUI , 0000000000000000000000000000000000000000000000000000000000000002::sui::SUI).
+          token_out_type (str): on chain token type of output coin, without 0x prefix (i.e for USDC , dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC).
           created_at_utc_ms (int): the unix timestamp at which the quote was created in milliseconds (Defaults to current timestamp).
           expires_at_utc_ms (int): the unix timestamp at which the quote is to be expired in milliseconds (Defaults to 30 seconds after creation timestamp).
 

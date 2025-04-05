@@ -1,6 +1,6 @@
 # RFQClient
 
-A Python-based client for interacting with Bluefin RFQ (Request for Quote) protocol on the Sui blockchain. This library module allows users to create, sign, and manage quotes, as well as deposit and withdraw assets from vaults.
+A Python-based client for interacting with Bluefin RFQ (Request for Quote) protocol on the Sui blockchain. This library module allows users to create and sign quotes, as well as manage on-chain RFQ vaults.
 
 ## Features
 
@@ -95,8 +95,8 @@ quote = rfq_client.create_quote(
     taker="0x67399451f127894ee0f9ff7182cbe914008a0197a97b54e86226d1c33635c368",
     token_in_amount=1000000000, # (scaled to supported coin decimals, eg. 1000000000 for 1 Sui)
     token_out_amount=200000000, # (scaled to supported coin decimals, eg. 1000000 for 1 USDC)
-    token_in_type="0x2::sui::SUI",
-    token_out_type="0x2::example::TOKEN",
+    token_in_type="0000000000000000000000000000000000000000000000000000000000000002::sui::SUI", # without 0x prefix
+    token_out_type="dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",  # without 0x prefix
     expired_at_utc_ms=1699765400,
     created_at_utc_ms=1698765400,
 )
@@ -111,8 +111,8 @@ quote, signature = rfq_client.create_and_sign_quote(
     taker="0x67399451f127894ee0f9ff7182cbe914008a0197a97b54e86226d1c33635c368",
     token_in_amount=1000000000, # (scaled to supported coin decimals, eg. 1000000000 for 1 Sui)
     token_out_amount=200000000, # (scaled to supported coin decimals, eg. 1000000 for 1 USDC)
-    token_in_type="0x2::sui::SUI",
-    token_out_type="0x2::example::TOKEN",
+    token_in_type="0000000000000000000000000000000000000000000000000000000000000002::sui::SUI", # without 0x prefix
+    token_out_type="dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",  # without 0x prefix
     expired_at_utc_ms=1699765400,
     created_at_utc_ms=1698765400,
 )
@@ -155,7 +155,7 @@ rfq_client.add_coin_support(
 ```python
 rfq_client.deposit_in_vault(
     vault="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
-    amount="200000000000",
+    amount="2000000000", # (scaled to supported coin decimals, eg. 1000000000 for 1 Sui)
     coin_type="0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
     gasbudget="100000000"  # Optional, defaults to 0.1 Sui
 )
@@ -170,7 +170,7 @@ rfq_client.deposit_in_vault(
 ```python
 rfq_client.withdraw_from_vault(
     vault="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
-    amount="200000000000",
+    amount="200000000000", # (scaled to supported coin decimals, eg. 1000000000 for 1 Sui)
     coin_type="0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
     gasbudget="100000000"  # Optional, defaults to 0.1 Sui
 )
@@ -199,7 +199,7 @@ rfq_client.update_vault_manager(
 ```python
 rfq_client.update_min_deposit_for_coin(
     vault="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
-    coin_type="0x2::sui::SUI",
+    coin_type="0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
     min_amount="1000000",  # (scaled to supported coin decimals, eg. 1000000000 for 1 Sui)
     gasbudget="100000000"  # Optional, defaults to 0.1 Sui
 )
@@ -210,7 +210,7 @@ rfq_client.update_min_deposit_for_coin(
 ```python
 balance = rfq_client.get_vault_coin_balance(
     vault="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
-    coin_type="0x2::sui::SUI"
+    coin_type="0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
 )
 ```
 
