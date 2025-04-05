@@ -288,4 +288,49 @@ class RFQClient:
         except Exception as e:
             return False , res
         
+    def add_coin_support(self, 
+        vault: str,
+        coin_type: str,
+        min_amount: str,
+        ) -> tuple[bool, dict] :
+        """
+        Adds coin support to the vault
+
+        Parameters:
+        vault (str): on chain vault object ID.
+        coin_type (str): on chain token type of the coin (i.e for USDC , usdc_Address::usdc::USDC)
+        min_amount (str): minimum amount of the coin that is to be supported in the vault [scaled to default base of the coin (i.e for 1 USDC(1e6) , provide input as 1000000 )]
+
+        Returns:
+        Tuple of bool (indicating status of execution) and sui chain response (dict).
+        """
+        
+        move_function_params = [
+                    vault,
+                    self.rfq_contracts.get_protocol_config(),
+                    min_amount
+                ]
+        move_function_type_arguments = [
+                    coin_type
+                ]
+        
+        tx_bytes = rpc_unsafe_moveCall(
+            url=self.url,
+            params=move_function_params,
+            function_name='support_coin',
+            function_library='gateway',
+            userAddress=self.wallet.getUserAddress(),
+            packageId=self.rfq_contracts.get_package(),
+            gasBudget=100000000,
+            typeArguments=move_function_type_arguments
+        )
+
+        signature = self.signer.sign_tx(tx_bytes, self.wallet)
+        res = rpc_sui_executeTransactionBlock(self.url, tx_bytes, signature)
+        try:
+            success = res["result"]["effects"]["status"]["status"] == "success"
+            return success, res
+        except Exception as e:
+            return False , res
+        
         

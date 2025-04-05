@@ -1,15 +1,17 @@
 # RFQClient
+
 A Python-based client for interacting with Bluefin RFQ (Request for Quote) protocol on the Sui blockchain. This library module allows users to create, sign, and manage quotes, as well as deposit and withdraw assets from vaults.
 
 ## Features
+
 - Initialize an RFQClient with a `SuiWallet`.
 - Create and sign quotes for token swaps.
 - Deposit tokens into a vault.
 - Withdraw tokens from a vault (vault manager only).
 
 ## Installation
-To use `RFQClient`, ensure you have Python installed and install the necessary dependencies.
 
+To use `RFQClient`, ensure you have Python installed and install the necessary dependencies.
 
 The package can be installed from [PyPi](https://pypi.org/project/bluefin-v2-client-python/) using pip:
 
@@ -20,29 +22,35 @@ pip install bluefin_v2_client_sui
 ## Usage
 
 ### Importing the Library
+
 ```python
 from bluefin_rfq_client import *
 ```
 
-### RFQ Contracts config 
+### RFQ Contracts config
+
 At the root of your working directory, create `rfq-contracts.json` and add the contract configs, eg.
+
 ```json
 {
-    "UpgradeCap": "0x23cffdc270102d2dbb36546ef202e7be100d1a56cc0e508eef505efd240988e3",
-    "ProtocolConfig": "0x7b8a9994e1887c82cfd925bd511abb33f8e2cf045fc6e605c73c2e8d51e89dba",
-    "Package": "0x872809300103e7812e6b515d277488ad747aecc6a0f537097a96ea0865c3952a",
-    "AdminCap": "0xa04ab81dcd60867f785639500d22dfd3fabdbed3b6daeac7d6bb2cd0745a3c3b",
-    "BasePackage": "0x872809300103e7812e6b515d277488ad747aecc6a0f537097a96ea0865c3952a",
-    "vaults": ["0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d"]
+  "UpgradeCap": "0x23cffdc270102d2dbb36546ef202e7be100d1a56cc0e508eef505efd240988e3",
+  "ProtocolConfig": "0x7b8a9994e1887c82cfd925bd511abb33f8e2cf045fc6e605c73c2e8d51e89dba",
+  "Package": "0x872809300103e7812e6b515d277488ad747aecc6a0f537097a96ea0865c3952a",
+  "AdminCap": "0xa04ab81dcd60867f785639500d22dfd3fabdbed3b6daeac7d6bb2cd0745a3c3b",
+  "BasePackage": "0x872809300103e7812e6b515d277488ad747aecc6a0f537097a96ea0865c3952a",
+  "vaults": [
+    "0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d"
+  ]
 }
-
 ```
->Note: These are different for mainnet/testnet
+
+> Note: These are different for mainnet/testnet
 
 ### Initializing the Client
+
 ```python
 # Seed phrase (mnemonic) of the wallet (currently supports only ED25519)
-TEST_ACCT_PHRASE = "wallet seed phrase" 
+TEST_ACCT_PHRASE = "wallet seed phrase"
 # RPC URL of the chain
 TEST_NETWORK = "https://fullnode.mainnet.sui.io:443"
 
@@ -60,12 +68,14 @@ rfq_client = RFQClient(wallet=wallet, url=TEST_NETWORK, rfq_contracts=rfq_contra
 
 ```
 
-### Creating and Signing a Quote 
+### Creating and Signing a Quote
 
 #### Supported wallets (No hashing required):
+
 - `ED25519`
 
 #### Parameters:
+
 - `vault` (str): On-chain vault object ID.
 - `quote_id` (str): Unique quote ID.
 - `taker` (str): Address of the receiver.
@@ -108,9 +118,37 @@ quote, signature = rfq_client.create_and_sign_quote(
 )
 ```
 
+### Creating a new Vault
+
+#### Supported wallets (blake2b hashing required, since its a sui transaction):
+
+- `ED25519`
+
+```python
+rfq_client.create_vault(
+    manager="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
+)
+```
+
+### Adding support for a coin in the vault (Only vault manager)
+
+#### Supported wallets (blake2b hashing required, since its a sui transaction):
+
+- `ED25519`
+
+```python
+rfq.add_coin_suppot(
+    vault="0x84511b56cb8e410ffa0fdde6760fca111d0b60ed2d741ee35b944a9bfbcc3456",
+    coin_type="0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC", 
+    min_amount="1000000" # Should be scaled to the appropriate decimals of the coin to be supported
+)
+```
+
+
 ### Depositing Tokens into a Vault
 
 #### Supported wallets (blake2b hashing required, since its a sui transaction):
+
 - `ED25519`
 
 ```python
@@ -121,9 +159,10 @@ rfq_client.deposit_in_vault(
 )
 ```
 
-### Withdrawing Tokens from a Vault
+### Withdrawing Tokens from a Vault (Only Vault Manager)
 
 #### Supported wallets (blake2b hashing required, since its a sui transaction):
+
 - `ED25519`
 
 ```python
@@ -134,33 +173,24 @@ rfq_client.withdraw_from_vault(
 )
 ```
 
-### Creating a new Vault
-
-#### Supported wallets (blake2b hashing required, since its a sui transaction):
-- `ED25519`
-
-```python
-rfq_client.create_vault(
-    manager="0x40923d059eae6ccbbb91ac9442b80b9bec8262122a5756d96021e34cf33f0b1d",
-)
-```
-
 ## API Reference
 
 #### `RFQClient(wallet: SuiWallet, url: str, rfq_contracts: RFQContracts)`
+
 Initializes the RFQClient.
 
 ##### Parameters:
+
 - `wallet` (SuiWallet): Instance of SuiWallet.
 - `url` (str): RPC URL of the chain node.
 - `rfq_contracts` (RFQContracts): Instance of RFQContracts.
 
 #### `create_quote(...) -> Quote`</br> `create_and_sign_quote(...) -> Tuple[Quote, str]`
 
-
 Creates or/and signs a quote.
 
 ##### Parameters:
+
 - `vault` (str): On-chain vault object ID.
 - `quote_id` (str): Unique quote ID.
 - `taker` (str): Address of the receiver.
@@ -172,15 +202,17 @@ Creates or/and signs a quote.
 - `expires_at_utc_ms` (int, optional): Expiry UTC timestamp in milliseconds (default: 10 seconds after creation timestamp).
 
 #### `deposit_in_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
+
 Deposits a token amount into the vault.
 
 #### `withdraw_from_vault(vault: str, amount: str, token_type: str) -> Tuple[bool, dict]`
+
 Withdraws a token amount from the vault (only vault manager can withdraw).
 
 #### `def create_vault(self, manager: str ) -> tuple[bool, dict]`
+
 Creates a new vault on bluefin rfq protocol with provided vault manager.
 
-
 ## Contact
-For issues and inquiries, please open a GitHub issue.
 
+For issues and inquiries, please open a GitHub issue.

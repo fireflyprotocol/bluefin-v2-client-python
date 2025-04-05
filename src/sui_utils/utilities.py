@@ -181,7 +181,7 @@ def config_logging(logging, logging_level, log_file: str = None):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-def decimal_to_bcs(self, num):
+def decimal_to_bcs(num):
         # Initialize an empty list to store the BCS bytes
         bcs_bytes = []
         while num > 0:
